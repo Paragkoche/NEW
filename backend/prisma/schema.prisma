@@ -1,0 +1,85 @@
+// Prisma schema generated from dbdiagram structure
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/db/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+}
+
+model Product {
+  id           Int     @id @default(autoincrement())
+  name         String
+  thumbnailUrl String?
+  bgs          bgs[]
+  Env          Env[]
+  model        Model[]
+}
+
+model bgs {
+  id    Int    @id @default(autoincrement())
+  color String
+
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId Int?
+}
+
+model Model {
+  id            Int     @id @default(autoincrement())
+  name          String  @unique
+  isDefault     Boolean
+  shadow        Boolean
+  autoRotate    Boolean
+  RotationSpeed Int
+  thumbnailUrl  String?
+  url           String?
+  mash          Mash[]
+  productId     Int?
+
+  Product Product? @relation(fields: [productId], references: [id])
+}
+
+model Env {
+  id           Int     @id @default(autoincrement())
+  name         String
+  url          String?
+  thumbnailUrl String?
+
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId Int?
+}
+
+model Mash {
+  id            Int     @id @default(autoincrement())
+  itOptional    Boolean
+  textureEnable Boolean
+  thumbnailUrl  String?
+  name          String
+  url           String?
+  mashId        Int?
+  Mash          Mash?   @relation("MashVariants", fields: [mashId], references: [id])
+  variants      Mash[]  @relation("MashVariants")
+
+  textures Fabric[]
+  Model    Model?   @relation(fields: [modelId], references: [id])
+  modelId  Int?
+}
+
+model Fabric {
+  id           Int     @id @default(autoincrement())
+  name         String
+  url          String?
+  thumbnailUrl String?
+  size         Int
+  mashId       Int?
+  Mash         Mash?   @relation(fields: [mashId], references: [id])
+}
