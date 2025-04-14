@@ -25,7 +25,7 @@ const Page = async () => {
     <main className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
       {columns.map((column, colIdx) => (
         <div key={colIdx} className="grid gap-16">
-          {column.map((model, i) => (
+          {column.map((model) => (
             <Card
               key={model.id}
               name={model.name}

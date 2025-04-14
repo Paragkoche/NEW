@@ -7,7 +7,7 @@ type PageProps = {
   // searchParams?: { [key: string]: string | string[] | undefined };
 };
 const Page = async (props: PageProps) => {
-  let id = (await props.params).id;
+  const id = (await props.params).id;
   const model = await getModelById(id);
   // console.log(model.data);
 

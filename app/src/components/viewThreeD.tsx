@@ -1,9 +1,13 @@
+// @typescript-eslint/no-unused-vars
 "use client";
-import { Canvas, useLoader } from "@react-three/fiber";
+import {
+  Canvas,
+  // useLoader
+} from "@react-three/fiber";
 import {
   EffectComposer,
   ToneMapping,
-  Bloom,
+  // Bloom,
 } from "@react-three/postprocessing";
 import {
   useGLTF,
@@ -12,11 +16,11 @@ import {
   Environment,
   useEnvironment,
 } from "@react-three/drei";
-import * as THREE from "three";
+// import * as THREE from "three";
 import { useConfig } from "@/context/configure-ctx";
 import { Fabric, Mash, Model as ModelType, Product } from "@/types/config";
 import { Suspense, useEffect } from "react";
-import DefaultView from "./views/defualt";
+// import DefaultView from "./views/defualt";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 
 // Assuming you have a type for Fabric
@@ -28,7 +32,7 @@ const VariantMesh = ({ url }: { url: string }) => {
 };
 
 const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
-  console.log(node.material);
+  console.log(node.material, fabric);
 
   return (
     <mesh

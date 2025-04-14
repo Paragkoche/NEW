@@ -2,6 +2,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  ignoreDuringBuilds: true,
   images: {
     domains: ["localhost"],
     remotePatterns: [

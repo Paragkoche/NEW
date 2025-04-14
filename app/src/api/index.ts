@@ -1,5 +1,5 @@
 "use clint";
-import { Model, Product } from "@/types/config";
+import { Product } from "@/types/config";
 import axios from "axios";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 const client = axios.create({

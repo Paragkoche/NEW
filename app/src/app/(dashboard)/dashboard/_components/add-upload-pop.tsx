@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, Dispatch, SetStateAction, useEffect } from "react";
+import { ChangeEvent, Dispatch, SetStateAction } from "react";
 
 export default function AddUploadPop(props: {
   setArrayBuffer: Dispatch<SetStateAction<File[] | null>>;
