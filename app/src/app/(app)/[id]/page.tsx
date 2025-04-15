@@ -1,34 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { getModelById } from "@/api";
 import CustomizePanel from "@/components/customize-panel";
 import ViewThreeD from "@/components/viewThreeD";
+import { Product } from "@/types/config";
 
 type PageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
+  // searchParams?: { [key: string]: string | string[] | undefined };
 };
-
 const Page = ({ params }: PageProps) => {
-  const [model, setModel] = useState<any>(null);
+  const { id } = use(params);
+
+  const [data, setData] = useState<{ models: Product } | null>(null);
 
   useEffect(() => {
-    const fetchModel = async () => {
-      const data = await getModelById(params.id);
-      setModel(data);
-    };
+    if (id) getModelById(id).then((data) => setData(data.data));
+    console.log(data);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
-    fetchModel();
-  }, [params.id]);
-
-  if (!model) {
+  if (!data) {
     return <div>Loading...</div>;
   }
 
   return (
     <main className="flex justify-center items-center w-screen h-screen relative overflow-hidden">
       <div className="w-full h-full">
-        <ViewThreeD {...model.data.models} />
+        <ViewThreeD {...data.models} />
       </div>
       <CustomizePanel />
     </main>
