@@ -102,7 +102,14 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
               <VariantMesh url={variantUrl} />
             ) : (
               nodes[mashKey] && (
-                <DefaultMesh node={nodes[mashKey]} fabric={fabric} />
+                <DefaultMesh
+                  node={nodes[mashKey]}
+                  fabric={
+                    mashKey == mash.name && mash.textureEnable
+                      ? fabric
+                      : undefined
+                  }
+                />
               )
             )}
           </Suspense>
