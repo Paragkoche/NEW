@@ -7,7 +7,7 @@ import AddUploadPop from "../../_components/add-upload-pop";
 import ColorPiker from "../../_components/color-piker";
 import { modelUploadState } from "@/types/upload";
 import { addProduct, connectEveryThinks } from "@/api";
-
+import { v4 as uuidv4 } from "uuid";
 const Page = () => {
   const [files, setFiles] = useState<File[] | null>(null);
   const [ThumbnailFiles, setThumbnailFiles] = useState<File | null>(null);
@@ -98,8 +98,8 @@ const Page = () => {
   return (
     <div className="w-full p-6 flex justify-center flex-col items-center">
       <div className="flex justify-center items-center gap-2.5">
-        <AddUploadPop setArrayBuffer={setFiles} name={crypto.randomUUID()} />
-        <EnvEdited setEnv={setModelSetting} name={crypto.randomUUID()} />
+        <AddUploadPop setArrayBuffer={setFiles} name={uuidv4()} />
+        <EnvEdited setEnv={setModelSetting} name={uuidv4()} />
       </div>
       <div className="flex justify-center items-center gap-2.5">
         <ColorPiker setBgs={setModelSetting} />

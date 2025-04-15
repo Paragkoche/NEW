@@ -11,7 +11,7 @@ import {
 } from "@/types/upload";
 import { addFabric, addVariant } from "@/api";
 import { getFileExtension } from "@/utility/ext";
-
+import { v4 as uuidv4 } from "uuid";
 type MeshViewerProps = {
   mesh: THREE.Object3D;
   texture?: THREE.Texture;
@@ -696,13 +696,9 @@ const MeshEdited = ({
       <div className="space-y-6">
         {/* Fabrics */}
         <div>
-          <Fabrics name={crypto.randomUUID()} setFabrics={setData} />
+          <Fabrics name={uuidv4()} setFabrics={setData} />
 
-          <Variants
-            name={crypto.randomUUID()}
-            mashName={name}
-            setVariants={setData}
-          />
+          <Variants name={uuidv4()} mashName={name} setVariants={setData} />
         </div>
         <div className=" flex  gap-3.5">
           <label className="fieldset-label">

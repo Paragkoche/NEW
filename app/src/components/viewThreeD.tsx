@@ -2,6 +2,7 @@
 "use client";
 import {
   Canvas,
+  useLoader,
   // useLoader
 } from "@react-three/fiber";
 import {
@@ -16,7 +17,8 @@ import {
   Environment,
   useEnvironment,
 } from "@react-three/drei";
-// import * as THREE from "three";
+import { v4 as uuidv4 } from "uuid";
+import * as THREE from "three";
 import { useConfig } from "@/context/configure-ctx";
 import { Fabric, Mash, Model as ModelType, Product } from "@/types/config";
 import { Suspense, useEffect } from "react";
@@ -33,10 +35,32 @@ const VariantMesh = ({ url }: { url: string }) => {
 
 const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
   console.log(node.material, fabric);
+  const clone = node.material;
+
+  // If fabric is provided, update the material with the fabric texture
+  if (fabric && node.material && fabric.url) {
+    const fabricTexture = useLoader(
+      THREE.TextureLoader,
+      `${API_BASE_URL}/${fabric.url}`,
+      (load) => {
+        load.crossOrigin = "anonymous";
+      }
+    );
+    fabricTexture.wrapS = THREE.RepeatWrapping;
+    fabricTexture.wrapT = THREE.RepeatWrapping;
+    fabricTexture.repeat.set(fabric.size || 1, fabric.size || 1);
+
+    node.material.map = fabricTexture;
+    node.material.needsUpdate = true;
+  } else if (node.material) {
+    // Reset to default material if fabric is reset
+    node.material.map = null;
+    node.material.needsUpdate = true;
+  }
 
   return (
     <mesh
-      key={crypto.randomUUID()}
+      key={uuidv4()}
       castShadow
       receiveShadow
       geometry={node.geometry}

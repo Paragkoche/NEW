@@ -1,12 +1,12 @@
 import { useCostumes } from "@/context/Costamize-ctx";
 import { Mash as MashPropType } from "@/types/config";
-
+import { v4 as uuidv4 } from "uuid";
 const Mash = (props: { mash: MashPropType; node: any }) => {
   console.log("--->", props);
 
   return (
     <mesh
-      key={crypto.randomUUID()}
+      key={uuidv4()}
       castShadow
       receiveShadow
       geometry={props.node.geometry}
