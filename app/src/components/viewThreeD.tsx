@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as THREE from "three";
 import { useConfig } from "@/context/configure-ctx";
 import { Fabric, Mash, Model as ModelType, Product } from "@/types/config";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 
@@ -122,33 +122,53 @@ const ModelView = ({ model }: { model: ModelType }) => (
   </Stage>
 );
 
+// const ENV = () => {
+//   const { envSelect } = useConfig();
+
+//   if (envSelect) {
+//     const hdrUrl = envSelect?.url
+//       ? `${API_BASE_URL}/${envSelect.url}`
+//       : "https://raw.githubusercontent.com/pmndrs/drei-assets/456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/venice_sunset_1k.hdr";
+
+//     const envMap = useEnvironment({ files: hdrUrl });
+
+//     return <Environment background map={envMap} blur={0.7} />;
+//   }
+
+//   return <Environment background preset="sunset" blur={0.7} />;
+// };
+
 const ENV = () => {
   const { envSelect } = useConfig();
 
-  if (envSelect) {
-    const hdrUrl = envSelect?.url
-      ? `${API_BASE_URL}/${envSelect.url}`
-      : "https://raw.githubusercontent.com/pmndrs/drei-assets/456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/venice_sunset_1k.hdr";
+  const hdrUrl = envSelect?.url ? `${API_BASE_URL}/${envSelect.url}` : null;
 
-    const envMap = useEnvironment({ files: hdrUrl });
-
-    return <Environment background map={envMap} blur={0.7} />;
-  }
-
-  return <Environment background preset="sunset" blur={0.7} />;
+  return hdrUrl && <Environment background files={hdrUrl} blur={0.7} />;
 };
-
 const Loader = () => {
-  const { progress } = useProgress();
-  return (
+  const { progress, active } = useProgress();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (progress === 100) {
+      setLoading(false);
+    }
+  }, [progress]);
+
+  return loading ? (
     <Html center>
-      <div style={{ color: "#fff", fontSize: "1.5em" }}>
-        {Math.floor(progress)}%
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center z-50 bg-black bg-opacity-80 p-6 rounded-xl flex flex-col items-center justify-center">
+        <div className="w-full h-2 bg-gray-300 rounded-full mb-4">
+          <div
+            className="h-full bg-green-500 rounded-full"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <p className="text-white text-lg">Loading {Math.floor(progress)}%</p>
       </div>
     </Html>
-  );
+  ) : null;
 };
-
 const ViewThreeD = (pops: Product) => {
   const { model, setConfig, bg } = useConfig();
 
@@ -163,35 +183,35 @@ const ViewThreeD = (pops: Product) => {
         shadows={model.shadow ?? true}
         camera={{ position: [-15, 0, 10], fov: 30 }}
       >
-        <color attach="background" args={[bg?.color || "#FFFFF"]} />
-        <ambientLight intensity={0.0} color={bg?.color || "#FFFFF"} />
-        <directionalLight
-          position={[0, 0, 0]}
-          intensity={0.05}
-          color={bg?.color || "#FFFDE0"}
-          castShadow
-        />
+        <Suspense fallback={<Loader />}>
+          <color attach="background" args={[bg?.color || "#FFFFF"]} />
+          <ambientLight intensity={0.0} color={bg?.color || "#FFFFFF"} />
+          <directionalLight
+            position={[0, 0, 0]}
+            intensity={0.05}
+            color={bg?.color || "#FFFDE0"}
+            castShadow
+          />
 
-        <ModelView model={model} />
+          <ModelView model={model} />
 
-        <OrbitControls
-          autoRotate={model.autoRotate}
-          autoRotateSpeed={model.RotationSpeed || 0.5}
-          enableZoom={true}
-          zoomSpeed={0.5}
-          minDistance={5}
-          maxDistance={20}
-          rotateSpeed={0.5}
-          makeDefault
-          minPolarAngle={Math.PI / 3}
-          maxPolarAngle={(2 * Math.PI) / 3}
-        />
+          <OrbitControls
+            autoRotate={model.autoRotate}
+            autoRotateSpeed={model.RotationSpeed || 0.5}
+            enableZoom={true}
+            zoomSpeed={0.5}
+            minDistance={5}
+            maxDistance={20}
+            rotateSpeed={0.5}
+            makeDefault
+            minPolarAngle={Math.PI / 3}
+            maxPolarAngle={(2 * Math.PI) / 3}
+          />
 
-        <EffectComposer enableNormalPass={false}>
-          <ToneMapping />
-        </EffectComposer>
+          <EffectComposer enableNormalPass={false}>
+            <ToneMapping />
+          </EffectComposer>
 
-        <Suspense fallback={null}>
           <ENV />
         </Suspense>
       </Canvas>
