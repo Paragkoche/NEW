@@ -1,31 +1,23 @@
 // @typescript-eslint/no-unused-vars
 "use client";
-import {
-  Canvas,
-  useLoader,
-  // useLoader
-} from "@react-three/fiber";
-import {
-  EffectComposer,
-  ToneMapping,
-  // Bloom,
-} from "@react-three/postprocessing";
+import { Canvas, useLoader } from "@react-three/fiber";
+import { EffectComposer, ToneMapping } from "@react-three/postprocessing";
 import {
   useGLTF,
   Stage,
   OrbitControls,
   Environment,
   useEnvironment,
+  useProgress,
+  Html,
 } from "@react-three/drei";
 import { v4 as uuidv4 } from "uuid";
 import * as THREE from "three";
 import { useConfig } from "@/context/configure-ctx";
 import { Fabric, Mash, Model as ModelType, Product } from "@/types/config";
 import { Suspense, useEffect } from "react";
-// import DefaultView from "./views/defualt";
-const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 
-// Assuming you have a type for Fabric
+const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 
 const VariantMesh = ({ url }: { url: string }) => {
   const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}/${url}`;
@@ -34,10 +26,8 @@ const VariantMesh = ({ url }: { url: string }) => {
 };
 
 const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
-  console.log(node.material, fabric);
   const clone = node.material;
 
-  // If fabric is provided, update the material with the fabric texture
   if (fabric && node.material && fabric.url) {
     const fabricTexture = useLoader(
       THREE.TextureLoader,
@@ -53,7 +43,6 @@ const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
     node.material.map = fabricTexture;
     node.material.needsUpdate = true;
   } else if (node.material) {
-    // Reset to default material if fabric is reset
     node.material.map = null;
     node.material.needsUpdate = true;
   }
@@ -76,7 +65,7 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
   const baseUrl = glfUrl.startsWith("http")
     ? glfUrl
     : `${API_BASE_URL}/${glfUrl}`;
-  const { scene, nodes } = useGLTF(baseUrl);
+  const { nodes } = useGLTF(baseUrl);
   const { selectedVariants, selectedFabric } = useConfig();
 
   return (
@@ -84,17 +73,14 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
       {mashData.map((mash, index) => {
         const variantUrl = selectedVariants[mash.name];
         const mashKey = mash.name;
-        console.log(selectedFabric, ">>><<<<<");
 
-        // Check if the mash has textures enabled
         const fabric =
           mash.textureEnable && selectedFabric
-            ? ({
-                url: selectedFabric?.url,
+            ? {
+                url: selectedFabric.url,
                 size: selectedFabric.size,
-              } as Fabric)
+              }
             : undefined;
-        console.log(fabric);
 
         return (
           <Suspense fallback={null} key={mashKey + index}>
@@ -105,8 +91,8 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
                 <DefaultMesh
                   node={nodes[mashKey]}
                   fabric={
-                    mashKey == mash.name && mash.textureEnable
-                      ? fabric
+                    mashKey === mash.name && mash.textureEnable
+                      ? (fabric as Fabric)
                       : undefined
                   }
                 />
@@ -119,32 +105,6 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
   );
 };
 
-// const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
-//   const baseUrl = glfUrl.startsWith("http")
-//     ? glfUrl
-//     : `${API_BASE_URL}/${glfUrl}`;
-//   const { scene, nodes } = useGLTF(baseUrl);
-//   const { selectedVariants } = useConfig();
-
-//   return (
-//     <group scale={0.05}>
-//       {mashData.map((mash, index) => {
-//         const variantUrl = selectedVariants[mash.name];
-//         const mashKey = mash.name;
-
-//         return (
-//           <Suspense fallback={null} key={mashKey + index}>
-//             {variantUrl ? (
-//               <VariantMesh url={variantUrl} />
-//             ) : (
-//               nodes[mashKey] && <DefaultMesh node={nodes[mashKey]} />
-//             )}
-//           </Suspense>
-//         );
-//       })}
-//     </group>
-//   );
-// };
 const ModelView = ({ model }: { model: ModelType }) => (
   <Stage
     intensity={0.05}
@@ -156,49 +116,54 @@ const ModelView = ({ model }: { model: ModelType }) => (
     }}
     adjustCamera={false}
   >
-    <Model glfUrl={`${API_BASE_URL}/${model.url}`} mashData={model.mash} />
+    <Suspense fallback={<Loader />}>
+      <Model glfUrl={`${API_BASE_URL}/${model.url}`} mashData={model.mash} />
+    </Suspense>
   </Stage>
 );
 
 const ENV = () => {
-  const { Config, envSelect } = useConfig();
+  const { envSelect } = useConfig();
 
   if (envSelect) {
-    // Get the HDR URL or use a default sunset HDR URL
     const hdrUrl = envSelect?.url
       ? `${API_BASE_URL}/${envSelect.url}`
       : "https://raw.githubusercontent.com/pmndrs/drei-assets/456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/venice_sunset_1k.hdr";
 
-    // Use the environment from Drei, based on the HDR URL
     const envMap = useEnvironment({ files: hdrUrl });
 
-    return (
-      <>
-        <Environment background map={envMap} blur={0.7} />
-
-        {/* Apply the blur effect with EffectComposer */}
-      </>
-    );
+    return <Environment background map={envMap} blur={0.7} />;
   }
+
   return <Environment background preset="sunset" blur={0.7} />;
 };
 
+const Loader = () => {
+  const { progress } = useProgress();
+  return (
+    <Html center>
+      <div style={{ color: "#fff", fontSize: "1.5em" }}>
+        {Math.floor(progress)}%
+      </div>
+    </Html>
+  );
+};
+
 const ViewThreeD = (pops: Product) => {
-  const { model, setConfig, bg, Config, envSelect } = useConfig();
+  const { model, setConfig, bg } = useConfig();
+
   useEffect(() => {
     setConfig(pops);
   }, [pops]);
-  console.log(pops, model);
 
   return (
     model && (
       <Canvas
         flat
-        shadows={model.shadow || true}
+        shadows={model.shadow ?? true}
         camera={{ position: [-15, 0, 10], fov: 30 }}
       >
         <color attach="background" args={[bg?.color || "#FFFFF"]} />
-
         <ambientLight intensity={0.0} color={bg?.color || "#FFFFF"} />
         <directionalLight
           position={[0, 0, 0]}
@@ -206,6 +171,7 @@ const ViewThreeD = (pops: Product) => {
           color={bg?.color || "#FFFDE0"}
           castShadow
         />
+
         <ModelView model={model} />
 
         <OrbitControls
@@ -213,30 +179,24 @@ const ViewThreeD = (pops: Product) => {
           autoRotateSpeed={model.RotationSpeed || 0.5}
           enableZoom={true}
           zoomSpeed={0.5}
-          minDistance={5} // how close the user can zoom in
+          minDistance={5}
           maxDistance={20}
           rotateSpeed={0.5}
           makeDefault
           minPolarAngle={Math.PI / 3}
           maxPolarAngle={(2 * Math.PI) / 3}
         />
+
         <EffectComposer enableNormalPass={false}>
           <ToneMapping />
         </EffectComposer>
-        {Config?.Env && envSelect && envSelect.url ? (
-          <Environment
-            background
-            files={`${API_BASE_URL}/${envSelect.url}`}
-            blur={0.8}
-          />
-        ) : (
-          <Environment background preset="sunset" blur={0.8} />
-        )}
-        {/* <ENV /> */}
+
+        <Suspense fallback={null}>
+          <ENV />
+        </Suspense>
       </Canvas>
     )
   );
-  // return <DefaultView />;
 };
 
 export default ViewThreeD;
