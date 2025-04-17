@@ -18,9 +18,10 @@ const CustomizePanel = () => {
     setModel,
     setSelectedVariants,
     selectedVariants,
-    setFabric, // Function to set fabric
-    resetFabrics,
-    selectedFabric,
+    setSelectedFabrics,
+    deselectFabric,
+
+    selectedFabrics,
   } = useConfig();
 
   const togglePanel = () => setOpen(!open);
@@ -142,56 +143,65 @@ const CustomizePanel = () => {
                   </>
                 )}
 
-                {/* Fabric Selection */}
                 {model && model?.mash?.length > 0 && (
                   <>
                     <div className="mb-6">
                       <h3 className="text-white text-sm font-medium mb-2">
                         Fabrics
                       </h3>
-                      <div className="flex gap-2">
-                        {model.mash.map(
-                          (mesh) =>
-                            mesh.textures.length > 0 && (
-                              <div key={mesh.id}>
-                                <h4 className="text-white">
-                                  {mesh.name} Fabrics
-                                </h4>
-                                <div className="flex gap-2">
-                                  {mesh.textures.map((fabric) => (
-                                    <div
-                                      key={fabric.id}
-                                      className={`w-12 h-12 cursor-pointer rounded-lg border-2 border-transparent ${
-                                        selectedVariants.fabric === fabric.url
-                                          ? "border-white"
-                                          : ""
-                                      }`}
-                                      onClick={() => {
-                                        console.log(fabric, ">>>");
-                                        setFabric(fabric.url || "");
-                                      }} // Apply fabric change
-                                      style={{
-                                        backgroundImage: `url(${API_BASE_URL}/${fabric.thumbnailUrl})`,
-                                        backgroundSize: "cover",
-                                      }}
-                                    />
-                                  ))}
-                                </div>
+                      <div className="flex flex-col gap-4">
+                        {model.mash.map((mesh) =>
+                          mesh.textures.length > 0 ? (
+                            <div key={mesh.id}>
+                              <h4 className="text-white mb-1">
+                                {mesh.name} Fabrics
+                              </h4>
+                              <div className="flex gap-2 flex-wrap items-center">
+                                {mesh.textures.map((fabric) => (
+                                  <div
+                                    key={fabric.id}
+                                    className={`w-12 h-12 cursor-pointer rounded-lg border-2 ${
+                                      selectedFabrics[mesh.name]?.url ===
+                                      fabric.url
+                                        ? "border-white"
+                                        : "border-transparent"
+                                    }`}
+                                    onClick={() =>
+                                      setSelectedFabrics((prev) => ({
+                                        ...prev,
+                                        [mesh.name]: fabric,
+                                      }))
+                                    }
+                                    style={{
+                                      backgroundImage: `url(${API_BASE_URL}/${fabric.thumbnailUrl})`,
+                                      backgroundSize: "cover",
+                                    }}
+                                  />
+                                ))}
+                                {selectedFabrics[mesh.name] && (
+                                  <button
+                                    onClick={() => deselectFabric(mesh.name)}
+                                    className="text-white text-xs px-2 py-1 border border-white rounded hover:bg-white hover:text-black"
+                                  >
+                                    Reset
+                                  </button>
+                                )}
                               </div>
-                            )
+                            </div>
+                          ) : null
                         )}
                       </div>
                     </div>
-                    {selectedFabric && selectedFabric.url !== "" && (
+                    {/* {Object.keys(selectedFabrics).length > 0 && (
                       <div className="mb-6">
                         <button
                           onClick={resetFabrics}
                           className="bg-white text-black px-3 py-1 rounded hover:bg-gray-100"
                         >
-                          Reset Fabric
+                          Reset Fabrics
                         </button>
                       </div>
-                    )}
+                    )} */}
                   </>
                 )}
 

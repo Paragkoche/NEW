@@ -22,9 +22,9 @@ interface ConfigType {
   setBg: Dispatch<SetStateAction<Bgs | undefined>>;
   selectedVariants: Record<string, string>; // { mashName: variantUrl }
   setSelectedVariants: Dispatch<SetStateAction<Record<string, string>>>;
-  selectedFabric: Fabric | null;
-  setFabric: (fabricUrl: string) => void;
-  resetFabrics: () => void;
+  selectedFabrics: Record<string, Fabric | null>;
+  setSelectedFabrics: Dispatch<SetStateAction<Record<string, Fabric | null>>>;
+  deselectFabric: (meshName: string) => void;
 }
 
 const ConfigCtx = createContext<ConfigType | undefined>(undefined);
@@ -45,30 +45,40 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
   const [selectedVariants, setSelectedVariants] = useState<
     Record<string, string>
   >({});
-  const [selectedFabric, setSelectedFabric] = useState<Fabric | null>(null);
+  const [selectedFabrics, setSelectedFabrics] = useState<
+    Record<string, Fabric | null>
+  >({});
 
   const getAllFabrics = (): Fabric[] => {
     let fabrics: Fabric[] = [];
     if (selectedModel?.mash) {
       selectedModel.mash.forEach((mash: Mash) => {
-        fabrics = [...fabrics, ...mash.textures];
+        let data = mash.textures.map((v) => ({ ...v, Mash: mash }));
+        fabrics = [...fabrics, ...data];
       });
     }
     return fabrics;
   };
 
-  const findFabricByUrl = (fabricUrl: string): Fabric | null => {
-    const allFabrics = getAllFabrics();
-    return allFabrics.find((fabric) => fabric.url === fabricUrl) || null;
+  const findFabricByUrl = (
+    mashName: string,
+    fabricUrl: string
+  ): Fabric | null => {
+    const mash = selectedModel?.mash.find((m) => m.name === mashName);
+    if (!mash) return null;
+    return mash.textures.find((f) => f.url === fabricUrl) || null;
   };
 
-  const setFabric = (fabricUrl: string) => {
-    const found = findFabricByUrl(fabricUrl);
-    setSelectedFabric(found);
+  const setFabric = (mashName: string, fabricUrl: string) => {
+    const found = findFabricByUrl(mashName, fabricUrl);
+    setSelectedFabrics((prev) => ({
+      ...prev,
+      [mashName]: found,
+    }));
   };
 
   const resetFabrics = () => {
-    setSelectedFabric(null);
+    setSelectedFabrics({});
   };
 
   useEffect(() => {
@@ -82,6 +92,12 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
       setSelectedEnv(config.Env[0]);
     }
   }, [config]);
+  const deselectFabric = (meshName: string) => {
+    setSelectedFabrics((prev) => ({
+      ...prev,
+      [meshName]: null,
+    }));
+  };
 
   return (
     <ConfigCtx.Provider
@@ -96,9 +112,9 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
         setBg: setSelectedBg,
         selectedVariants,
         setSelectedVariants,
-        selectedFabric,
-        setFabric,
-        resetFabrics,
+        selectedFabrics,
+        setSelectedFabrics,
+        deselectFabric, // ✅
       }}
     >
       {children}

@@ -66,7 +66,7 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
     ? glfUrl
     : `${API_BASE_URL}/${glfUrl}`;
   const { nodes } = useGLTF(baseUrl);
-  const { selectedVariants, selectedFabric } = useConfig();
+  const { selectedVariants, selectedFabrics } = useConfig();
 
   return (
     <group scale={0.05}>
@@ -74,11 +74,11 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
         const variantUrl = selectedVariants[mash.name];
         const mashKey = mash.name;
 
-        const fabric =
-          mash.textureEnable && selectedFabric
+        // 🔁 Get the fabric for this specific mesh
+        const fabric: Fabric | undefined =
+          mash.textureEnable && selectedFabrics[mashKey]
             ? {
-                url: selectedFabric.url,
-                size: selectedFabric.size,
+                ...selectedFabrics[mashKey],
               }
             : undefined;
 
@@ -90,11 +90,7 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
               nodes[mashKey] && (
                 <DefaultMesh
                   node={nodes[mashKey]}
-                  fabric={
-                    mashKey === mash.name && mash.textureEnable
-                      ? (fabric as Fabric)
-                      : undefined
-                  }
+                  fabric={fabric && mash.textureEnable ? fabric : undefined}
                 />
               )
             )}
@@ -104,7 +100,6 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
     </group>
   );
 };
-
 const ModelView = ({ model }: { model: ModelType }) => (
   <Stage
     intensity={0.05}
