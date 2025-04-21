@@ -20,8 +20,8 @@ const CustomizePanel = () => {
     selectedVariants,
     setSelectedFabrics,
     deselectFabric,
-
     selectedFabrics,
+    bg,
   } = useConfig();
 
   const togglePanel = () => setOpen(!open);
@@ -85,6 +85,84 @@ const CustomizePanel = () => {
                   />
                 </div>
 
+                {/* Model Selection (Dropdown) */}
+                {Config.model.length > 1 && (
+                  <div className="mb-6">
+                    <h3 className="text-white text-sm font-medium mb-2">
+                      Models
+                    </h3>
+                    <select
+                      className="w-full p-2 rounded bg-white text-black"
+                      value={model?.id || ""}
+                      onChange={(e) =>
+                        setModel(
+                          Config.model.find(
+                            (v) => v.id === parseInt(e.target.value)
+                          )
+                        )
+                      }
+                    >
+                      {Config.model.map((v) => (
+                        <option key={v.id} value={v.id}>
+                          {v.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Environment Selection (Dropdown) */}
+                {Config.Env.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-white text-sm font-medium mb-2">
+                      Environment
+                    </h3>
+                    <select
+                      className="w-full p-2 rounded bg-white text-black"
+                      value={model?.id || ""}
+                      onChange={(e) =>
+                        setEnv(
+                          Config.Env.find(
+                            (env) => env.id === parseInt(e.target.value)
+                          )
+                        )
+                      }
+                    >
+                      {Config.Env.map((env) => (
+                        <option key={env.id} value={env.id}>
+                          {env.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Background Selection (Dropdown) */}
+                {Config.bgs.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-white text-sm font-medium mb-2">
+                      Background
+                    </h3>
+                    <select
+                      className="w-full p-2 rounded bg-white text-black"
+                      value={bg?.id || ""}
+                      onChange={(e) =>
+                        setBg(
+                          Config.bgs.find(
+                            (bg) => bg.id === parseInt(e.target.value)
+                          )
+                        )
+                      }
+                    >
+                      {Config.bgs.map((bg) => (
+                        <option key={bg.id} value={bg.id}>
+                          {bg.color}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
                 {/* Mesh Variants */}
                 {model && model?.mash?.length > 1 && (
                   <>
@@ -94,43 +172,30 @@ const CustomizePanel = () => {
                           <h3 className="text-white text-sm font-medium mb-2">
                             {mesh.name}
                           </h3>
-                          <div className="flex flex-wrap gap-2">
+                          <select
+                            className="w-full p-2 rounded bg-white text-black"
+                            value={selectedVariants[mesh.name] || ""}
+                            onChange={(e) =>
+                              setSelectedVariants((prev) => ({
+                                ...prev,
+                                [mesh.name]: e.target.value,
+                              }))
+                            }
+                          >
+                            <option value="">Select a variant</option>
                             {mesh.variants.map((variant) => (
-                              <div
+                              <option
                                 key={variant.id}
-                                className={`cursor-pointer border-2 rounded p-1 ${
-                                  selectedVariants[mesh.name] === variant.url
-                                    ? "border-white"
-                                    : "border-transparent"
-                                }`}
-                                onClick={() =>
-                                  setSelectedVariants((prev) => ({
-                                    ...prev,
-                                    [mesh.name]: variant.url || "",
-                                  }))
-                                }
+                                value={variant.url || ""}
                               >
-                                {variant.thumbnailUrl ? (
-                                  <div className="relative w-12 h-12">
-                                    <Image
-                                      src={`${API_BASE_URL}/${variant.thumbnailUrl}`}
-                                      alt={variant.name}
-                                      fill
-                                      className="rounded"
-                                    />
-                                  </div>
-                                ) : (
-                                  <span className="text-sm text-white">
-                                    {variant.name}
-                                  </span>
-                                )}
-                              </div>
+                                {variant.name}
+                              </option>
                             ))}
-                          </div>
+                          </select>
                         </div>
                       ) : null
                     )}
-                    {Object.keys(selectedVariants).length > 0 && (
+                    {/* {Object.keys(selectedVariants).length > 0 && (
                       <div className="mb-6">
                         <button
                           onClick={() => setSelectedVariants({})}
@@ -139,139 +204,57 @@ const CustomizePanel = () => {
                           Reset Variants
                         </button>
                       </div>
-                    )}
+                    )} */}
                   </>
                 )}
 
+                {/* Fabrics */}
                 {model && model?.mash?.length > 0 && (
                   <>
                     <div className="mb-6">
                       <h3 className="text-white text-sm font-medium mb-2">
                         Fabrics
                       </h3>
-                      <div className="flex flex-col gap-4">
-                        {model.mash.map((mesh) =>
-                          mesh.textures.length > 0 ? (
-                            <div key={mesh.id}>
-                              <h4 className="text-white mb-1">
-                                {mesh.name} Fabrics
-                              </h4>
-                              <div className="flex gap-2 flex-wrap items-center">
-                                {mesh.textures.map((fabric) => (
-                                  <div
-                                    key={fabric.id}
-                                    className={`w-12 h-12 cursor-pointer rounded-lg border-2 ${
-                                      selectedFabrics[mesh.name]?.url ===
-                                      fabric.url
-                                        ? "border-white"
-                                        : "border-transparent"
-                                    }`}
-                                    onClick={() =>
-                                      setSelectedFabrics((prev) => ({
-                                        ...prev,
-                                        [mesh.name]: fabric,
-                                      }))
-                                    }
-                                    style={{
-                                      backgroundImage: `url(${API_BASE_URL}/${fabric.thumbnailUrl})`,
-                                      backgroundSize: "cover",
-                                    }}
-                                  />
-                                ))}
-                                {selectedFabrics[mesh.name] && (
-                                  <button
-                                    onClick={() => deselectFabric(mesh.name)}
-                                    className="text-white text-xs px-2 py-1 border border-white rounded hover:bg-white hover:text-black"
-                                  >
-                                    Reset
-                                  </button>
-                                )}
-                              </div>
-                            </div>
-                          ) : null
-                        )}
-                      </div>
+                      {model.mash.map((mesh) =>
+                        mesh.textures.length > 0 ? (
+                          <div key={mesh.id} className="mb-4">
+                            <h4 className="text-white mb-2">
+                              {mesh.name} Fabrics
+                            </h4>
+                            <select
+                              className="w-full p-2 rounded bg-white text-black"
+                              value={selectedFabrics[mesh.name]?.id || ""}
+                              onChange={(e) =>
+                                setSelectedFabrics((prev) => ({
+                                  ...prev,
+                                  [mesh.name]:
+                                    mesh.textures.find(
+                                      (fabric) =>
+                                        fabric.id === parseInt(e.target.value)
+                                    ) || null,
+                                }))
+                              }
+                            >
+                              <option value="">Select a fabric</option>
+                              {mesh.textures.map((fabric) => (
+                                <option key={fabric.id} value={fabric.id}>
+                                  {fabric.name}
+                                </option>
+                              ))}
+                            </select>
+                            {selectedFabrics[mesh.name] && (
+                              <button
+                                onClick={() => deselectFabric(mesh.name)}
+                                className="mt-2 text-white text-xs px-2 py-1 border border-white rounded hover:bg-white hover:text-black"
+                              >
+                                Reset
+                              </button>
+                            )}
+                          </div>
+                        ) : null
+                      )}
                     </div>
-                    {/* {Object.keys(selectedFabrics).length > 0 && (
-                      <div className="mb-6">
-                        <button
-                          onClick={resetFabrics}
-                          className="bg-white text-black px-3 py-1 rounded hover:bg-gray-100"
-                        >
-                          Reset Fabrics
-                        </button>
-                      </div>
-                    )} */}
                   </>
-                )}
-
-                {/* Model Switcher */}
-                {Config.model.length > 1 && (
-                  <div className="mb-6">
-                    <h3 className="text-white text-sm font-medium mb-2">
-                      Models
-                    </h3>
-                    <div className="flex gap-2">
-                      {Config.model.map((v, i) => (
-                        <div
-                          key={i}
-                          className="relative w-10 h-10 cursor-pointer rounded overflow-hidden border"
-                          onClick={() => setModel(v)}
-                        >
-                          <Image
-                            fill
-                            src={`${API_BASE_URL}/${v.thumbnailUrl}`}
-                            alt="model"
-                            className="object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Environment Picker */}
-                {Config.Env.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="text-white text-sm font-medium mb-2">
-                      Environment
-                    </h3>
-                    <div className="flex gap-2">
-                      {Config.Env.map((env, i) => (
-                        <div
-                          key={i}
-                          className="relative w-10 h-10 cursor-pointer rounded overflow-hidden border"
-                          onClick={() => setEnv(env)}
-                        >
-                          <Image
-                            fill
-                            src={`${API_BASE_URL}/${env.thumbnailUrl}`}
-                            alt="env"
-                            className="object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Background Picker */}
-                {Config.bgs.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="text-white text-sm font-medium mb-2">
-                      Background
-                    </h3>
-                    <div className="flex gap-2">
-                      {Config.bgs.map((bg, i) => (
-                        <div
-                          key={i}
-                          className="w-6 h-6 rounded-full cursor-pointer border border-white"
-                          style={{ backgroundColor: bg.color }}
-                          onClick={() => setBg(bg)}
-                        />
-                      ))}
-                    </div>
-                  </div>
                 )}
               </motion.div>
             </motion.div>

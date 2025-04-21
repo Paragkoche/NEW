@@ -22,7 +22,8 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 const VariantMesh = ({ url }: { url: string }) => {
   const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}/${url}`;
   const { scene } = useGLTF(fullUrl);
-  return <primitive object={scene} dispose={null} />;
+
+  return <primitive key={fullUrl} object={scene} dispose={null} />;
 };
 
 const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
@@ -58,6 +59,39 @@ const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
       rotation={node.rotation}
       scale={node.scale}
     />
+  );
+};
+import { Line, Text } from "@react-three/drei";
+
+const Dimension = ({
+  start,
+  end,
+  label,
+}: {
+  start: [number, number, number];
+  end: [number, number, number];
+  label: string;
+}) => {
+  const mid = [
+    (start[0] + end[0]) / 2,
+    (start[1] + end[1]) / 2 + 0.1, // offset label a bit
+    (start[2] + end[2]) / 2,
+  ];
+
+  return (
+    <>
+      <Line
+        points={[start, end]}
+        color="black"
+        lineWidth={1}
+        dashed
+        dashSize={0.05}
+        gapSize={0.05}
+      />
+      <Text fontSize={0.1} color="black">
+        {label}
+      </Text>
+    </>
   );
 };
 
