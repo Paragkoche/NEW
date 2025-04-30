@@ -4,7 +4,8 @@ import { use, useEffect, useState } from "react";
 import { getModelById } from "@/api";
 import CustomizePanel from "@/components/customize-panel";
 import ViewThreeD from "@/components/viewThreeD";
-import { Product } from "@/types/config";
+import { Product as ProductType } from "@/types/type";
+import { product } from "@/data/product";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -13,10 +14,13 @@ type PageProps = {
 const Page = ({ params }: PageProps) => {
   const { id } = use(params);
 
-  const [data, setData] = useState<{ models: Product } | null>(null);
+  const [data, setData] = useState<{ models: ProductType } | null>(null);
 
   useEffect(() => {
-    if (id) getModelById(id).then((data) => setData(data.data));
+    if (id)
+      setData({
+        models: product,
+      });
     console.log(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -30,6 +34,7 @@ const Page = ({ params }: PageProps) => {
       <div className="w-full h-full">
         <ViewThreeD {...data.models} />
       </div>
+      <h1 className="fixed top-2 left-2 text-4xl">{data.models.name}</h1>
       <CustomizePanel />
     </main>
   );

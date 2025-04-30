@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 
 const Card = (props: { name: string; imageUrl: string; id: number }) => {
   const router = useRouter();
+  console.log("props:::", props);
 
   return (
     <div

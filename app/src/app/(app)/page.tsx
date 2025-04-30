@@ -3,31 +3,20 @@
 import { useEffect, useState } from "react";
 import { getModels } from "@/api";
 import Card from "./_components/Card";
-import { Product } from "@/types/config";
+import { Product as ProductType } from "@/types/type";
+import { ProductGlary } from "@/data/product";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 
 const Page = () => {
-  const [columns, setColumns] = useState<
-    [Product[], Product[], Product[], Product[]]
-  >([[], [], [], []]);
+  const [columns, setColumns] = useState<Array<ProductType>>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getModels();
+      const data = ProductGlary;
+      console.log("<<()>>>", data);
 
-      // Split into 4 columns
-      const newColumns: [Product[], Product[], Product[], Product[]] = [
-        [],
-        [],
-        [],
-        [],
-      ];
-      data.data.models.forEach((model, idx) => {
-        newColumns[idx % 4].push(model);
-      });
-
-      setColumns(newColumns);
+      setColumns(data);
     };
 
     fetchData();
@@ -37,14 +26,18 @@ const Page = () => {
     <main className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
       {columns.map((column, colIdx) => (
         <div key={colIdx} className="grid gap-16">
-          {column.map((model) => (
-            <Card
-              key={model.id}
-              name={model.name}
-              id={model.id}
-              imageUrl={`${API_BASE_URL}/${model.thumbnailUrl}`}
-            />
-          ))}
+          {column.model.map((model) => {
+            console.log(":::[]:::", model);
+
+            return (
+              <Card
+                key={model.id}
+                name={model.name}
+                id={model.id}
+                imageUrl={`/${model.thumbnailUrl}`}
+              />
+            );
+          })}
         </div>
       ))}
     </main>

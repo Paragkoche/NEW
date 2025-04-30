@@ -1,6 +1,16 @@
 "use client";
 
-import { Env, Model, Product, Bgs, Fabric, Mash } from "@/types/config";
+import {
+  Env,
+  Model,
+  Product,
+  Bgs,
+  Fabric,
+  Mash,
+  MashVariants,
+  FabricRage,
+} from "@/types/type";
+import { fabrics } from "@/types/upload";
 import {
   createContext,
   Dispatch,
@@ -12,19 +22,25 @@ import {
 } from "react";
 
 interface ConfigType {
-  Config: Product | undefined;
-  setConfig: Dispatch<SetStateAction<Product | undefined>>;
-  model: Model | undefined;
-  setModel: Dispatch<SetStateAction<Model | undefined>>;
-  envSelect: Env | undefined;
-  setEnv: Dispatch<SetStateAction<Env | undefined>>;
-  bg: Bgs | undefined;
-  setBg: Dispatch<SetStateAction<Bgs | undefined>>;
-  selectedVariants: Record<string, string>; // { mashName: variantUrl }
-  setSelectedVariants: Dispatch<SetStateAction<Record<string, string>>>;
-  selectedFabrics: Record<string, Fabric | null>;
-  setSelectedFabrics: Dispatch<SetStateAction<Record<string, Fabric | null>>>;
-  deselectFabric: (meshName: string) => void;
+  Models: Model[] | null;
+  setModel: Dispatch<SetStateAction<Model[] | null>>;
+  envs: Env[] | null;
+  setBgs: Dispatch<SetStateAction<Bgs[] | null>>;
+  bgs: Bgs[] | null;
+  setEnvs: Dispatch<SetStateAction<Env[] | null>>;
+  selectedModel: Model | null;
+  changeSelectedModel: Dispatch<SetStateAction<Model | null>>;
+  selectedBg: Bgs | null;
+  changeSelectedBg: Dispatch<SetStateAction<Bgs | null>>;
+  selectedEnv: Env | null;
+  changeSelectedEnv: Dispatch<SetStateAction<Env | null>>;
+  selectedVariants: Mash | null;
+  changeSelectedVariants: Dispatch<SetStateAction<Mash | null>>;
+
+  fabricRageMap: Record<number, FabricRage | null>; // Keyed by Mash ID
+  setFabricRageForVariant: (mashId: number, rage: FabricRage | null) => void;
+  selectedFabrics: Record<string, Fabric>;
+  changeSelectedFabrics: Dispatch<SetStateAction<Record<string, Fabric>>>;
 }
 
 const ConfigCtx = createContext<ConfigType | undefined>(undefined);
@@ -38,86 +54,49 @@ export const useConfig = (): ConfigType => {
 };
 
 export const ConfigProvider = ({ children }: PropsWithChildren) => {
-  const [config, setConfig] = useState<Product | undefined>();
-  const [selectedModel, setSelectedModel] = useState<Model>();
-  const [selectedEnv, setSelectedEnv] = useState<Env>();
-  const [selectedBg, setSelectedBg] = useState<Bgs>();
-  const [selectedVariants, setSelectedVariants] = useState<
-    Record<string, string>
-  >({});
-  const [selectedFabrics, setSelectedFabrics] = useState<
-    Record<string, Fabric | null>
-  >({});
-
-  const getAllFabrics = (): Fabric[] => {
-    let fabrics: Fabric[] = [];
-    if (selectedModel?.mash) {
-      selectedModel.mash.forEach((mash: Mash) => {
-        let data = mash.textures.map((v) => ({ ...v, Mash: mash }));
-        fabrics = [...fabrics, ...data];
-      });
-    }
-    return fabrics;
-  };
-
-  const findFabricByUrl = (
-    mashName: string,
-    fabricUrl: string
-  ): Fabric | null => {
-    const mash = selectedModel?.mash.find((m) => m.name === mashName);
-    if (!mash) return null;
-    return mash.textures.find((f) => f.url === fabricUrl) || null;
-  };
-
-  const setFabric = (mashName: string, fabricUrl: string) => {
-    const found = findFabricByUrl(mashName, fabricUrl);
-    setSelectedFabrics((prev) => ({
-      ...prev,
-      [mashName]: found,
-    }));
-  };
-
-  const resetFabrics = () => {
-    setSelectedFabrics({});
-  };
-
-  useEffect(() => {
-    if (config && !selectedModel) {
-      setSelectedModel(
-        config.model.find((v) => v.isDefault) || config.model[0]
-      );
-    }
-
-    if (config && !selectedEnv && config.Env.length > 0) {
-      setSelectedEnv(config.Env[0]);
-    }
-  }, [config]);
-  const deselectFabric = (meshName: string) => {
-    setSelectedFabrics((prev) => ({
-      ...prev,
-      [meshName]: null,
-    }));
-  };
-
-  return (
-    <ConfigCtx.Provider
-      value={{
-        Config: config,
-        setConfig,
-        model: selectedModel,
-        setModel: setSelectedModel,
-        envSelect: selectedEnv,
-        setEnv: setSelectedEnv,
-        bg: selectedBg,
-        setBg: setSelectedBg,
-        selectedVariants,
-        setSelectedVariants,
-        selectedFabrics,
-        setSelectedFabrics,
-        deselectFabric, // ✅
-      }}
-    >
-      {children}
-    </ConfigCtx.Provider>
+  const [Models, setModel] = useState<Model[] | null>(null);
+  const [envs, setEnvs] = useState<Env[] | null>(null);
+  const [bgs, setBgs] = useState<Bgs[] | null>(null);
+  const [selectedModel, changeSelectedModel] = useState<Model | null>(null);
+  const [selectedBg, changeSelectedBg] = useState<Bgs | null>(null);
+  const [selectedEnv, changeSelectedEnv] = useState<Env | null>(null);
+  const [selectedVariants, changeSelectedVariants] = useState<Mash | null>(
+    null
   );
+  const [fabricRageMap, setFabricRageMap] = useState<
+    Record<number, FabricRage | null>
+  >({});
+  const [selectedFabrics, changeSelectedFabrics] = useState<
+    Record<string, Fabric>
+  >({});
+
+  const setFabricRageForVariant = (mashId: number, rage: FabricRage | null) => {
+    setFabricRageMap((prev) => ({
+      ...prev,
+      [mashId]: rage,
+    }));
+  };
+
+  const value: ConfigType = {
+    bgs,
+    setBgs,
+    setEnvs,
+    setModel,
+    Models,
+    envs,
+    selectedModel,
+    changeSelectedModel,
+    selectedBg,
+    changeSelectedBg,
+    selectedEnv,
+    changeSelectedEnv,
+    selectedVariants,
+    changeSelectedVariants,
+    fabricRageMap,
+    setFabricRageForVariant,
+    selectedFabrics,
+    changeSelectedFabrics,
+  };
+
+  return <ConfigCtx.Provider value={value}>{children}</ConfigCtx.Provider>;
 };

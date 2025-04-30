@@ -14,39 +14,39 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import * as THREE from "three";
 import { useConfig } from "@/context/configure-ctx";
-import { Fabric, Mash, Model as ModelType, Product } from "@/types/config";
+import { Fabric, Mash, Model as ModelType, Product } from "@/types/type";
 import { Suspense, useEffect, useState } from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 
 const VariantMesh = ({ url }: { url: string }) => {
-  const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}/${url}`;
+  const fullUrl = url.startsWith("http") ? url : `/${url}`;
   const { scene } = useGLTF(fullUrl);
 
   return <primitive key={fullUrl} object={scene} dispose={null} />;
 };
 
 const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
-  const clone = node.material;
+  const clonedMaterial = node.material.clone();
+  console.log("():::()", fabric);
 
-  if (fabric && node.material && fabric.url) {
+  if (fabric && fabric.url) {
     const fabricTexture = useLoader(
       THREE.TextureLoader,
-      `${API_BASE_URL}/${fabric.url}`,
-      (load) => {
-        load.crossOrigin = "anonymous";
+      `${fabric.url}`,
+      (loader) => {
+        loader.crossOrigin = "anonymous";
       }
     );
     fabricTexture.wrapS = THREE.RepeatWrapping;
     fabricTexture.wrapT = THREE.RepeatWrapping;
     fabricTexture.repeat.set(fabric.size || 1, fabric.size || 1);
-
-    node.material.map = fabricTexture;
-    node.material.needsUpdate = true;
-  } else if (node.material) {
-    node.material.map = null;
-    node.material.needsUpdate = true;
+    clonedMaterial.map = fabricTexture;
+  } else {
+    clonedMaterial.map = null;
   }
+
+  clonedMaterial.needsUpdate = true;
 
   return (
     <mesh
@@ -54,13 +54,14 @@ const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
       castShadow
       receiveShadow
       geometry={node.geometry}
-      material={node.material}
+      material={clonedMaterial}
       position={node.position}
       rotation={node.rotation}
       scale={node.scale}
     />
   );
 };
+
 import { Line, Text } from "@react-three/drei";
 
 const Dimension = ({
@@ -96,44 +97,35 @@ const Dimension = ({
 };
 
 const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
-  const baseUrl = glfUrl.startsWith("http")
-    ? glfUrl
-    : `${API_BASE_URL}/${glfUrl}`;
+  const baseUrl = glfUrl.startsWith("http") ? glfUrl : `/${glfUrl}`;
   const { nodes } = useGLTF(baseUrl);
   const { selectedVariants, selectedFabrics } = useConfig();
 
   return (
     <group scale={0.05}>
       {mashData.map((mash, index) => {
-        const variantUrl = selectedVariants[mash.name];
-        const mashKey = mash.name;
+        const mashKey = mash.mashName;
+        const fabric = mash.textureEnable
+          ? selectedFabrics[mashKey]
+          : undefined;
 
-        // 🔁 Get the fabric for this specific mesh
-        const fabric: Fabric | undefined =
-          mash.textureEnable && selectedFabrics[mashKey]
-            ? {
-                ...selectedFabrics[mashKey],
-              }
-            : undefined;
+        const shouldShowVariant =
+          selectedVariants && selectedVariants.mashName === mashKey;
 
         return (
           <Suspense fallback={null} key={mashKey + index}>
-            {variantUrl ? (
-              <VariantMesh url={variantUrl} />
-            ) : (
-              nodes[mashKey] && (
-                <DefaultMesh
-                  node={nodes[mashKey]}
-                  fabric={fabric && mash.textureEnable ? fabric : undefined}
-                />
-              )
-            )}
+            {shouldShowVariant && selectedVariants.url ? (
+              <VariantMesh url={selectedVariants.url} />
+            ) : nodes[mashKey] ? (
+              <DefaultMesh node={nodes[mashKey]} fabric={fabric} />
+            ) : null}
           </Suspense>
         );
       })}
     </group>
   );
 };
+
 const ModelView = ({ model }: { model: ModelType }) => (
   <Stage
     intensity={0.05}
@@ -146,7 +138,7 @@ const ModelView = ({ model }: { model: ModelType }) => (
     adjustCamera={false}
   >
     <Suspense fallback={<Loader />}>
-      <Model glfUrl={`${API_BASE_URL}/${model.url}`} mashData={model.mash} />
+      <Model glfUrl={`${model.url}`} mashData={model.mash} />
     </Suspense>
   </Stage>
 );
@@ -168,9 +160,9 @@ const ModelView = ({ model }: { model: ModelType }) => (
 // };
 
 const ENV = () => {
-  const { envSelect } = useConfig();
+  const { selectedEnv } = useConfig();
 
-  const hdrUrl = envSelect?.url ? `${API_BASE_URL}/${envSelect.url}` : null;
+  const hdrUrl = selectedEnv?.url ? `${selectedEnv.url}` : null;
 
   return hdrUrl && <Environment background files={hdrUrl} blur={0.7} />;
 };
@@ -199,34 +191,47 @@ const Loader = () => {
   ) : null;
 };
 const ViewThreeD = (pops: Product) => {
-  const { model, setConfig, bg } = useConfig();
+  const {
+    changeSelectedModel,
+    selectedModel,
+    selectedBg,
+    setBgs,
+    setModel,
+    setFabricRageForVariant,
+  } = useConfig();
 
   useEffect(() => {
-    setConfig(pops);
+    if (pops) {
+      changeSelectedModel(pops.model[0]);
+      setModel(pops.model);
+      setBgs(pops.bgs);
+    }
   }, [pops]);
-
   return (
-    model && (
+    selectedModel && (
       <Canvas
-        flat
-        shadows={model.shadow ?? true}
+        shadows={selectedModel.shadow ?? true}
         camera={{ position: [-15, 0, 10], fov: 30 }}
+        className="w-full h-screen"
       >
         <Suspense fallback={<Loader />}>
-          <color attach="background" args={[bg?.color || "#FFFFF"]} />
-          <ambientLight intensity={0.0} color={bg?.color || "#FFFFFF"} />
+          <color attach="background" args={[selectedBg?.color || "#FFFFF"]} />
+          <ambientLight
+            intensity={0.0}
+            color={selectedBg?.color || "#FFFFFF"}
+          />
           <directionalLight
             position={[0, 0, 0]}
             intensity={0.05}
-            color={bg?.color || "#FFFDE0"}
+            color={selectedBg?.color || "#FFFDE0"}
             castShadow
           />
 
-          <ModelView model={model} />
+          <ModelView model={selectedModel} />
 
           <OrbitControls
-            autoRotate={model.autoRotate}
-            autoRotateSpeed={model.RotationSpeed || 0.5}
+            autoRotate={selectedModel.autoRotate}
+            autoRotateSpeed={selectedModel.RotationSpeed || 0.5}
             enableZoom={true}
             zoomSpeed={0.5}
             minDistance={5}
