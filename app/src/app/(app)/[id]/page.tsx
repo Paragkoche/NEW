@@ -34,7 +34,10 @@ const Page = ({ params }: PageProps) => {
       <div className="w-full h-full">
         <ViewThreeD {...data.models} />
       </div>
-      <h1 className="fixed top-2 left-2 text-4xl">{data.models.name}</h1>
+      <h1 className="fixed top-2 left-2 text-4xl select-none">
+        {data.models.name} <br />
+        <span className="text-zinc-400 text-2xl">Virtual configurator</span>
+      </h1>
       <CustomizePanel />
     </main>
   );
