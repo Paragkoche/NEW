@@ -1,13 +1,73 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Pencil, X } from "lucide-react";
 import { useConfig } from "@/context/configure-ctx";
 import Image from "next/image";
-import { Fabric } from "@/types/type";
+import { Fabric, Model } from "@/types/type";
 import { Mash } from "@/types/type";
 
+const CustomSelectWithImages = ({ options, value, onChange, size }: any) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<null | HTMLDivElement>(null);
+  const toggleDropdown = () => setIsOpen((prev) => !prev);
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  return (
+    <div className="relative" ref={menuRef}>
+      <button
+        onClick={toggleDropdown}
+        className="w-full p-2 rounded bg-white text-black flex items-center"
+      >
+        {value ? (
+          <div className="flex items-center">
+            <img
+              src={value.thumbnailUrl}
+              alt={value.name}
+              className="w-6 h-6 mr-2"
+            />
+            {value.name}
+          </div>
+        ) : (
+          "Select Variant"
+        )}
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 w-full bg-white border rounded shadow-lg z-10 overflow-auto h-72">
+          {options.map((option: any) => (
+            <div
+              key={option.id}
+              onClick={() => {
+                onChange(option);
+                setIsOpen(false);
+              }}
+              className="flex items-center p-2 cursor-pointer hover:bg-gray-200"
+            >
+              <img
+                src={option.thumbnailUrl}
+                alt={option.name}
+                height={size}
+                width={size}
+                className="mr-2"
+              />
+              {option.name}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 const CustomizePanel = () => {
   const [open, setOpen] = useState(false);
   const {
@@ -38,7 +98,6 @@ const CustomizePanel = () => {
     const selectedVariant = mash.variants?.mash.find(
       (variantMash) => variantMash.name === selectedVariantName
     );
-    console.log("sspss::", selectedVariant);
 
     if (selectedVariant) {
       // Update the selected variant context or state
@@ -110,7 +169,9 @@ const CustomizePanel = () => {
                 className="fixed top-1/2 right-0 transform -translate-y-1/2 h-[90%] max-w-[90vw] w-[380px] bg-red-600/60 rounded-l-3xl backdrop-blur-2xl p-5 z-50 shadow-2xl overflow-y-auto"
               >
                 <div className="flex justify-between items-center text-white mb-4">
-                  <h2 className="text-xl font-semibold">Customize</h2>
+                  <h2 className="text-xl font-semibold">
+                    Queen Arm chair with 180&deg; Auto return Swivel Base
+                  </h2>
                   <X
                     className="cursor-pointer"
                     size={24}
@@ -145,56 +206,8 @@ const CustomizePanel = () => {
                 )}
 
                 {/* Environment Selection */}
-                {envs && envs.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="text-white text-sm font-medium mb-2">
-                      Environment
-                    </h3>
-                    <select
-                      className="w-full p-2 rounded bg-white text-black"
-                      value={selectedEnv?.id || ""}
-                      onChange={(e) =>
-                        changeSelectedEnv(
-                          envs.find(
-                            (env) => env.id === parseInt(e.target.value)
-                          ) ?? null
-                        )
-                      }
-                    >
-                      {envs.map((env) => (
-                        <option key={env.id} value={env.id}>
-                          {env.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
 
                 {/* Background Selection */}
-                {bgs && bgs.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="text-white text-sm font-medium mb-2">
-                      Background
-                    </h3>
-                    <select
-                      className="w-full p-2 rounded bg-white text-black"
-                      value={selectedBg?.id || ""}
-                      onChange={(e) =>
-                        changeSelectedBg(
-                          bgs.find(
-                            (bg) => bg.id === parseInt(e.target.value)
-                          ) ?? null
-                        )
-                      }
-                    >
-                      {bgs.map((bg) => (
-                        <option key={bg.id} value={bg.id}>
-                          {bg.color}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
 
                 {/* Variants Selection */}
                 {/* {selectedModel && (
@@ -223,60 +236,33 @@ const CustomizePanel = () => {
                     )}
                   </div>
                 )} */}
-                {Models.map((mash) =>
-                  mash.mash.map(
-                    (mash) =>
-                      mash.variants && (
-                        <div key={mash.id} className="mb-6">
-                          <label
-                            htmlFor={`variant-select-${mash.id}`}
-                            className="text-white text-sm font-medium mb-2"
-                          >
-                            {mash.name}:
-                          </label>
-                          <select
-                            id={`variant-select-${mash.id}`}
-                            className="w-full p-2 rounded bg-white text-black mb-2"
-                            value={selectedVariants?.name || ""}
-                            onChange={(event) =>
-                              handleVariantChange(event, mash)
-                            }
-                          >
-                            <option value="">Default</option>
-                            {mash?.variants?.mash.map((variant) => (
-                              <option key={variant.id} value={variant.name}>
-                                {variant.name}
-                              </option>
-                            ))}
-                          </select>
 
-                          {/* Display available textures for the selected variant */}
-                          {selectedVariants &&
-                            selectedVariants.Mash &&
-                            selectedVariants.Mash?.textures && (
-                              <div>
-                                <h3>Textures</h3>
-                                {selectedVariants.Mash?.textures.map(
-                                  (texture, index) => (
-                                    <button
-                                      key={index}
-                                      onClick={() => {
-                                        // When a texture is selected, update the fabric for this mash
-                                        // changeSelectedFabrics((prevFabrics) => ({
-                                        //   ...prevFabrics,
-                                        //   [mash.mashName]: texture, // Store the selected texture in the context
-                                        // }));
-                                      }}
-                                    >
-                                      {texture.name}{" "}
-                                      {/* Assuming each texture has a 'name' property */}
-                                    </button>
-                                  )
-                                )}
-                              </div>
-                            )}
-                        </div>
-                      )
+                {Models.map((model) =>
+                  model.mash.map((mash) =>
+                    mash.variants?.mash?.length ? (
+                      <div key={mash.id} className="mb-6">
+                        <label className="text-white text-sm font-medium mb-2 block">
+                          {mash.name} Variant:
+                        </label>
+                        <CustomSelectWithImages
+                          options={mash.variants.mash}
+                          size={42}
+                          value={
+                            selectedVariants?.id &&
+                            mash.variants.mash.find(
+                              (v) => v.id === selectedVariants.id
+                            )
+                              ? selectedVariants
+                              : null
+                          }
+                          onChange={(variant: Mash) => {
+                            changeSelectedVariants(variant);
+
+                            // Optionally reset fabric or textures if needed
+                          }}
+                        />
+                      </div>
+                    ) : null
                   )
                 )}
 
@@ -317,30 +303,25 @@ const CustomizePanel = () => {
 
                           {/* Select Fabric from Selected Rage */}
                           {fabricRageMap[mesh.id] && (
-                            <select
-                              className="w-full p-2 rounded bg-white text-black"
-                              value={selectedFabrics[mesh.mashName]?.id || ""}
-                              onChange={(e) => {
-                                const selected = fabricRageMap[
-                                  mesh.id
-                                ]?.fabrics.find(
-                                  (f) => f.id === parseInt(e.target.value)
-                                );
-                                if (selected) {
-                                  changeSelectedFabrics((prev) => ({
-                                    ...prev,
-                                    [mesh.mashName]: selected,
-                                  }));
-                                }
+                            <CustomSelectWithImages
+                              options={fabricRageMap[mesh.id]?.fabrics}
+                              size={32}
+                              value={
+                                selectedFabrics[mesh.mashName]?.id
+                                  ? fabricRageMap[mesh.id]?.fabrics.find(
+                                      (f) =>
+                                        f.id ===
+                                        selectedFabrics[mesh.mashName]?.id
+                                    )
+                                  : null
+                              }
+                              onChange={(selected: Fabric) => {
+                                changeSelectedFabrics((prev) => ({
+                                  ...prev,
+                                  [mesh.mashName]: selected,
+                                }));
                               }}
-                            >
-                              <option value="">Select fabric</option>
-                              {fabricRageMap[mesh.id]?.fabrics.map((fabric) => (
-                                <option key={fabric.id} value={fabric.id}>
-                                  {fabric.name}
-                                </option>
-                              ))}
-                            </select>
+                            />
                           )}
 
                           {/* Reset Fabric */}

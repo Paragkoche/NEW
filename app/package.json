@@ -24,11 +24,15 @@
     "flowbite": "^3.1.2",
     "flowbite-react": "^0.11.7",
     "framer-motion": "^12.6.3",
+    "html2canvas": "^1.4.1",
+    "html2canvas-pro": "^1.5.10",
     "lucide-react": "^0.487.0",
     "next": "15.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-screen-capture": "^1.1.1",
     "three": "^0.175.0",
+    "use-react-screenshot": "^4.0.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

@@ -6,6 +6,9 @@ import CustomizePanel from "@/components/customize-panel";
 import ViewThreeD from "@/components/viewThreeD";
 import { Product as ProductType } from "@/types/type";
 import { product } from "@/data/product";
+import MoreOptions from "@/components/More-options";
+import { FullscreenIcon } from "lucide-react";
+import FullscreenToggle from "@/components/fullsceen";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -21,7 +24,6 @@ const Page = ({ params }: PageProps) => {
       setData({
         models: product,
       });
-    console.log(data);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -36,9 +38,14 @@ const Page = ({ params }: PageProps) => {
       </div>
       <h1 className="fixed top-2 left-2 text-4xl select-none">
         {data.models.name} <br />
-        <span className="text-zinc-400 text-2xl">Virtual configurator</span>
+        <span className="text-gray-900 text-3xl">Virtual configurator</span>
       </h1>
+
       <CustomizePanel />
+      <div className="fixed top-2 right-2 flex items-center">
+        <FullscreenToggle />
+        <MoreOptions />
+      </div>
     </main>
   );
 };

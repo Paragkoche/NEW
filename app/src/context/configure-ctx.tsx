@@ -15,9 +15,11 @@ import {
   createContext,
   Dispatch,
   PropsWithChildren,
+  RefObject,
   SetStateAction,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -41,6 +43,9 @@ interface ConfigType {
   setFabricRageForVariant: (mashId: number, rage: FabricRage | null) => void;
   selectedFabrics: Record<string, Fabric>;
   changeSelectedFabrics: Dispatch<SetStateAction<Record<string, Fabric>>>;
+  showDimensions: boolean;
+  setShowDimensions: Dispatch<SetStateAction<boolean>>;
+  canvasRef: RefObject<HTMLCanvasElement | null>;
 }
 
 const ConfigCtx = createContext<ConfigType | undefined>(undefined);
@@ -69,6 +74,9 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
   const [selectedFabrics, changeSelectedFabrics] = useState<
     Record<string, Fabric>
   >({});
+  const canvasRef = useRef<null | HTMLCanvasElement>(null);
+
+  const [showDimensions, setShowDimensions] = useState<boolean>(false);
 
   const setFabricRageForVariant = (mashId: number, rage: FabricRage | null) => {
     setFabricRageMap((prev) => ({
@@ -96,6 +104,9 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
     setFabricRageForVariant,
     selectedFabrics,
     changeSelectedFabrics,
+    showDimensions,
+    setShowDimensions,
+    canvasRef,
   };
 
   return <ConfigCtx.Provider value={value}>{children}</ConfigCtx.Provider>;

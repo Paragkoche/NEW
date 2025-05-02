@@ -1,6 +1,6 @@
 // @typescript-eslint/no-unused-vars
 "use client";
-import { Canvas, useLoader } from "@react-three/fiber";
+import { Canvas, useLoader, useThree } from "@react-three/fiber";
 import { EffectComposer, ToneMapping } from "@react-three/postprocessing";
 import {
   useGLTF,
@@ -10,89 +10,64 @@ import {
   useEnvironment,
   useProgress,
   Html,
+  Text,
+  RandomizedLight,
+  AccumulativeShadows,
 } from "@react-three/drei";
 import { v4 as uuidv4 } from "uuid";
 import * as THREE from "three";
 import { useConfig } from "@/context/configure-ctx";
 import { Fabric, Mash, Model as ModelType, Product } from "@/types/type";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import Dimension from "./Dimension";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
-
 const VariantMesh = ({ url }: { url: string }) => {
   const fullUrl = url.startsWith("http") ? url : `/${url}`;
+
+  useEffect(() => {
+    useGLTF.clear(fullUrl);
+  }, [fullUrl]);
+
   const { scene } = useGLTF(fullUrl);
 
   return <primitive key={fullUrl} object={scene} dispose={null} />;
 };
 
 const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
-  const clonedMaterial = node.material.clone();
-  console.log("():::()", fabric);
+  const [material, setMaterial] = useState(() => node.material.clone());
 
-  if (fabric && fabric.url) {
-    const fabricTexture = useLoader(
-      THREE.TextureLoader,
-      `${fabric.url}`,
-      (loader) => {
-        loader.crossOrigin = "anonymous";
-      }
-    );
-    fabricTexture.wrapS = THREE.RepeatWrapping;
-    fabricTexture.wrapT = THREE.RepeatWrapping;
-    fabricTexture.repeat.set(fabric.size || 1, fabric.size || 1);
-    clonedMaterial.map = fabricTexture;
-  } else {
-    clonedMaterial.map = null;
-  }
-
-  clonedMaterial.needsUpdate = true;
+  useEffect(() => {
+    const cloned = node.material.clone();
+    if (fabric?.url) {
+      const loader = new THREE.TextureLoader();
+      loader.crossOrigin = "anonymous";
+      loader.load(fabric.url, (texture) => {
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(fabric.size || 1, fabric.size || 1);
+        cloned.map = texture;
+        cloned.needsUpdate = true;
+        setMaterial(cloned);
+      });
+    } else {
+      cloned.map = null;
+      cloned.needsUpdate = true;
+      setMaterial(cloned);
+    }
+  }, [fabric]);
 
   return (
     <mesh
       key={uuidv4()}
       castShadow
-      receiveShadow
+      // receiveShadow
       geometry={node.geometry}
-      material={clonedMaterial}
+      material={material}
       position={node.position}
       rotation={node.rotation}
-      scale={node.scale}
-    />
-  );
-};
-
-import { Line, Text } from "@react-three/drei";
-
-const Dimension = ({
-  start,
-  end,
-  label,
-}: {
-  start: [number, number, number];
-  end: [number, number, number];
-  label: string;
-}) => {
-  const mid = [
-    (start[0] + end[0]) / 2,
-    (start[1] + end[1]) / 2 + 0.1, // offset label a bit
-    (start[2] + end[2]) / 2,
-  ];
-
-  return (
-    <>
-      <Line
-        points={[start, end]}
-        color="black"
-        lineWidth={1}
-        dashed
-        dashSize={0.05}
-        gapSize={0.05}
-      />
-      <Text fontSize={0.1} color="black">
-        {label}
-      </Text>
-    </>
+      receiveShadow
+    ></mesh>
   );
 };
 
@@ -114,7 +89,7 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
 
         return (
           <Suspense fallback={null} key={mashKey + index}>
-            {shouldShowVariant && selectedVariants.url ? (
+            {shouldShowVariant && selectedVariants && selectedVariants.url ? (
               <VariantMesh url={selectedVariants.url} />
             ) : nodes[mashKey] ? (
               <DefaultMesh node={nodes[mashKey]} fabric={fabric} />
@@ -126,38 +101,47 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
   );
 };
 
-const ModelView = ({ model }: { model: ModelType }) => (
-  <Stage
-    intensity={0.05}
-    environment="studio"
-    shadows={{
-      type: "accumulative",
-      bias: -0.0001,
-      intensity: Math.PI,
-    }}
-    adjustCamera={false}
-  >
-    <Suspense fallback={<Loader />}>
-      <Model glfUrl={`${model.url}`} mashData={model.mash} />
-    </Suspense>
-  </Stage>
-);
+const ModelView = ({ model }: { model: ModelType }) => {
+  const { selectedVariants, selectedFabrics } = useConfig();
+  const [rerender, setRerender] = useState(false);
 
-// const ENV = () => {
-//   const { envSelect } = useConfig();
+  useEffect(() => {
+    // Whenever selectedVariants or selectedFabrics change, trigger a re-render
+    setRerender((prev) => !prev); // Toggle rerender state
+  }, [selectedVariants, selectedFabrics]);
 
-//   if (envSelect) {
-//     const hdrUrl = envSelect?.url
-//       ? `${API_BASE_URL}/${envSelect.url}`
-//       : "https://raw.githubusercontent.com/pmndrs/drei-assets/456060a26bbeb8fdf79326f224b6d99b8bcce736/hdri/venice_sunset_1k.hdr";
-
-//     const envMap = useEnvironment({ files: hdrUrl });
-
-//     return <Environment background map={envMap} blur={0.7} />;
-//   }
-
-//   return <Environment background preset="sunset" blur={0.7} />;
-// };
+  return (
+    <Stage
+      intensity={0.05}
+      environment="studio"
+      adjustCamera={false}
+      shadows={{
+        type: "accumulative",
+        bias: -0.05, // Slight bias to control sharpness of shadows
+        intensity: Math.PI, // Adjust intensity to simulate accumulation
+        temporal: false, // abe bhai 3 month lega debug kar ne ko fuck!!
+      }}
+      castShadow
+    >
+      {/* <AccumulativeShadows
+        frames={20} // Number of frames for smoother shadows
+        temporal={false} // Temporal anti-aliasing for better smoothness
+        color="black"
+        opacity={0.5} // Adjust opacity for softer shadows
+        scale={10} // Scale of the shadows
+      /> */}
+      <Suspense fallback={<Loader />}>
+        <Model
+          glfUrl={`${model.url}`}
+          mashData={model.mash}
+          key={`${selectedVariants?.url || ""}-${Object.keys(
+            selectedFabrics
+          ).join(",")}`}
+        />
+      </Suspense>
+    </Stage>
+  );
+};
 
 const ENV = () => {
   const { selectedEnv } = useConfig();
@@ -190,6 +174,7 @@ const Loader = () => {
     </Html>
   ) : null;
 };
+
 const ViewThreeD = (pops: Product) => {
   const {
     changeSelectedModel,
@@ -197,7 +182,8 @@ const ViewThreeD = (pops: Product) => {
     selectedBg,
     setBgs,
     setModel,
-    setFabricRageForVariant,
+    showDimensions,
+    canvasRef,
   } = useConfig();
 
   useEffect(() => {
@@ -207,48 +193,64 @@ const ViewThreeD = (pops: Product) => {
       setBgs(pops.bgs);
     }
   }, [pops]);
+
   return (
     selectedModel && (
-      <Canvas
-        shadows={selectedModel.shadow ?? true}
-        camera={{ position: [-15, 0, 10], fov: 30 }}
-        className="w-full h-screen"
-      >
-        <Suspense fallback={<Loader />}>
-          <color attach="background" args={[selectedBg?.color || "#FFFFF"]} />
-          <ambientLight
-            intensity={0.0}
-            color={selectedBg?.color || "#FFFFFF"}
-          />
-          <directionalLight
-            position={[0, 0, 0]}
-            intensity={0.05}
-            color={selectedBg?.color || "#FFFDE0"}
-            castShadow
-          />
+      <>
+        <Canvas
+          ref={canvasRef}
+          shadows={selectedModel.shadow ?? true}
+          camera={{ position: [-15, 0, 10], fov: 30 }}
+          className="w-full h-screen"
+          gl={{ preserveDrawingBuffer: true }}
+        >
+          <Suspense fallback={<Loader />}>
+            <color
+              attach="background"
+              args={[selectedBg?.color || "#FFFFFF"]}
+            />
+            <ambientLight
+              intensity={0.0}
+              color={selectedBg?.color || "#FFFFFF"}
+            />
+            <directionalLight
+              castShadow
+              position={[10, 5, 10]}
+              intensity={1}
+              color={selectedBg?.color || "#FFFDE0"}
+            />
 
-          <ModelView model={selectedModel} />
+            {/* Model */}
 
-          <OrbitControls
-            autoRotate={selectedModel.autoRotate}
-            autoRotateSpeed={selectedModel.RotationSpeed || 0.5}
-            enableZoom={true}
-            zoomSpeed={0.5}
-            minDistance={5}
-            maxDistance={20}
-            rotateSpeed={0.5}
-            makeDefault
-            minPolarAngle={Math.PI / 3}
-            maxPolarAngle={(2 * Math.PI) / 3}
-          />
+            <ModelView model={selectedModel} />
+            {showDimensions &&
+              selectedModel.dimensions.map((v, i) => (
+                <Dimension
+                  start={[v.x, v.y, v.z]}
+                  end={[v.end_x, v.end_y, v.end_z]}
+                  label={v.label}
+                  key={i}
+                />
+              ))}
 
-          <EffectComposer enableNormalPass={false}>
-            <ToneMapping />
-          </EffectComposer>
-
-          <ENV />
-        </Suspense>
-      </Canvas>
+            <OrbitControls
+              autoRotate={selectedModel.autoRotate}
+              autoRotateSpeed={selectedModel.RotationSpeed || 0.5}
+              enableZoom
+              zoomSpeed={0.5}
+              minDistance={5}
+              maxDistance={20}
+              rotateSpeed={0.5}
+              makeDefault
+              minPolarAngle={Math.PI / 3}
+              maxPolarAngle={(2 * Math.PI) / 3}
+            />
+            <EffectComposer enableNormalPass={true}>
+              <ToneMapping />
+            </EffectComposer>
+          </Suspense>
+        </Canvas>
+      </>
     )
   );
 };

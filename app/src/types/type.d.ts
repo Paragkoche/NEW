@@ -37,6 +37,18 @@ export interface Model {
   productId?: number | null;
   Product?: Product | null;
   mash: Mash[];
+  dimensions: dimensions[];
+}
+
+export interface dimensions {
+  id: number;
+  label: string;
+  x: number;
+  y: number;
+  z: number;
+  end_x: number;
+  end_y: number;
+  end_z: number;
 }
 
 export interface Env {

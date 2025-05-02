@@ -20,30 +20,7 @@ model Product {
   shadow        Boolean
   autoRotate    Boolean
   rotationSpeed Int
-
-  envId Int?
-  env   Env? @relation(fields: [envId], references: [id])
-
-  bgsId Int?
-  bgs   Bgs? @relation(fields: [bgsId], references: [id])
-
-  models Model[]
-}
-
-model Bgs {
-  id    Int    @id @default(autoincrement())
-  color String
-
-  products Product[]
-}
-
-model Env {
-  id           Int    @id @default(autoincrement())
-  name         String
-  url          String
-  thumbnailUrl String
-
-  products Product[]
+  models        Model[]
 }
 
 model Model {
@@ -86,15 +63,15 @@ model Fabric {
   thumbnailUrl String
   size         String
 
-  fabricRanges FabricRange[]
+  FabricRange   FabricRange? @relation(fields: [fabricRangeId], references: [id])
+  fabricRangeId Int?
 }
 
 model FabricRange {
   id   Int    @id @default(autoincrement())
   name String
 
-  fabricId Int
-  fabric   Fabric @relation(fields: [fabricId], references: [id])
+  fabric Fabric[]
 
   mashId Int
   mash   Mash @relation(fields: [mashId], references: [id])
