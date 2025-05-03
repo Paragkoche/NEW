@@ -14,7 +14,6 @@ const Page = () => {
   useEffect(() => {
     const fetchData = async () => {
       const data = ProductGlary;
-      console.log("<<()>>>", data);
 
       setColumns(data);
     };
@@ -27,8 +26,6 @@ const Page = () => {
       {columns.map((column, colIdx) => (
         <div key={colIdx} className="grid gap-16">
           {column.model.map((model) => {
-            console.log(":::[]:::", model);
-
             return (
               <Card
                 key={model.id}
