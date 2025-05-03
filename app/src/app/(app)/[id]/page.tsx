@@ -5,7 +5,7 @@ import { getModelById } from "@/api";
 import CustomizePanel from "@/components/customize-panel";
 import ViewThreeD from "@/components/viewThreeD";
 import { Product as ProductType } from "@/types/type";
-import { product } from "@/data/product";
+import { product, product2, ProductGlary } from "@/data/product";
 import MoreOptions from "@/components/More-options";
 import { FullscreenIcon } from "lucide-react";
 import FullscreenToggle from "@/components/fullsceen";
@@ -22,7 +22,7 @@ const Page = ({ params }: PageProps) => {
   useEffect(() => {
     if (id)
       setData({
-        models: product,
+        models: ProductGlary.find((v) => v.id == Number(id)) || product,
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -30,6 +30,7 @@ const Page = ({ params }: PageProps) => {
   if (!data) {
     return <div>Loading...</div>;
   }
+  console.log(":)>", data);
 
   return (
     <main className="flex justify-center items-center w-screen h-screen relative overflow-hidden">

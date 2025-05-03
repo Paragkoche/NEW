@@ -169,9 +169,12 @@ const CustomizePanel = () => {
                 className="fixed top-1/2 right-0 transform -translate-y-1/2 h-[90%] max-w-[90vw] w-[380px] bg-red-600/60 rounded-l-3xl backdrop-blur-2xl p-5 z-50 shadow-2xl overflow-y-auto"
               >
                 <div className="flex justify-between items-center text-white mb-4">
-                  <h2 className="text-xl font-semibold">
-                    Queen Arm chair with 180&deg; Auto return Swivel Base
-                  </h2>
+                  <h2
+                    className="text-xl font-semibold"
+                    dangerouslySetInnerHTML={{
+                      __html: selectedModel?.name || "",
+                    }}
+                  ></h2>
                   <X
                     className="cursor-pointer"
                     size={24}
