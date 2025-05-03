@@ -184,6 +184,7 @@ const ViewThreeD = (pops: Product) => {
     setModel,
     showDimensions,
     canvasRef,
+    setPdfText,
   } = useConfig();
 
   useEffect(() => {
@@ -191,6 +192,7 @@ const ViewThreeD = (pops: Product) => {
       changeSelectedModel(pops.model[0]);
       setModel(pops.model);
       setBgs(pops.bgs);
+      setPdfText(pops.pdfText);
     }
   }, [pops]);
 

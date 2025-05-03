@@ -16,6 +16,7 @@ export interface Product {
   bgs: Bgs[];
   Env: Env[];
   model: Model[];
+  pdfText: string;
 }
 
 export interface Bgs {

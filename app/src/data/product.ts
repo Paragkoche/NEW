@@ -70,6 +70,29 @@ export const product: ProductType = {
   name: "Queen Arm Chair",
   bgs,
   Env: Env,
+  pdfText: `
+  Dimensions:
+Height                   : 1130 mm
+Width                    : 780 mm
+Depth                    : 760 mm
+Seat Height          : 420 mm
+
+Application Area: 
+Leisure
+
+Specifications: 
+Shell: 
+Steel Frame manufactured in CNC machines and joined on Fixture with Metal Inert Gas Welding with accuracy and low tolerance.
+Foam:
+CMRH Foam Injection Moulded, Average Density 50-55 Kg per M3 Technical specifications matching Poly Flex
+Weight:
+14.5 Kg
+Packing:
+Volume (Disassembled) chair: 0.40 CBM, pouf: 0.02 CBM
+Packing:
+Available in Fabric/Leatherette (Leather available on specific request at extra cost)
+
+  `,
   model: [
     {
       autoRotate: true,
@@ -230,6 +253,33 @@ export const product2: ProductType = {
   name: "Nora MB",
   bgs,
   Env: Env,
+  pdfText: `Chair name: Nora MB
+Dimensions:
+Height                   : 880 mm
+Width                    : 750 mm
+Depth                    : 800 mm
+Seat Height          : 420 mm
+Application Area: 
+Private Zone
+
+Specifications: 
+
+Shell: 
+Steel Frame manufactured in CNC machines and joined on Fixture with Metal Inert Gas Welding with accuracy and low tolerance.
+Foam:
+CMRH Foam Injection Molded, Average Density 50-55 Kg per M3 Technical specifications matching Poly Flex
+SS Legs:
+Polished stainless steel base
+
+Wooden Legs: 
+Stained ash wooden base, assembled, swivelling
+Weight:
+13 Kg
+Packing:
+Volume (Disassembled) chair: 0.30 CBM, pouf: 0.02 CBM
+Seat Finishes:
+Available in Fabric/Leatherette (Leather available on specific request at extra cost).
+`,
   model: [
     {
       autoRotate: true,

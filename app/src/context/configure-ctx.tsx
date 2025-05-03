@@ -29,6 +29,8 @@ interface ConfigType {
   envs: Env[] | null;
   setBgs: Dispatch<SetStateAction<Bgs[] | null>>;
   bgs: Bgs[] | null;
+  setPdfText: Dispatch<SetStateAction<string | null>>;
+  pdfText: string | null;
   setEnvs: Dispatch<SetStateAction<Env[] | null>>;
   selectedModel: Model | null;
   changeSelectedModel: Dispatch<SetStateAction<Model | null>>;
@@ -62,6 +64,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
   const [Models, setModel] = useState<Model[] | null>(null);
   const [envs, setEnvs] = useState<Env[] | null>(null);
   const [bgs, setBgs] = useState<Bgs[] | null>(null);
+  const [pdfText, setPdfText] = useState<string | null>(null);
   const [selectedModel, changeSelectedModel] = useState<Model | null>(null);
   const [selectedBg, changeSelectedBg] = useState<Bgs | null>(null);
   const [selectedEnv, changeSelectedEnv] = useState<Env | null>(null);
@@ -107,6 +110,8 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
     showDimensions,
     setShowDimensions,
     canvasRef,
+    pdfText,
+    setPdfText,
   };
 
   return <ConfigCtx.Provider value={value}>{children}</ConfigCtx.Provider>;

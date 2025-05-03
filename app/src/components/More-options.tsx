@@ -5,11 +5,17 @@ import html2canvas from "html2canvas-pro";
 import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 const savedImageUrls = ["IMAGE BANK.zip"];
-
+import { jsPDF } from "jspdf";
 const MoreOptions = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<null | HTMLDivElement>(null);
-  const { showDimensions, setShowDimensions, canvasRef } = useConfig();
+  const {
+    showDimensions,
+    setShowDimensions,
+    canvasRef,
+    selectedModel,
+    pdfText,
+  } = useConfig();
   const togglePopup = () => {
     setIsOpen(!isOpen);
   };
@@ -55,6 +61,14 @@ const MoreOptions = () => {
       link.click();
       document.body.removeChild(link);
     });
+  };
+  const generatePDF = () => {
+    const doc = new jsPDF();
+
+    const text = pdfText || "";
+    doc.text(text, 10, 10); // (text, x, y)
+
+    doc.save(`${selectedModel?.name}.pdf`);
   };
 
   return (
@@ -109,6 +123,12 @@ const MoreOptions = () => {
             >
               <Download /> Image Bank
             </p>
+            <button
+              onClick={generatePDF}
+              className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+            >
+              <Download /> Download PDF
+            </button>
           </div>
         </div>
       )}
