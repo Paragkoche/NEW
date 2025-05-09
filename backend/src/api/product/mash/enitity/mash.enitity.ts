@@ -6,9 +6,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { MashVariants } from './mash-variants.enitity';
-import { FabricRage } from './fabric-rage.enitity';
-import { Model } from './model.enitity';
+import { MashVariants } from '../../mash-variants/enitity/mash-variants.enitity';
+import { FabricRage } from '../../fabric-rage/enitity/fabric-rage.enitity';
+import { Model } from '../../model/enitity/model.enitity';
 
 @Entity()
 export class Mash {
@@ -33,7 +33,7 @@ export class Mash {
   @Column()
   mashName: string;
 
-  @OneToMany(() => FabricRage, (fr) => fr)
+  @OneToMany(() => FabricRage, (fr) => fr.mash)
   fabricRange: FabricRage[];
 
   @ManyToOne(() => Model, (model) => model.mash)

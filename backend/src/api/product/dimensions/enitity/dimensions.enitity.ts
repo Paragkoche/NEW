@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { Model } from './model.enitity';
+import { Model } from '../../model/enitity/model.enitity';
 
 @Entity()
 export class Dimensions {

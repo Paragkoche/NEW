@@ -13,7 +13,7 @@ const Card = (props: { name: string; imageUrl: string; id: number }) => {
       <img
         src={props.imageUrl}
         alt={props.name}
-        className="h-auto max-w-full rounded-lg object-cover"
+        className="h-auto w-full aspect-w-1 aspect-square rounded-lg object-cover"
       />
       <div className="mt-2 px-1">
         <h2 className="text-sm font-semibold">{props.name}</h2>

@@ -143,13 +143,6 @@ const ModelView = ({ model }: { model: ModelType }) => {
   );
 };
 
-const ENV = () => {
-  const { selectedEnv } = useConfig();
-
-  const hdrUrl = selectedEnv?.url ? `${selectedEnv.url}` : null;
-
-  return hdrUrl && <Environment background files={hdrUrl} blur={0.7} />;
-};
 const Loader = () => {
   const { progress, active } = useProgress();
   const [loading, setLoading] = useState(true);
@@ -179,8 +172,7 @@ const ViewThreeD = (pops: Product) => {
   const {
     changeSelectedModel,
     selectedModel,
-    selectedBg,
-    setBgs,
+
     setModel,
     showDimensions,
     canvasRef,
@@ -191,7 +183,7 @@ const ViewThreeD = (pops: Product) => {
     if (pops) {
       changeSelectedModel(pops.model[0]);
       setModel(pops.model);
-      setBgs(pops.bgs);
+
       setPdfText(pops.pdfText);
     }
   }, [pops]);
@@ -207,19 +199,13 @@ const ViewThreeD = (pops: Product) => {
           gl={{ preserveDrawingBuffer: true }}
         >
           <Suspense fallback={<Loader />}>
-            <color
-              attach="background"
-              args={[selectedBg?.color || "#FFFFFF"]}
-            />
-            <ambientLight
-              intensity={0.0}
-              color={selectedBg?.color || "#FFFFFF"}
-            />
+            <color attach="background" args={["#FFFFFF"]} />
+            <ambientLight intensity={0.0} color={"#FFFFFF"} />
             <directionalLight
               castShadow
               position={[10, 5, 10]}
               intensity={1}
-              color={selectedBg?.color || "#FFFDE0"}
+              color={"#FFFDE0"}
             />
 
             {/* Model */}

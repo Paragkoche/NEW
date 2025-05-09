@@ -4,16 +4,25 @@ import { ProductController } from './product.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from '../users/enititys/user.enitity';
 import { Product } from './enititys/product.enitity';
-import { Model } from './enititys/model.enitity';
-import { Mash } from './enititys/mash.enitity';
-import { MashVariants } from './enititys/mash-variants.enitity';
-import { Fabric } from './enititys/fabric.enitity';
-import { FabricRage } from './enititys/fabric-rage.enitity';
-import { Dimensions } from './enititys/dimensions.enitity';
+import { Model } from './model/enitity/model.enitity';
+
+import { MashVariants } from './mash-variants/enitity/mash-variants.enitity';
+
+import { FabricRage } from './fabric-rage/enitity/fabric-rage.enitity';
+
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { randomUUID } from 'crypto';
+import { ModelModule } from './model/model.module';
+import { DimensionsModule } from './dimensions/dimensions.module';
+import { FabricRageModule } from './fabric-rage/fabric-rage.module';
+import { FabricModule } from './fabric/fabric.module';
+import { MashModule } from './mash/mash.module';
+import { MashVariantsModule } from './mash-variants/mash-variants.module';
+import { Mash } from './mash/enitity/mash.enitity';
+import { Fabric } from './fabric/enitity/fabric.enitity';
+import { Dimensions } from './dimensions/enitity/dimensions.enitity';
 
 @Module({
   imports: [
@@ -36,6 +45,12 @@ import { randomUUID } from 'crypto';
       FabricRage,
       Dimensions,
     ]),
+    ModelModule,
+    DimensionsModule,
+    FabricRageModule,
+    FabricModule,
+    MashModule,
+    MashVariantsModule,
   ],
   controllers: [ProductController],
   providers: [ProductService],

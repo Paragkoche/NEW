@@ -6,14 +6,15 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { Users } from './api/users/enititys/user.enitity';
 import { Product } from './api/product/enititys/product.enitity';
-import { Model } from './api/product/enititys/model.enitity';
-import { Mash } from './api/product/enititys/mash.enitity';
-import { MashVariants } from './api/product/enititys/mash-variants.enitity';
-import { Fabric } from './api/product/enititys/fabric.enitity';
-import { Dimensions } from './api/product/enititys/dimensions.enitity';
-import { FabricRage } from './api/product/enititys/fabric-rage.enitity';
+import { Model } from './api/product/model/enitity/model.enitity';
+import { MashVariants } from './api/product/mash-variants/enitity/mash-variants.enitity';
+
+import { FabricRage } from './api/product/fabric-rage/enitity/fabric-rage.enitity';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { Mash } from './api/product/mash/enitity/mash.enitity';
+import { Fabric } from './api/product/fabric/enitity/fabric.enitity';
+import { Dimensions } from './api/product/dimensions/enitity/dimensions.enitity';
 
 @Module({
   imports: [

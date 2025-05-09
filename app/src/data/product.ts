@@ -1,17 +1,10 @@
-import {
-  Bgs,
-  Env as EnvType,
-  FabricRage,
-  Product as ProductType,
-} from "@/types/type";
+import { FabricRage, Product as ProductType } from "@/types/type";
 
-export const bgs: Bgs[] = [];
-export const Env: EnvType[] = [];
 export const fabricRage: FabricRage[] = [
   {
     id: 1,
     name: "Bentley",
-    fabrics: [...Array(12)].map((_, i) => {
+    fabric: [...Array(12)].map((_, i) => {
       const number = [
         "917",
         "919",
@@ -38,7 +31,7 @@ export const fabricRage: FabricRage[] = [
   {
     id: 2,
     name: "Jaguar",
-    fabrics: [...Array(21)].map((_, i) => {
+    fabric: [...Array(21)].map((_, i) => {
       const number = 101 + i;
       return {
         id: i + 1,
@@ -52,7 +45,7 @@ export const fabricRage: FabricRage[] = [
   {
     id: 3,
     name: "Elegant",
-    fabrics: [...Array(18)].map((_, i) => {
+    fabric: [...Array(18)].map((_, i) => {
       const num = (i + 1).toString().padStart(2, "0");
       return {
         id: i + 1,
@@ -68,8 +61,7 @@ export const fabricRage: FabricRage[] = [
 export const product: ProductType = {
   id: 1,
   name: "Queen Arm Chair",
-  bgs,
-  Env: Env,
+
   pdfText: `
   Dimensions:
 Height                   : 1130 mm
@@ -150,31 +142,31 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
           id: 1,
           itOptional: false,
           textureEnable: true,
-          thumbnailUrl: null,
+
           name: "Inner Face Fabric/Leatherette Rage Option",
           mashName: "Fabric001_2",
           url: null,
-          textures: fabricRage,
+          fabricRange: fabricRage,
         },
         {
           id: 2,
           itOptional: false,
           textureEnable: true,
-          thumbnailUrl: null,
+
           name: "Outer Face Fabric/Leatherette Rage Option",
           mashName: "Fabric001_1",
           url: null,
-          textures: fabricRage,
+          fabricRange: fabricRage,
         },
         {
           id: 3,
           itOptional: false,
           textureEnable: false,
-          thumbnailUrl: null,
+
           name: "Leg",
           mashName: "R13_Leg",
           url: null,
-          variants: {
+          mashVariants: {
             id: 1,
             name: "Legs Options",
             mash: [
@@ -186,9 +178,8 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
                 name: "D9",
                 mashName: "R13_Leg",
                 url: "Queen_Chair_D9_Leg.glb",
-                mashId: 7,
-                modelId: null,
-                textures: [],
+
+                fabricRange: [],
               },
               {
                 id: 2,
@@ -198,9 +189,8 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
                 name: "L21",
                 mashName: "R13_Leg",
                 url: "Queen_Chair_L21_Leg.glb",
-                mashId: 7,
-                modelId: null,
-                textures: [],
+
+                fabricRange: [],
               },
 
               {
@@ -211,9 +201,7 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
                 name: "R7",
                 mashName: "R13_Leg",
                 url: "Queen_Chair_R7_Leg.glb",
-                mashId: 7,
-                modelId: null,
-                textures: [],
+                fabricRange: [],
               },
               {
                 id: 3,
@@ -223,9 +211,7 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
                 name: "R13",
                 mashName: "R13_Leg",
                 url: "Queen_Chair_R13_Leg.glb",
-                mashId: 7,
-                modelId: null,
-                textures: [],
+                fabricRange: [],
               },
               {
                 id: 3,
@@ -235,13 +221,11 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
                 name: "S7",
                 mashName: "R13_Leg",
                 url: "Queen_Chair_S7_Leg.glb",
-                mashId: 7,
-                modelId: null,
-                textures: [],
+                fabricRange: [],
               },
             ],
           },
-          textures: [],
+          fabricRange: [],
         },
       ],
     },
@@ -251,8 +235,7 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
 export const product2: ProductType = {
   id: 2,
   name: "Nora MB",
-  bgs,
-  Env: Env,
+
   pdfText: `Chair name: Nora MB
 Dimensions:
 Height                   : 880 mm
@@ -280,6 +263,7 @@ Volume (Disassembled) chair: 0.30 CBM, pouf: 0.02 CBM
 Seat Finishes:
 Available in Fabric/Leatherette (Leather available on specific request at extra cost).
 `,
+  thumbnailUrl: "nora chair 1.jpg",
   model: [
     {
       autoRotate: true,
@@ -287,7 +271,7 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
       isDefault: true,
       RotationSpeed: 0.25,
       shadow: true,
-      thumbnailUrl: "nora chair 1.jpg",
+
       name: "Nora MB",
       url: "Nora_MB_Chair.glb",
       dimensions: [
@@ -337,22 +321,22 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
           id: 1,
           itOptional: false,
           textureEnable: true,
-          thumbnailUrl: null,
+
           name: "Seat Fabric /Leatherette Rage Option",
           mashName: "Fabric",
           url: null,
-          textures: fabricRage,
+          fabricRange: fabricRage,
         },
 
         {
           id: 3,
           itOptional: false,
           textureEnable: false,
-          thumbnailUrl: null,
+
           name: "Leg",
           mashName: "Legs",
           url: null,
-          variants: {
+          mashVariants: {
             id: 1,
             name: "Legs Options",
             mash: [
@@ -364,9 +348,7 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
                 name: "D9",
                 mashName: "Legs",
                 url: "Nora_Chair_D9_Leg.glb",
-                mashId: 7,
-                modelId: null,
-                textures: [],
+                fabricRange: [],
               },
               {
                 id: 2,
@@ -376,9 +358,7 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
                 name: "L30",
                 mashName: "Legs",
                 url: "Nora_Chair_L30_Leg.glb",
-                mashId: 7,
-                modelId: null,
-                textures: [],
+                fabricRange: [],
               },
 
               {
@@ -389,9 +369,7 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
                 name: "L31",
                 mashName: "Legs",
                 url: "Nora_Chair_L31_Leg.glb",
-                mashId: 7,
-                modelId: null,
-                textures: [],
+                fabricRange: [],
               },
               {
                 id: 3,
@@ -401,13 +379,11 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
                 name: "S7",
                 mashName: "Legs",
                 url: "Nora_Chair_S7_Leg.glb",
-                mashId: 7,
-                modelId: null,
-                textures: [],
+                fabricRange: [],
               },
             ],
           },
-          textures: [],
+          fabricRange: [],
         },
       ],
     },

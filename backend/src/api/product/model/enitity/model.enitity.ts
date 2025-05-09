@@ -5,9 +5,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Mash } from './mash.enitity';
-import { Dimensions } from './dimensions.enitity';
-import { Product } from './product.enitity';
+import { Mash } from '../../mash/enitity/mash.enitity';
+import { Dimensions } from '../../dimensions/enitity/dimensions.enitity';
+import { Product } from '../../enititys/product.enitity';
 
 @Entity()
 export class Model {
@@ -32,6 +32,8 @@ export class Model {
   @Column()
   url: string;
 
+  @Column('text', { nullable: true })
+  thumbnailUrl?: string | null;
   @OneToMany(() => Mash, (mash) => mash.model)
   mash: Mash[];
 

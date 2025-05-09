@@ -1,139 +1,51 @@
 "use clint";
-import { Product } from "@/types/config";
+import { Fabric, FabricRage, Model, Product } from "@/types/type";
 import axios from "axios";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 const client = axios.create({
-  baseURL: API_BASE_URL + "/api",
+  baseURL: API_BASE_URL + "/",
 });
 
 export const getModelById = async (id: string) =>
-  await client.get<{ models: Product }>(`/model/${id}`);
+  await client.get<Model>(`/product/model/model/${id}`);
 
-export const getModels = async () =>
-  await client.get<{ models: Product[] }>(`/model`);
+export const getAllProduct = async () =>
+  await client.get<Product[]>(`/product/get-all`);
 
-export const addProduct = async (data: { name: string }, token: string) =>
-  await client.post("/model/product-data", data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export const getAllFabricRage = async () =>
+  await client.get<FabricRage[]>("/product/fabric-rage");
+export const getAllFabric = async () =>
+  await client.get<Fabric[]>("/product/fabric/get-all-fabric");
 
-export const addModel = async (
+export const PostFabricRage = async (
+  token: string,
   data: {
     name: string;
-    isDefault: boolean;
-    shadow: boolean;
-    autoRotate: boolean;
-    RotationSpeed: number;
-    productId: number;
-  },
-  token: string
-) =>
-  await client.post("/model/add-model-data", data, {
+  }
+) => {
+  console.log(token);
+  return await client.post<FabricRage>("/product/fabric-rage/create", data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+};
 
-export const addFabric = async (
+export const getFabricById = async (id: number) =>
+  await client.get<Fabric>("/product/fabric-rage/get-fabric-id/" + id);
+
+export const getFabricRageById = async (id: number) =>
+  await client.get<FabricRage>("/product/fabric/get-fabric-by-id/" + id);
+
+export const updateFabricRageById = async (
+  token: string,
+  id: number,
   data: {
     name: string;
-    size: number;
-  },
-  token: string
+  }
 ) =>
-  await client.post("/model/add-fabric-data", data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-export const addVariant = async (
-  data: {
-    itOptional: boolean;
-    textureEnable: boolean;
-    fabricId?: number[];
-    name: string;
-  },
-  token: string
-) =>
-  await client.post("/model/add-variant-data", data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-export const addBg = async (data: { color: string }[], token: string) =>
-  await client.post("/model/add-bg", data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-export const addEnv = async (data: { name: string }, token: string) =>
-  await client.post("/model/env-data", data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-export const connectEveryThinks = async (
-  data: {
-    bgs: {
-      id: number;
-    }[];
-    productId: number;
-    env: {
-      id: number;
-    }[];
-    mash: {
-      id: number;
-      fabrics: {
-        id: number;
-      }[];
-      variant: {
-        id: number;
-        fabrics?:
-          | {
-              id: number;
-            }[]
-          | undefined;
-      }[];
-    }[];
-  },
-  token: string
-) =>
-  await client.post("/model/connect-every-thinks/" + data.productId, data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-export const connectModel = async (
-  data: {
-    modelId: number;
-    productId: number;
-
-    mash: {
-      id: number;
-      fabrics: {
-        id: number;
-      }[];
-      variant: {
-        id: number;
-        fabrics?:
-          | {
-              id: number;
-            }[]
-          | undefined;
-      }[];
-    }[];
-  },
-  token: string
-) =>
-  await client.post(
-    "/model/add-model-and-connect-variants-n-fabric/" + data.modelId,
+  await client.put<FabricRage>(
+    "/product/fabric-rage/update-fabric-by-id/" + id,
     data,
     {
       headers: {
@@ -141,3 +53,17 @@ export const connectModel = async (
       },
     }
   );
+
+export const deleteFabricRageById = async (token: string, id: number) =>
+  await client.delete<undefined>(
+    "/product/fabric-rage/delete-fabric-by-id/" + id,
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+export const getAllModel = async () =>
+  await client.get<Model[]>("/product/model/get-all-model");

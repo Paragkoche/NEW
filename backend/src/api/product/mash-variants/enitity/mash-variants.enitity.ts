@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Mash } from './mash.enitity';
+import { Mash } from '../../mash/enitity/mash.enitity';
 
 @Entity()
 export class MashVariants {
