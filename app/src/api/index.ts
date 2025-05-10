@@ -7,7 +7,7 @@ const client = axios.create({
 });
 
 export const getModelById = async (id: string) =>
-  await client.get<Model>(`/product/model/model/${id}`);
+  await client.get<Model[]>(`/product/model/get-model/${id}`);
 
 export const getAllProduct = async () =>
   await client.get<Product[]>(`/product/get-all`);

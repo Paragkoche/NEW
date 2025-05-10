@@ -26,6 +26,8 @@ export class MashService {
   ) {}
 
   async createMash(data: MashCreteDTO) {
+    console.log(data);
+
     const modelExists = await this.ModelRepo.findOne({
       where: { id: data.modelId },
     });
@@ -65,19 +67,25 @@ export class MashService {
     }
 
     const fabricRangeArray: FabricRage[] = [];
+    console.log(data.fabricRanges);
 
-    for (const item of data.fabricRanges) {
-      const fabricRange = await this.FabricRageRepo.findOne({
-        where: { id: item.fabricRangeId },
-      });
+    if (data.fabricRanges && data.fabricRanges.length !== 0) {
+      for (const item of data.fabricRanges) {
+        if (!item.fabricRangeId) {
+          continue;
+        }
+        const fabricRange = await this.FabricRageRepo.findOne({
+          where: { id: item.fabricRangeId },
+        });
 
-      if (!fabricRange) {
-        throw new UnprocessableEntityException(
-          `Fabric range with ID ${item.fabricRangeId} not found.`,
-        );
+        if (!fabricRange) {
+          throw new UnprocessableEntityException(
+            `Fabric range with ID ${item.fabricRangeId} not found.`,
+          );
+        }
+
+        fabricRangeArray.push(fabricRange);
       }
-
-      fabricRangeArray.push(fabricRange);
     }
 
     try {
@@ -90,6 +98,8 @@ export class MashService {
       const savedMash = await this.MashRepo.save(newMash);
       return savedMash;
     } catch (error) {
+      console.log(error);
+
       throw new InternalServerErrorException('Failed to create mash entry.');
     }
   }

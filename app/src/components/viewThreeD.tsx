@@ -20,6 +20,7 @@ import { useConfig } from "@/context/configure-ctx";
 import { Fabric, Mash, Model as ModelType, Product } from "@/types/type";
 import { Suspense, useEffect, useRef, useState } from "react";
 import Dimension from "./Dimension";
+import { getModelById } from "@/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 const VariantMesh = ({ url }: { url: string }) => {
@@ -72,7 +73,9 @@ const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
 };
 
 const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
-  const baseUrl = glfUrl.startsWith("http") ? glfUrl : `/${glfUrl}`;
+  const baseUrl = glfUrl.startsWith("http")
+    ? glfUrl
+    : `${API_BASE_URL}/${glfUrl}`;
   const { nodes } = useGLTF(baseUrl);
   const { selectedVariants, selectedFabrics } = useConfig();
 
@@ -181,8 +184,10 @@ const ViewThreeD = (pops: Product) => {
 
   useEffect(() => {
     if (pops) {
-      changeSelectedModel(pops.model[0]);
-      setModel(pops.model);
+      getModelById(pops.id.toString()).then((data) => {
+        setModel(data.data);
+        changeSelectedModel(data.data.filter((v) => v.isDefault)[0]);
+      });
 
       setPdfText(pops.pdfText);
     }

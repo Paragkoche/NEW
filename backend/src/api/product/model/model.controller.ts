@@ -19,12 +19,12 @@ import { ModelCreateDto } from './dto/create.dto';
 export class ModelController {
   constructor(private readonly modelService: ModelService) {}
 
-  @Get('/get-all-model')
+  @Get('get-all-model')
   getAllModel() {
     return this.modelService.getAllModel();
   }
 
-  @Get(':ProductId')
+  @Get('get-model/:ProductId')
   getAllByIdModel(@Param('ProductId') id: number) {
     return this.modelService.getAllByIdModel(id);
   }

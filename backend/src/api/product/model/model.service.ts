@@ -58,6 +58,8 @@ export class ModelService {
         },
       },
       relations: {
+        dimensions: true,
+
         mash: {
           mashVariants: true,
           fabricRange: {

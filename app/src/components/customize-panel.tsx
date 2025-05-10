@@ -75,15 +75,10 @@ const CustomizePanel = () => {
     selectedVariants,
     selectedFabrics,
     changeSelectedModel,
-    selectedEnv,
-    changeSelectedEnv,
-    changeSelectedBg,
+
     changeSelectedFabrics,
     changeSelectedVariants,
-    selectedBg,
-    bgs,
-    setBgs,
-    envs,
+
     Models,
     fabricRageMap,
     setFabricRageForVariant,
@@ -95,7 +90,7 @@ const CustomizePanel = () => {
     const selectedVariantName = event.target.value;
 
     // Find the correct variant by searching through the mash array inside mash.variants
-    const selectedVariant = mash.variants?.mash.find(
+    const selectedVariant = mash.mashVariants?.mash.find(
       (variantMash) => variantMash.name === selectedVariantName
     );
 
@@ -146,7 +141,7 @@ const CustomizePanel = () => {
             className="bg-red-600/60 h-[55px] w-[55px] fixed right-0 top-1/2 transform -translate-y-1/2 cursor-pointer flex justify-center items-center text-white rounded-l-3xl z-50"
             onClick={togglePanel}
           >
-            <Pencil />
+            customization
           </motion.div>
         )}
 
@@ -242,17 +237,17 @@ const CustomizePanel = () => {
 
                 {Models.map((model) =>
                   model.mash.map((mash) =>
-                    mash.variants?.mash?.length ? (
+                    mash.mashVariants?.mash?.length ? (
                       <div key={mash.id} className="mb-6">
                         <label className="text-white text-sm font-medium mb-2 block">
                           {mash.name} Variant:
                         </label>
                         <CustomSelectWithImages
-                          options={mash.variants.mash}
+                          options={mash.mashVariants.mash}
                           size={42}
                           value={
                             selectedVariants?.id &&
-                            mash.variants.mash.find(
+                            mash.mashVariants.mash.find(
                               (v) => v.id === selectedVariants.id
                             )
                               ? selectedVariants
@@ -276,7 +271,7 @@ const CustomizePanel = () => {
                       Fabrics
                     </h3>
                     {selectedModel.mash.map((mesh) =>
-                      mesh.textureEnable && mesh.textures.length > 0 ? (
+                      mesh.textureEnable && mesh.fabricRange.length > 0 ? (
                         <div key={mesh.id} className="mb-5">
                           <h4 className="text-white mb-1">{mesh.name}</h4>
 
@@ -285,7 +280,7 @@ const CustomizePanel = () => {
                             className="w-full p-2 rounded bg-white text-black mb-2"
                             value={fabricRageMap[mesh.id]?.id || ""}
                             onChange={(e) => {
-                              const rage = mesh.textures.find(
+                              const rage = mesh.fabricRange.find(
                                 (r) => r.id === parseInt(e.target.value)
                               );
                               setFabricRageForVariant(mesh.id, rage || null);
@@ -297,7 +292,7 @@ const CustomizePanel = () => {
                             }}
                           >
                             <option value="">Select Fabric Range</option>
-                            {mesh.textures.map((rage) => (
+                            {mesh.fabricRange.map((rage) => (
                               <option key={rage.id} value={rage.id}>
                                 {rage.name}
                               </option>
@@ -307,11 +302,11 @@ const CustomizePanel = () => {
                           {/* Select Fabric from Selected Rage */}
                           {fabricRageMap[mesh.id] && (
                             <CustomSelectWithImages
-                              options={fabricRageMap[mesh.id]?.fabrics}
+                              options={fabricRageMap[mesh.id]?.fabric}
                               size={32}
                               value={
                                 selectedFabrics[mesh.mashName]?.id
-                                  ? fabricRageMap[mesh.id]?.fabrics.find(
+                                  ? fabricRageMap[mesh.id]?.fabric.find(
                                       (f) =>
                                         f.id ===
                                         selectedFabrics[mesh.mashName]?.id

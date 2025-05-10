@@ -1,5 +1,5 @@
 import { useConfig } from "@/context/configure-ctx";
-import { Camera, Download, MoreHorizontal } from "lucide-react";
+import { Camera, Download, FileDown, MoreHorizontal } from "lucide-react";
 import { MouseEventHandler, useEffect, useRef, useState } from "react";
 import html2canvas from "html2canvas-pro";
 import { useThree } from "@react-three/fiber";
@@ -127,7 +127,7 @@ const MoreOptions = () => {
               onClick={generatePDF}
               className="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
             >
-              <Download /> Download PDF
+              <FileDown /> Download PDF
             </button>
           </div>
         </div>

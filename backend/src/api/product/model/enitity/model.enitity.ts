@@ -29,7 +29,7 @@ export class Model {
   @Column()
   RotationSpeed: number;
 
-  @Column()
+  @Column({ nullable: true })
   url: string;
 
   @Column('text', { nullable: true })

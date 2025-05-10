@@ -1,14 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
-import { z } from "zod";
+import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useAuth } from "@/app/(dashboard)/_ctx/auth.ctx";
-
+import { Fabric, FabricRage, Mash, Product } from "@/types/type";
+import { get } from "http";
+import { getAllFabricRage, getAllProduct } from "@/api";
+import { useGLTFFromArrayBuffer } from "../_ctx/mash";
+import * as THREE from "three";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
-
+import MashFrom from "./_components/mashFrom";
+import { log } from "console";
 const fileSchema = z
   .any()
   .refine((file) => file instanceof File && file.size > 0, {
@@ -24,19 +29,17 @@ const mashVariantSchema = z.object({
 });
 
 const fabricRangeSchema = z.object({
-  fabricRageID: z.string().min(1, "Fabric Rage ID is required"),
+  fabricRageID: z.string(),
 });
 
 const mashSchema = z.object({
   name: z.string().min(1, "Mash name is required"),
   mashName: z.string().min(1, "Mash display name is required"),
-  url: z.string().min(1, "Mash URL is required"),
-  thumbnailUrl: z.string().min(1, "Thumbnail is required"),
+  url: z.string().optional(),
+  thumbnailUrl: z.string().optional(),
   itOptional: z.boolean().default(false),
   textureEnable: z.boolean().default(false),
-  fabricRange: z
-    .array(fabricRangeSchema)
-    .min(1, "At least one fabric is required"),
+  fabricRange: z.array(fabricRangeSchema.optional()),
   mashVariants: z.array(mashVariantSchema).optional(),
 });
 
@@ -51,14 +54,15 @@ const dimensionsSchema = z.object({
 });
 
 const modelSchema = z.object({
-  productId: z.coerce.number().min(1, "Product ID is required"),
+  productId: z.coerce.number(),
   name: z.string().min(1, "Name is required"),
   isDefault: z.boolean().default(false),
   autoRotate: z.boolean().default(false),
+  shadow: z.boolean().default(false),
   RotationSpeed: z.coerce.number().default(0),
-  url: z.string().min(1, "URL is required"),
-  thumbnailUrl: z.string().min(1, "Thumbnail is required"),
-  mash: z.array(mashSchema).min(1, "At least one mash is required"),
+  url: z.string().optional(),
+  thumbnailUrl: z.string().optional(),
+  mash: z.array(mashSchema.optional()),
   dimensions: z
     .array(dimensionsSchema)
     .min(1, "At least one dimension is required"),
@@ -69,21 +73,11 @@ const defaultValues = {
   name: "",
   isDefault: false,
   autoRotate: false,
+  shadow: false,
   RotationSpeed: 0,
   url: "",
   thumbnailUrl: "",
-  mash: [
-    {
-      name: "",
-      mashName: "",
-      itOptional: false,
-      textureEnable: false,
-      url: "",
-      thumbnailUrl: "",
-      fabricRange: [{ fabricRageID: "" }],
-      mashVariants: [],
-    },
-  ],
+  mash: [],
   dimensions: [
     {
       label: "",
@@ -104,6 +98,7 @@ export default function ModelForm() {
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
   } = useForm({
     resolver: zodResolver(modelSchema),
     defaultValues,
@@ -122,6 +117,8 @@ export default function ModelForm() {
   const [modelThumbnail, setModelThumbnail] = React.useState<File | null>(null);
 
   const { token } = useAuth();
+  console.log(errors);
+
   const onSubmit = async (data: z.infer<typeof modelSchema>) => {
     const formData = new FormData();
 
@@ -141,6 +138,7 @@ export default function ModelForm() {
       isDefault: data.isDefault,
       autoRotate: data.autoRotate,
       RotationSpeed: data.RotationSpeed,
+      shadow: data.shadow,
       // Optionally you can add mash/dimensions if needed at backend
     };
 
@@ -150,7 +148,7 @@ export default function ModelForm() {
 
     try {
       const res = await axios.post(
-        `${API_BASE_URL}/product/create-model`,
+        `${API_BASE_URL}/product/model/create-model`,
         formData,
         {
           headers: {
@@ -186,7 +184,8 @@ export default function ModelForm() {
         name: mash.name,
         mashName: mash.mashName,
         fabricRanges: mash.fabricRange.map((fabric: any) => ({
-          fabricRangeId: fabric.fabricRageID, // Assuming `fabricRageID` is used
+          fabricRangeId:
+            fabric.fabricRageID == "" ? undefined : Number(fabric.fabricRageID), // Assuming `fabricRageID` is used
         })),
         mashVariants: mash.mashVariants.map((variant: any) => ({
           name: variant.name,
@@ -205,17 +204,19 @@ export default function ModelForm() {
         thumbnailUrl: mash.thumbnailUrl,
       }));
 
-      const mashResponse = await axios.post(
-        `${API_BASE_URL}/product/mash/create-mash`,
-        mashPayload,
-        {
-          headers: {
-            Authorization: `Bearer YOUR_TOKEN_HERE`, // replace with real token
-          },
-        }
-      );
+      mashPayload.forEach(async (mash) => {
+        const mashResponse = await axios.post(
+          `${API_BASE_URL}/product/mash/create-mash`,
+          mash,
+          {
+            headers: {
+              Authorization: `Bearer YOUR_TOKEN_HERE`, // replace with real token
+            },
+          }
+        );
+        console.log("Mash created:", mashResponse.data);
+      });
 
-      console.log("Mash created:", mashResponse.data);
       alert("Model, dimensions, and mash created successfully!");
     } catch (err) {
       console.error("Upload failed:", err);
@@ -243,7 +244,18 @@ export default function ModelForm() {
       console.error(`Error uploading ${fieldPath}:`, error);
     }
   };
-
+  const [products, setProducts] = React.useState<Product[]>([]);
+  const [fabricRanges, setFabricRanges] = React.useState<FabricRage[]>([]);
+  useEffect(() => {
+    getAllProduct().then(({ data }) => {
+      setProducts(data);
+    });
+    getAllFabricRage().then(({ data }) => {
+      setFabricRanges(data);
+    });
+  }, []);
+  const [mash, setMash] = React.useState<Mash[]>([]);
+  const model = useGLTFFromArrayBuffer(modelFile);
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -251,14 +263,27 @@ export default function ModelForm() {
     >
       {/* <label className="text-lg font-semibold">Add Model</label> */}
       <label className="text-sm">Product</label>
-      <input
+      <select
         {...register("productId")}
-        type="number"
-        className="input input-bordered w-full"
-      />
+        className="select select-bordered w-full"
+        onChange={(e) => {
+          console.log(e.target.value);
+
+          // Updating the form value
+          setValue("productId", Number(e.target.value));
+        }}
+      >
+        <option value="">Select a product</option>
+        {products.map((product) => (
+          <option key={product.id} value={product.id}>
+            {product.name}
+          </option>
+        ))}
+      </select>
       {errors.productId && (
         <p className="text-red-500 text-sm">{errors.productId.message}</p>
       )}
+
       <label className="text-sm">Name</label>
 
       <input
@@ -276,6 +301,10 @@ export default function ModelForm() {
           className="checkbox"
         />
         <span>Is Default</span>
+      </label>
+      <label className="flex items-center space-x-2">
+        <input type="checkbox" {...register("shadow")} className="checkbox" />
+        <span>Shadow</span>
       </label>
       <label className="flex items-center space-x-2">
         <input
@@ -301,7 +330,11 @@ export default function ModelForm() {
       <input
         type="file"
         className="file-input file-input-bordered w-full"
-        onChange={(e) => handleFileUpload(e.target.files?.[0]!, "url")}
+        onChange={(e) => {
+          handleFileUpload(e.target.files?.[0]!, "url");
+          setModelFile(e.target.files?.[0] || null);
+          console.log(model);
+        }}
       />
       {errors.url && (
         <p className="text-red-500 text-sm">{errors.url.message}</p>
@@ -317,188 +350,40 @@ export default function ModelForm() {
         <p className="text-red-500 text-sm">{errors.thumbnailUrl.message}</p>
       )}
 
-      {mashFields.map((mash, i) => {
-        const {
-          fields: variantFields,
-          append: appendVariant,
-          remove: removeVariant,
-        } = useFieldArray({
-          control,
-          name: `mash.${i}.mashVariants`,
-        });
-        const {
-          fields: fabricFields,
-          append: appendFabric,
-          remove: removeFabric,
-        } = useFieldArray({
-          control,
-          name: `mash.${i}.fabricRange`,
-        });
-        return (
-          <div
-            key={mash.id}
-            className="border p-4 space-y-2 rounded bg-gray-50"
-          >
-            <label className="text-sm">name</label>
-
-            <input
-              {...register(`mash.${i}.name`)}
-              className="input input-bordered w-full"
-            />
-            <label className="text-sm">mash name</label>
-
-            <input
-              {...register(`mash.${i}.mashName`)}
-              className="input input-bordered w-full"
-            />
-            <label className="text-sm">model</label>
-            <input
-              type="file"
-              className="file-input file-input-bordered w-full"
-              onChange={(e) =>
-                handleFileUpload(e.target.files?.[0]!, `mash.${i}.url`)
-              }
-            />
-            <label className="text-sm">thumbnail</label>
-
-            <input
-              type="file"
-              className="file-input file-input-bordered w-full"
-              onChange={(e) =>
-                handleFileUpload(e.target.files?.[0]!, `mash.${i}.thumbnailUrl`)
-              }
-            />
-            <label className="flex items-center space-x-2">
-              <input type="checkbox" {...register(`mash.${i}.itOptional`)} />
-              <span>Optional</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input type="checkbox" {...register(`mash.${i}.textureEnable`)} />
-              <span>Texture Enabled</span>
-            </label>
-
-            {fabricFields.map((field, j) => (
-              <div key={field.id} className="flex items-center space-x-2">
-                <div className="w-full">
-                  <label className="text-sm">Fabric Range ID</label>
-                  <input
-                    {...register(`mash.${i}.fabricRange.${j}.fabricRageID`)}
-                    className="input input-bordered w-full"
-                  />
-                  {errors?.mash?.[i]?.fabricRange?.[j]?.fabricRageID && (
-                    <p className="text-red-500 text-sm">
-                      {errors.mash[i].fabricRange[j].fabricRageID.message}
-                    </p>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => removeFabric(j)}
-                  className="btn btn-error btn-sm"
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={() => appendFabric({ fabricRageID: "" })}
-              className="btn btn-outline btn-sm mt-2"
-            >
-              Add Fabric Range
-            </button>
-            <br />
-
-            {variantFields.map((variant, k) => (
-              <div key={variant.id} className="border p-2 rounded bg-white">
-                <input
-                  {...register(`mash.${i}.mashVariants.${k}.name`)}
-                  className="input input-bordered w-full"
-                />
-                <label className="text-sm">model</label>
-
-                <input
-                  type="file"
-                  className="file-input file-input-bordered w-full"
-                  onChange={(e) =>
-                    handleFileUpload(
-                      e.target.files?.[0]!,
-                      `mash.${i}.mashVariants.${k}.url`
-                    )
-                  }
-                />
-                <label className="text-sm">thumbnailUrl</label>
-
-                <input
-                  type="file"
-                  className="file-input file-input-bordered w-full"
-                  onChange={(e) =>
-                    handleFileUpload(
-                      e.target.files?.[0]!,
-                      `mash.${i}.mashVariants.${k}.thumbnailUrl`
-                    )
-                  }
-                />
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    {...register(`mash.${i}.mashVariants.${k}.itOptional`)}
-                  />
-                  <span>Optional</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    {...register(`mash.${i}.mashVariants.${k}.textureEnable`)}
-                  />
-                  <span>Texture Enabled</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => removeVariant(k)}
-                  className="btn btn-error mt-2"
-                >
-                  Delete Variant
-                </button>
-              </div>
-            ))}
-
-            <button
-              type="button"
-              onClick={() =>
-                appendVariant({
-                  name: "",
-                  url: "",
-                  thumbnailUrl: "",
-                  itOptional: false,
-                  textureEnable: false,
-                })
-              }
-              className="btn btn-secondary"
-            >
-              Add Variant
-            </button>
-          </div>
-        );
-      })}
+      {mashFields.map((mash, i) => (
+        <MashFrom
+          key={mash.id}
+          control={control}
+          register={register}
+          i={i}
+          errors={errors}
+          watch={watch}
+          fabricRanges={fabricRanges}
+          handleFileUpload={handleFileUpload}
+        />
+      ))}
 
       <button
         type="button"
-        onClick={() =>
-          appendMash({
-            name: "",
-            mashName: "",
-            url: "",
-            thumbnailUrl: "",
-            itOptional: false,
-            textureEnable: false,
-            fabricRange: [{ fabricRageID: "" }],
-            mashVariants: [],
-          })
-        }
+        onClick={() => {
+          if (model)
+            Object.keys(model?.meshes).forEach((key) => {
+              appendMash({
+                name: "",
+                mashName: key,
+                url: "",
+                thumbnailUrl: "",
+                itOptional: false,
+                textureEnable: false,
+                fabricRange: [{ fabricRageID: "" }],
+                mashVariants: [],
+              });
+            });
+          else alert("Model is required");
+        }}
         className="btn btn-outline"
       >
-        Add Mash
+        Get All Mash in Model
       </button>
 
       {dimensionFields.map((dim, i) => (

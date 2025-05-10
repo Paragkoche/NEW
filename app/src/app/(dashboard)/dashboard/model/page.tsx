@@ -4,6 +4,7 @@ import { Model } from "@/types/type";
 import { Edit2, Plus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import AddProduct from "./_components/add_model";
+import { useRouter } from "next/navigation";
 const API_URL = process.env.NEXT_PUBLIC_API;
 
 const page = () => {
@@ -15,6 +16,7 @@ const page = () => {
       setProduct(data.data);
     });
   }, []);
+  const router = useRouter();
   return (
     <div className="card  bg-base-100 shadow-sm">
       <div className="card-body">
@@ -24,7 +26,7 @@ const page = () => {
             <button
               className="btn"
               onClick={() => {
-                if (addProductRef.current) addProductRef.current.showModal();
+                router.push("/dashboard/model/add");
               }}
             >
               <Plus />

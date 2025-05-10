@@ -1,10 +1,10 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import { getModelById } from "@/api";
+import { getAllProduct, getModelById } from "@/api";
 import CustomizePanel from "@/components/customize-panel";
 import ViewThreeD from "@/components/viewThreeD";
-import { Product as ProductType } from "@/types/type";
+import { Product, Product as ProductType } from "@/types/type";
 import { product, product2, ProductGlary } from "@/data/product";
 import MoreOptions from "@/components/More-options";
 import { FullscreenIcon } from "lucide-react";
@@ -17,13 +17,16 @@ type PageProps = {
 const Page = ({ params }: PageProps) => {
   const { id } = use(params);
 
-  const [data, setData] = useState<{ models: ProductType } | null>(null);
+  const [data, setData] = useState<Product | null>(null);
 
   useEffect(() => {
-    if (id)
-      setData({
-        models: ProductGlary.find((v) => v.id == Number(id)) || product,
+    if (id) {
+      getAllProduct().then(({ data }) => {
+        data.map((v) => {
+          if (v.id == Number(id)) setData(v);
+        });
       });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -35,10 +38,10 @@ const Page = ({ params }: PageProps) => {
   return (
     <main className="flex justify-center items-center w-screen h-screen relative overflow-hidden">
       <div className="w-full h-full">
-        <ViewThreeD {...data.models} />
+        <ViewThreeD {...data} />
       </div>
       <h1 className="fixed top-2 left-2 text-4xl select-none">
-        {data.models.name} <br />
+        {data.name} <br />
         <span className="text-gray-900 text-3xl">Virtual configurator</span>
       </h1>
 
