@@ -94,7 +94,7 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
         return (
           <Suspense fallback={null} key={mashKey + index}>
             {shouldShowVariant && selectedVariants && selectedVariants.url ? (
-              <VariantMesh url={selectedVariants.url} />
+              <VariantMesh url={`${API_BASE_URL}${selectedVariants.url}`} />
             ) : nodes[mashKey] ? (
               <DefaultMesh node={nodes[mashKey]} fabric={fabric} />
             ) : null}
@@ -118,7 +118,7 @@ const ModelView = ({ model }: { model: ModelType }) => {
   return (
     <Stage
       intensity={0.3} // soft light
-      environment="apartment"
+      environment="forest"
       adjustCamera={false}
       shadows={{
         type: "accumulative",
@@ -177,12 +177,13 @@ const ViewThreeD = (pops: Product) => {
   const {
     changeSelectedModel,
     selectedModel,
-
+    rotation,
     setModel,
     showDimensions,
     canvasRef,
     setPdfText,
     setImageBank,
+    SetRotation,
   } = useConfig();
 
   useEffect(() => {
@@ -193,7 +194,8 @@ const ViewThreeD = (pops: Product) => {
       });
 
       setPdfText(pops.pdfText);
-      setImageBank(pops.imageBank);
+      setImageBank(`${API_BASE_URL}${selectedModel?.imageBank}`!);
+      SetRotation(selectedModel?.autoRotate ?? false);
     }
   }, [pops]);
 
@@ -231,7 +233,7 @@ const ViewThreeD = (pops: Product) => {
               ))}
 
             <OrbitControls
-              autoRotate={selectedModel.autoRotate}
+              autoRotate={rotation ?? false}
               autoRotateSpeed={selectedModel.RotationSpeed || 0.5}
               enableZoom
               zoomSpeed={0.5}

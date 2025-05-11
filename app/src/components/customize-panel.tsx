@@ -79,7 +79,8 @@ const CustomizePanel = () => {
 
     changeSelectedFabrics,
     changeSelectedVariants,
-
+    SetRotation,
+    rotation,
     Models,
     fabricRageMap,
     setFabricRageForVariant,
@@ -139,10 +140,10 @@ const CustomizePanel = () => {
             animate={{ x: 0, opacity: 1 }}
             whileHover={{ scale: 1.1 }}
             transition={{ type: "spring", stiffness: 200 }}
-            className="bg-red-600/60 h-[55px] w-auto px-3.5 fixed right-0 top-1/2 transform -translate-y-1/2 cursor-pointer flex justify-center items-center text-white rounded-l-3xl z-50 select-none"
+            className="bg-red-600/60  h-[150px] w-[50px] px-3.5 fixed right-0 top-1/2 transform -translate-y-1/2 cursor-pointer flex justify-center items-center text-white rounded-l-3xl z-50 select-none"
             onClick={togglePanel}
           >
-            customization
+            <span className="rotate-90">customization</span>
           </motion.div>
         )}
 
@@ -203,6 +204,22 @@ const CustomizePanel = () => {
                     </select>
                   </div>
                 )}
+
+                {/* Auto Rotation Toggle */}
+                <div className="mb-6">
+                  <h3 className="text-white text-sm font-medium mb-2">
+                    Auto Rotation
+                  </h3>
+                  <div className="flex items-center">
+                    <label className="text-white mr-2">Enable Rotation:</label>
+                    <input
+                      type="checkbox"
+                      className="w-5 h-5"
+                      checked={rotation || false}
+                      onChange={(e) => SetRotation((prv) => !prv)}
+                    />
+                  </div>
+                </div>
 
                 {/* Environment Selection */}
 

@@ -27,9 +27,12 @@ interface ConfigType {
 
   setPdfText: Dispatch<SetStateAction<string | null>>;
   pdfText: string | null;
+
   setImageBank: Dispatch<SetStateAction<string | null>>;
   ImageBank: string | null;
 
+  SetRotation: Dispatch<SetStateAction<boolean | null>>;
+  rotation: boolean | null;
   selectedModel: Model | null;
   changeSelectedModel: Dispatch<SetStateAction<Model | null>>;
 
@@ -59,6 +62,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
   const [Models, setModel] = useState<Model[] | null>(null);
 
   const [pdfText, setPdfText] = useState<string | null>(null);
+  const [rotate, setRotate] = useState<boolean | null>(null);
   const [imageBank, setImageBank] = useState<string | null>(null);
   const [selectedModel, changeSelectedModel] = useState<Model | null>(null);
 
@@ -102,6 +106,8 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
     setPdfText,
     ImageBank: imageBank,
     setImageBank,
+    SetRotation: setRotate,
+    rotation: rotate,
   };
 
   return <ConfigCtx.Provider value={value}>{children}</ConfigCtx.Provider>;

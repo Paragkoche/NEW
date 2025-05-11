@@ -68,6 +68,8 @@ export class Model {
   url: string;
   thumbnailUrl?: string | null;
   mash: Mash[];
+  imageBank: string;
+
   dimensions: Dimensions[];
 }
 
@@ -76,6 +78,5 @@ export class Product {
   name: string;
   thumbnailUrl?: string;
   pdfText: string;
-  imageBank: string;
   model: Model[];
 }

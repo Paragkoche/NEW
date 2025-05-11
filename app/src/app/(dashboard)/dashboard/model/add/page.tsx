@@ -437,48 +437,36 @@ export default function ModelForm() {
           <label className="text-sm">X</label>
           <input
             type="number"
-            min={-0.001}
-            max={5}
             {...register(`dimensions.${i}.x`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">Y</label>
           <input
             type="number"
-            min={-0.001}
-            max={5}
             {...register(`dimensions.${i}.y`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">Z</label>
           <input
             type="number"
-            min={-0.001}
-            max={5}
             {...register(`dimensions.${i}.z`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">End X</label>
           <input
             type="number"
-            min={-0.001}
-            max={5}
             {...register(`dimensions.${i}.end_x`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">End Y</label>
           <input
             type="number"
-            min={-0.001}
-            max={5}
             {...register(`dimensions.${i}.end_y`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">End Z</label>
           <input
             type="number"
-            min={-0.001}
-            max={5}
             {...register(`dimensions.${i}.end_z`)}
             className="input input-bordered w-full"
           />
