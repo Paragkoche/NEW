@@ -5,7 +5,6 @@ import { getAllProduct, getModelById } from "@/api";
 import CustomizePanel from "@/components/customize-panel";
 import ViewThreeD from "@/components/viewThreeD";
 import { Product, Product as ProductType } from "@/types/type";
-import { product, product2, ProductGlary } from "@/data/product";
 import MoreOptions from "@/components/More-options";
 import { FullscreenIcon } from "lucide-react";
 import FullscreenToggle from "@/components/fullsceen";
