@@ -7,6 +7,7 @@ import { useConfig } from "@/context/configure-ctx";
 import Image from "next/image";
 import { Fabric, Model } from "@/types/type";
 import { Mash } from "@/types/type";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 
 const CustomSelectWithImages = ({ options, value, onChange, size }: any) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +32,7 @@ const CustomSelectWithImages = ({ options, value, onChange, size }: any) => {
         {value ? (
           <div className="flex items-center">
             <img
-              src={value.thumbnailUrl}
+              src={`${API_BASE_URL}${value.thumbnailUrl}`}
               alt={value.name}
               className="w-6 h-6 mr-2"
             />
@@ -54,7 +55,7 @@ const CustomSelectWithImages = ({ options, value, onChange, size }: any) => {
               className="flex items-center p-2 cursor-pointer hover:bg-gray-200"
             >
               <img
-                src={option.thumbnailUrl}
+                src={`${API_BASE_URL}${option.thumbnailUrl}`}
                 alt={option.name}
                 height={size}
                 width={size}

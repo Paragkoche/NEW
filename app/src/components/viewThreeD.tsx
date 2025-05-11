@@ -43,7 +43,7 @@ const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
     if (fabric?.url) {
       const loader = new THREE.TextureLoader();
       loader.crossOrigin = "anonymous";
-      loader.load(fabric.url, (texture) => {
+      loader.load(`${API_BASE_URL}${fabric.url}`, (texture) => {
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(fabric.size || 1, fabric.size || 1);
@@ -109,10 +109,10 @@ const ModelView = ({ model }: { model: ModelType }) => {
   const { selectedVariants, selectedFabrics } = useConfig();
   const [rerender, setRerender] = useState(false);
 
-  useEffect(() => {
-    // Whenever selectedVariants or selectedFabrics change, trigger a re-render
-    setRerender((prev) => !prev); // Toggle rerender state
-  }, [selectedVariants, selectedFabrics]);
+  // useEffect(() => {
+  //   // Whenever selectedVariants or selectedFabrics change, trigger a re-render
+  //   setRerender((prev) => !prev); // Toggle rerender state
+  // }, [selectedVariants, selectedFabrics]);
   console.log("mash.mash", model);
 
   return (

@@ -33,7 +33,7 @@ export class Mash {
   @Column()
   mashName: string;
 
-  @OneToMany(() => FabricRage, (fr) => fr.mash)
+  @ManyToMany(() => FabricRage, (fr) => fr.mash)
   fabricRange: FabricRage[];
 
   @ManyToOne(() => Model, (model) => model.mash)

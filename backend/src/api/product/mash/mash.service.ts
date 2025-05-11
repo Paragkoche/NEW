@@ -40,7 +40,7 @@ export class MashService {
 
     if (data.mashVariant) {
       for (const mashItem of data.mashVariant.mash) {
-        if (mashItem.mashVariant) {
+        if (!mashItem.mashVariant) {
           throw new UnprocessableEntityException(
             'Nested mash variants are not allowed.',
           );

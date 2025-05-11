@@ -27,7 +27,7 @@ const Page = () => {
       {data.map((v: any, i: number) => (
         <Card
           name={v.name}
-          imageUrl={`${API_BASE_URL}/${v.thumbnailUrl}`}
+          imageUrl={`${API_BASE_URL}${v.thumbnailUrl}`}
           key={i}
           id={v.id}
         />

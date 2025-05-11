@@ -1,6 +1,8 @@
 import {
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -20,6 +22,7 @@ export class FabricRage {
     onDelete: 'CASCADE',
   })
   fabric: Fabric[];
-  @ManyToOne(() => Mash, (mash) => mash.fabricRange)
+  @ManyToMany(() => Mash, (mash) => mash.fabricRange)
+  @JoinTable()
   mash: Mash;
 }

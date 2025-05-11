@@ -6,7 +6,7 @@ import React from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 
-const Page = async () => {
+const Page = () => {
   const [data, setData] = React.useState<{ data: ProductType[] }>({ data: [] });
 
   React.useEffect(() => {

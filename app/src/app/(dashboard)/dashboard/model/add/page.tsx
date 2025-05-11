@@ -185,7 +185,7 @@ export default function ModelForm() {
       console.log(data);
 
       const mashPayload = data.mash.map((mash: any) => ({
-        modelId: res.data.modelId, // Assuming `modelId` is returned from the model upload response
+        modelId: res.data.data.id, // Assuming `modelId` is returned from the model upload response
         name: mash.name,
         mashName: mash.mashName,
         fabricRanges: mash.fabricRange.map((fabric: any) => ({
