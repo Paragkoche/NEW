@@ -26,7 +26,7 @@ export class MashService {
   ) {}
 
   async createMash(data: MashCreteDTO) {
-    console.log(data);
+    // console.log(data);
 
     const modelExists = await this.ModelRepo.findOne({
       where: { id: data.modelId },
@@ -37,37 +37,59 @@ export class MashService {
     }
 
     let mashVariantId: number | null = null;
-
     if (data.mashVariant) {
-      for (const mashItem of data.mashVariant.mash) {
-        if (!mashItem.mashVariant) {
-          throw new UnprocessableEntityException(
-            'Nested mash variants are not allowed.',
+      // for (const mashItem of data.mashVariant.mash) {
+      //   if (mashItem.mashVariant) {
+      //     throw new UnprocessableEntityException(
+      //       'Nested mash variants are not allowed.',
+      //     );
+      //   }
+      // }
+      for (let mash of data.mashVariant) {
+        console.log(':', mash);
+        // console.log('mash', mash);
+
+        try {
+          const createdMash = this.MashRepo.create(
+            mash.mash.map((v) => ({
+              name: v.name,
+              itOptional: v.itOptional,
+              textureEnable: v.textureEnable,
+              thumbnailUrl: v.thumbnailUrl,
+              url: v.url,
+              mashName: v.mashName,
+              fabricRange: [],
+            })),
+          );
+          const savedMash = await this.MashRepo.save(createdMash);
+          console.log('savedMash', savedMash);
+
+          const newMashVariant = this.MashVariantsRepo.create({
+            name: mash.name,
+          });
+          const savedMashVariant =
+            await this.MashVariantsRepo.save(newMashVariant);
+          savedMashVariant.mash = [];
+          for (let i of savedMash) {
+            savedMashVariant.mash.push(i);
+          }
+          await this.MashVariantsRepo.save(savedMashVariant);
+
+          console.log('newMashVariant', savedMashVariant);
+
+          mashVariantId = savedMashVariant.id;
+        } catch (error) {
+          console.log(error);
+
+          throw new InternalServerErrorException(
+            'Failed to create mash variant.',
           );
         }
-      }
-
-      try {
-        const createdMash = this.MashRepo.create(data.mashVariant.mash);
-        const savedMash = await this.MashRepo.save(createdMash);
-
-        const newMashVariant = this.MashVariantsRepo.create({
-          name: data.mashVariant.name,
-          mash: savedMash,
-        });
-
-        const savedMashVariant =
-          await this.MashVariantsRepo.save(newMashVariant);
-        mashVariantId = savedMashVariant.id;
-      } catch (error) {
-        throw new InternalServerErrorException(
-          'Failed to create mash variant.',
-        );
       }
     }
 
     const fabricRangeArray: FabricRage[] = [];
-    console.log(data.fabricRanges);
+    // console.log(data.fabricRanges);
 
     if (data.fabricRanges && data.fabricRanges.length !== 0) {
       for (const item of data.fabricRanges) {
@@ -91,11 +113,17 @@ export class MashService {
     try {
       const newMash = this.MashRepo.create({
         ...data,
-        fabricRange: fabricRangeArray,
+
         mashVariants: mashVariantId ? { id: mashVariantId } : undefined,
       });
 
       const savedMash = await this.MashRepo.save(newMash);
+      // console.log('savedMash', savedMash);
+      savedMash.fabricRange = [];
+      for (let i of fabricRangeArray) {
+        savedMash.fabricRange.push(i);
+      }
+      await this.MashRepo.save(savedMash);
       return savedMash;
     } catch (error) {
       console.log(error);

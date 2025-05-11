@@ -192,20 +192,23 @@ export default function ModelForm() {
           fabricRangeId:
             fabric.fabricRageID == "" ? undefined : Number(fabric.fabricRageID), // Assuming `fabricRageID` is used
         })),
-        mashVariants: mash.mashVariants.map((variant: any) => ({
+        mashVariant: mash.mashVariants.map((variant: any) => ({
           name: variant.name,
-          mash: {
-            thumbnailUrl: variant.thumbnailUrl,
-            fabricRange: mash.fabricRange.map((fabric: any) => ({
-              fabricRangeId:
-                fabric.fabricRageID == ""
-                  ? undefined
-                  : Number(fabric.fabricRageID), // Assuming `fabricRageID` is used
-            })),
-            itOptional: variant.itOptional,
-            mashName: mash.name,
-            textureEnable: variant.textureEnable,
-          },
+          mash: [
+            {
+              thumbnailUrl: variant.thumbnailUrl,
+              fabricRange: mash.fabricRange.map((fabric: any) => ({
+                fabricRangeId:
+                  fabric.fabricRageID == ""
+                    ? undefined
+                    : Number(fabric.fabricRageID), // Assuming `fabricRageID` is used
+              })),
+              itOptional: variant.itOptional,
+              mashName: mash.mashName,
+              name: mash.name,
+              textureEnable: variant.textureEnable,
+            },
+          ],
         })),
         url: mash.url,
         thumbnailUrl: mash.thumbnailUrl,
