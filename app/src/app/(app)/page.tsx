@@ -1,11 +1,21 @@
+"use client";
 import { getAllProduct } from "@/api";
 import Card from "./_components/Card";
 import { Product as ProductType } from "@/types/type";
+import React from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 
 const Page = async () => {
-  const data = await getAllProduct();
+  const [data, setData] = React.useState<{ data: ProductType[] }>({ data: [] });
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const result = await getAllProduct();
+      setData(result);
+    };
+    fetchData();
+  }, []);
 
   // Split into 4 columns
   const columns: Array<[ProductType?]> = [[], [], [], []];
@@ -24,7 +34,7 @@ const Page = async () => {
                   key={model.id}
                   name={model.name}
                   id={model.id}
-                  imageUrl={`${API_BASE_URL}/${model.thumbnailUrl}`}
+                  imageUrl={`${API_BASE_URL}${model.thumbnailUrl}`}
                 />
               )
           )}

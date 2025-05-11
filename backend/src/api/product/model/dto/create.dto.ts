@@ -9,6 +9,9 @@ export class ModelCreateDto {
   @IsString()
   @ApiProperty()
   name: string;
+  @IsString()
+  @ApiProperty()
+  imageBank: string;
 
   @IsBoolean()
   @ApiProperty()

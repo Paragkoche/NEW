@@ -65,6 +65,7 @@ export class ProductController {
     } else {
       parsedData = data;
     }
+    console.log(file);
 
     return this.productService.createPost(
       parsedData,

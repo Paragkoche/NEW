@@ -6,7 +6,7 @@ import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useAuth } from "@/app/(dashboard)/_ctx/auth.ctx";
-import { Fabric, FabricRage, Mash, Product } from "@/types/type";
+import { Fabric, FabricRage, Mash, MashVariants, Product } from "@/types/type";
 import { get } from "http";
 import { getAllFabricRage, getAllProduct } from "@/api";
 import { useGLTFFromArrayBuffer } from "../_ctx/mash";
@@ -59,6 +59,8 @@ const modelSchema = z.object({
   isDefault: z.boolean().default(false),
   autoRotate: z.boolean().default(false),
   shadow: z.boolean().default(false),
+  imageBank: z.string().optional(),
+
   RotationSpeed: z.coerce.number().default(0),
   url: z.string().optional(),
   thumbnailUrl: z.string().optional(),
@@ -75,6 +77,7 @@ const defaultValues = {
   autoRotate: false,
   shadow: false,
   RotationSpeed: 0,
+  imageBank: "",
   url: "",
   thumbnailUrl: "",
   mash: [],
@@ -163,8 +166,9 @@ export default function ModelForm() {
       // 2. Submit dimensions after model is successfully created
       const dimensionPayload = data.dimensions.map((v) => ({
         ...v,
-        ModelId: res.data.id,
+        ModelId: res.data.data.id,
       }));
+      console.log(dimensionPayload);
 
       const dimensionsResponse = await axios.post(
         `${API_BASE_URL}/product/dimensions/create`,
@@ -178,6 +182,7 @@ export default function ModelForm() {
 
       console.log("Dimensions created:", dimensionsResponse.data);
       alert("Model and dimensions created successfully!");
+      console.log(data);
 
       const mashPayload = data.mash.map((mash: any) => ({
         modelId: res.data.modelId, // Assuming `modelId` is returned from the model upload response
@@ -189,16 +194,18 @@ export default function ModelForm() {
         })),
         mashVariants: mash.mashVariants.map((variant: any) => ({
           name: variant.name,
-          mash: variant.mash.map((mash: any) => ({
-            modelId: mash.modelId,
-            itOptional: mash.itOptional,
-            textureEnable: mash.textureEnable,
-            name: mash.name,
-            mashName: mash.mashName,
-            fabricRanges: mash.fabricRanges.map((fabric: any) => ({
-              fabricRangeId: fabric.fabricRangeId,
+          mash: {
+            thumbnailUrl: variant.thumbnailUrl,
+            fabricRange: mash.fabricRange.map((fabric: any) => ({
+              fabricRangeId:
+                fabric.fabricRageID == ""
+                  ? undefined
+                  : Number(fabric.fabricRageID), // Assuming `fabricRageID` is used
             })),
-          })),
+            itOptional: variant.itOptional,
+            mashName: mash.name,
+            textureEnable: variant.textureEnable,
+          },
         })),
         url: mash.url,
         thumbnailUrl: mash.thumbnailUrl,
@@ -210,7 +217,7 @@ export default function ModelForm() {
           mash,
           {
             headers: {
-              Authorization: `Bearer YOUR_TOKEN_HERE`, // replace with real token
+              Authorization: `Bearer ${token}`, // replace with real token
             },
           }
         );
@@ -239,6 +246,8 @@ export default function ModelForm() {
         }
       );
       const uploadedUrl = response.data.url || response.data;
+      console.log(uploadedUrl, response);
+
       setValue(fieldPath as any, uploadedUrl);
     } catch (error) {
       console.error(`Error uploading ${fieldPath}:`, error);
@@ -254,6 +263,8 @@ export default function ModelForm() {
       setFabricRanges(data);
     });
   }, []);
+  console.log("THUM", watch("thumbnailUrl"));
+
   const [mash, setMash] = React.useState<Mash[]>([]);
   const model = useGLTFFromArrayBuffer(modelFile);
   return (
@@ -329,6 +340,8 @@ export default function ModelForm() {
 
       <input
         type="file"
+        accept=".gltf,.glb,.obj"
+        // {...register("url", { required: true })}
         className="file-input file-input-bordered w-full"
         onChange={(e) => {
           handleFileUpload(e.target.files?.[0]!, "url");
@@ -343,6 +356,8 @@ export default function ModelForm() {
 
       <input
         type="file"
+        accept="image/*"
+        // {...register("thumbnailUrl", { required: true })}
         className="file-input file-input-bordered w-full"
         onChange={(e) => handleFileUpload(e.target.files?.[0]!, "thumbnailUrl")}
       />
@@ -350,6 +365,17 @@ export default function ModelForm() {
         <p className="text-red-500 text-sm">{errors.thumbnailUrl.message}</p>
       )}
 
+      <label className="text-sm">Image Bank</label>
+
+      <input
+        type="file"
+        accept=".zip"
+        className="file-input file-input-bordered w-full"
+        onChange={(e) => handleFileUpload(e.target.files?.[0]!, "imageBank")}
+      />
+      {errors.imageBank && (
+        <p className="text-red-500 text-sm">{errors.imageBank.message}</p>
+      )}
       {mashFields.map((mash, i) => (
         <MashFrom
           key={mash.id}

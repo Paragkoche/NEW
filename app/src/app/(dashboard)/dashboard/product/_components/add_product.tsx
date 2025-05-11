@@ -31,11 +31,13 @@ const AddProduct = forwardRef((props: {}, ref: Ref<HTMLDialogElement>) => {
   });
 
   const onSubmit = async (data: FormDataType) => {
+    console.log(data.thumbnail);
+
     try {
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("pdfText", data.pdfText);
-      formData.append("thumbnail", data.thumbnail);
+      formData.append("thumbnail", data.thumbnail[0]);
 
       await axios.post(`${API_URL}/product/create-product`, formData, {
         headers: {
@@ -104,9 +106,9 @@ const AddProduct = forwardRef((props: {}, ref: Ref<HTMLDialogElement>) => {
 
             <input
               type="file"
-              accept="application/pdf"
+              accept="image/*"
               className="file-input file-input-bordered w-full"
-              {...register("pdfText")}
+              {...register("thumbnail")}
             />
           </div>
 

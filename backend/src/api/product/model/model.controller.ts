@@ -54,6 +54,7 @@ export class ModelController {
       properties: {
         productId: { type: 'number' },
         name: { type: 'string' },
+        imageBank: { type: 'string' },
         isDefault: { type: 'boolean' },
         shadow: { type: 'boolean' },
         autoRotate: { type: 'boolean' },
@@ -71,6 +72,8 @@ export class ModelController {
     @UploadedFile()
     file: Express.Multer.File,
   ) {
+    console.log(data, file);
+
     return this.modelService.createModel(
       data,
       `/static/upload/${file.filename}`,

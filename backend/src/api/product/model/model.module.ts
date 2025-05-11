@@ -10,9 +10,22 @@ import { MashVariants } from '../mash-variants/enitity/mash-variants.enitity';
 import { Fabric } from '../fabric/enitity/fabric.enitity';
 import { FabricRage } from '../fabric-rage/enitity/fabric-rage.enitity';
 import { Dimensions } from '../dimensions/enitity/dimensions.enitity';
+import { MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import { randomUUID } from 'crypto';
 
 @Module({
   imports: [
+    MulterModule.register({
+      storage: diskStorage({
+        destination: join(__dirname, '..', '..', '..', '..', 'upload'),
+        filename: (req, file, cb) => {
+          const uniqueName = `${randomUUID()}${extname(file.originalname)}`;
+          cb(null, uniqueName);
+        },
+      }),
+    }),
     TypeOrmModule.forFeature([
       Product,
 

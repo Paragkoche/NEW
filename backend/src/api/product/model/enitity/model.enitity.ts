@@ -16,7 +16,8 @@ export class Model {
 
   @Column()
   name: string;
-
+  @Column({ default: '' })
+  imageBank: string;
   @Column()
   isDefault: boolean;
 

@@ -75,9 +75,10 @@ const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
 const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
   const baseUrl = glfUrl.startsWith("http")
     ? glfUrl
-    : `${API_BASE_URL}/${glfUrl}`;
+    : `${API_BASE_URL}${glfUrl}`;
   const { nodes } = useGLTF(baseUrl);
   const { selectedVariants, selectedFabrics } = useConfig();
+  console.log("ss", nodes, mashData);
 
   return (
     <group scale={0.05}>
@@ -112,6 +113,7 @@ const ModelView = ({ model }: { model: ModelType }) => {
     // Whenever selectedVariants or selectedFabrics change, trigger a re-render
     setRerender((prev) => !prev); // Toggle rerender state
   }, [selectedVariants, selectedFabrics]);
+  console.log("mash.mash", model);
 
   return (
     <Stage
