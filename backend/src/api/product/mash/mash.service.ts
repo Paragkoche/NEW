@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { Model } from '../model/enitity/model.enitity';
 import { MashVariants } from '../mash-variants/enitity/mash-variants.enitity';
 import { FabricRage } from '../fabric-rage/enitity/fabric-rage.enitity';
+import { clear, log } from 'console';
 
 @Injectable()
 export class MashService {
@@ -26,76 +27,71 @@ export class MashService {
   ) {}
 
   async createMash(data: MashCreteDTO) {
-    // console.log(data);
-
-    const modelExists = await this.ModelRepo.findOne({
-      where: { id: data.modelId },
-    });
-
-    if (!modelExists) {
+    // Validate model existence
+    const model = await this.ModelRepo.findOne({ where: { id: data.modelId } });
+    if (!model) {
       throw new NotFoundException('Model not found.');
     }
+    log('::::::::', data.mashVariant?.mash);
 
-    let mashVariantId: number | null = null;
+    let mashVariantEntity: MashVariants | null = null;
+
+    // Handle mash variant if present
     if (data.mashVariant) {
-      // for (const mashItem of data.mashVariant.mash) {
-      //   if (mashItem.mashVariant) {
-      //     throw new UnprocessableEntityException(
-      //       'Nested mash variants are not allowed.',
-      //     );
-      //   }
-      // }
-      for (let mash of data.mashVariant) {
-        console.log(':', mash);
-        // console.log('mash', mash);
-
-        try {
-          const createdMash = this.MashRepo.create(
-            mash.mash.map((v) => ({
-              name: v.name,
-              itOptional: v.itOptional,
-              textureEnable: v.textureEnable,
-              thumbnailUrl: v.thumbnailUrl,
-              url: v.url,
-              mashName: v.mashName,
-              fabricRange: [],
-            })),
-          );
-          const savedMash = await this.MashRepo.save(createdMash);
-          console.log('savedMash', savedMash);
-
-          const newMashVariant = this.MashVariantsRepo.create({
-            name: mash.name,
-          });
-          const savedMashVariant =
-            await this.MashVariantsRepo.save(newMashVariant);
-          savedMashVariant.mash = [];
-          for (let i of savedMash) {
-            savedMashVariant.mash.push(i);
-          }
-          await this.MashVariantsRepo.save(savedMashVariant);
-
-          console.log('newMashVariant', savedMashVariant);
-
-          mashVariantId = savedMashVariant.id;
-        } catch (error) {
-          console.log(error);
-
-          throw new InternalServerErrorException(
-            'Failed to create mash variant.',
+      // Optional: prevent nesting
+      for (const mashItem of data.mashVariant.mash) {
+        if (mashItem.mashVariant) {
+          throw new UnprocessableEntityException(
+            'Nested mash variants are not allowed.',
           );
         }
       }
+
+      try {
+        // Create mash variant first
+        mashVariantEntity = this.MashVariantsRepo.create({
+          name: data.mashVariant.name,
+        });
+        mashVariantEntity = await this.MashVariantsRepo.save(mashVariantEntity);
+
+        // Create mash entries for this variant
+        const mashEntities = data.mashVariant.mash.map((mashDto) => {
+          log('0>', mashDto);
+          return this.MashRepo.create({
+            name: mashDto.name,
+            itOptional: mashDto.itOptional,
+            textureEnable: mashDto.textureEnable,
+            thumbnailUrl: mashDto.thumbnailUrl,
+            url: mashDto.url,
+            mashName: mashDto.mashName,
+
+            mashVariants: mashVariantEntity ?? undefined,
+            fabricRange: [],
+          });
+        });
+
+        console.log('-><>---', mashEntities);
+
+        const savedMashEntities = await this.MashRepo.save(mashEntities);
+
+        // Assign mash to variant
+        mashVariantEntity.mash = savedMashEntities;
+        await this.MashVariantsRepo.save(mashVariantEntity);
+      } catch (error) {
+        console.error(error);
+        throw new InternalServerErrorException(
+          'Failed to create mash variant.',
+        );
+      }
     }
 
-    const fabricRangeArray: FabricRage[] = [];
-    // console.log(data.fabricRanges);
+    // Resolve fabric ranges
+    const fabricRangeEntities: FabricRage[] = [];
 
-    if (data.fabricRanges && data.fabricRanges.length !== 0) {
+    if (data.fabricRanges?.length) {
       for (const item of data.fabricRanges) {
-        if (!item.fabricRangeId) {
-          continue;
-        }
+        if (!item.fabricRangeId) continue;
+
         const fabricRange = await this.FabricRageRepo.findOne({
           where: { id: item.fabricRangeId },
         });
@@ -106,28 +102,30 @@ export class MashService {
           );
         }
 
-        fabricRangeArray.push(fabricRange);
+        fabricRangeEntities.push(fabricRange);
       }
     }
 
     try {
-      const newMash = this.MashRepo.create({
-        ...data,
+      console.log('ssssssssssssss', data.textureEnable);
 
-        mashVariants: mashVariantId ? { id: mashVariantId } : undefined,
+      // Create main mash
+      const newMash = this.MashRepo.create({
+        name: data.name,
+        itOptional: data.itOptional,
+        textureEnable: data.textureEnable,
+        thumbnailUrl: data.thumbnailUrl,
+        url: data.url,
+        mashName: data.mashName,
+        model,
+        mashVariants: mashVariantEntity ?? undefined,
+        fabricRange: fabricRangeEntities,
       });
 
       const savedMash = await this.MashRepo.save(newMash);
-      // console.log('savedMash', savedMash);
-      savedMash.fabricRange = [];
-      for (let i of fabricRangeArray) {
-        savedMash.fabricRange.push(i);
-      }
-      await this.MashRepo.save(savedMash);
       return savedMash;
     } catch (error) {
-      console.log(error);
-
+      console.error(error);
       throw new InternalServerErrorException('Failed to create mash entry.');
     }
   }

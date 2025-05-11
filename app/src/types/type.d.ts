@@ -76,5 +76,6 @@ export class Product {
   name: string;
   thumbnailUrl?: string;
   pdfText: string;
+  imageBank: string;
   model: Model[];
 }

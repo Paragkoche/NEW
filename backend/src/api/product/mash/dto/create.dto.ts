@@ -46,9 +46,8 @@ class MashCreteDTO {
   @IsArray()
   fabricRanges: FabricRangeArray[];
 
-  @ApiProperty({ type: () => MashVariants, isArray: true })
-  @IsArray()
-  mashVariant?: MashVariants[];
+  @ApiProperty({ type: () => MashVariants })
+  mashVariant?: MashVariants;
 
   @ApiProperty()
   @IsString()

@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
-import { set, z } from "zod";
+import { boolean, set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useAuth } from "@/app/(dashboard)/_ctx/auth.ctx";
@@ -23,7 +23,7 @@ const fileSchema = z
 const mashVariantSchema = z.object({
   name: z.string().min(1, "Variant name is required"),
   url: z.string().min(1, "URL required"),
-  thumbnailUrl: z.string().min(1, "Thumbnail required"),
+  thumbnailUrl: z.string().optional(),
   itOptional: z.boolean().default(false),
   textureEnable: z.boolean().default(false),
 });
@@ -40,7 +40,12 @@ const mashSchema = z.object({
   itOptional: z.boolean().default(false),
   textureEnable: z.boolean().default(false),
   fabricRange: z.array(fabricRangeSchema.optional()),
-  mashVariants: z.array(mashVariantSchema).optional(),
+  mashVariants: z
+    .object({
+      name: z.string(),
+      mash: z.array(mashVariantSchema).optional(),
+    })
+    .optional(),
 });
 
 const dimensionsSchema = z.object({
@@ -136,17 +141,17 @@ export default function ModelForm() {
 
     // Flatten the rest of the form fields into a JSON string
     const otherData = {
-      productId: data.productId,
-      name: data.name,
-      isDefault: data.isDefault,
-      autoRotate: data.autoRotate,
-      RotationSpeed: data.RotationSpeed,
-      shadow: data.shadow,
+      productId: Number(data.productId),
+      name: String(data.name),
+      isDefault: Boolean(data.isDefault),
+      autoRotate: Boolean(data.autoRotate),
+      RotationSpeed: Number(data.RotationSpeed),
+      shadow: Boolean(data.shadow),
       // Optionally you can add mash/dimensions if needed at backend
     };
 
     Object.entries(otherData).forEach(([key, value]) => {
-      formData.append(key, String(value));
+      formData.append(key, value as any);
     });
 
     try {
@@ -184,34 +189,29 @@ export default function ModelForm() {
       alert("Model and dimensions created successfully!");
       console.log(data);
 
-      const mashPayload = data.mash.map((mash: any) => ({
+      const mashPayload = data.mash.map((mash) => ({
         modelId: res.data.data.id, // Assuming `modelId` is returned from the model upload response
-        name: mash.name,
-        mashName: mash.mashName,
-        fabricRanges: mash.fabricRange.map((fabric: any) => ({
+        name: mash?.name,
+        mashName: mash?.mashName,
+        fabricRanges: mash?.fabricRange.map((fabric: any) => ({
           fabricRangeId:
             fabric.fabricRageID == "" ? undefined : Number(fabric.fabricRageID), // Assuming `fabricRageID` is used
         })),
-        mashVariant: mash.mashVariants.map((variant: any) => ({
-          name: variant.name,
-          mash: [
-            {
-              thumbnailUrl: variant.thumbnailUrl,
-              fabricRange: mash.fabricRange.map((fabric: any) => ({
-                fabricRangeId:
-                  fabric.fabricRageID == ""
-                    ? undefined
-                    : Number(fabric.fabricRageID), // Assuming `fabricRageID` is used
-              })),
-              itOptional: variant.itOptional,
-              mashName: mash.mashName,
-              name: mash.name,
-              textureEnable: variant.textureEnable,
-            },
-          ],
-        })),
-        url: mash.url,
-        thumbnailUrl: mash.thumbnailUrl,
+        mashVariant: mash?.mashVariants?.name != "" && {
+          name: mash?.mashVariants?.name,
+          mash: mash!.mashVariants!.mash!.map((v) => ({
+            thumbnailUrl: v.thumbnailUrl,
+            url: v.url,
+            itOptional: v.itOptional,
+            mashName: mash?.mashName,
+            name: v.name,
+            textureEnable: v.textureEnable,
+          })),
+        },
+        url: mash?.url,
+        thumbnailUrl: mash?.thumbnailUrl,
+        textureEnable: mash?.textureEnable,
+        itOptional: mash?.itOptional,
       }));
 
       mashPayload.forEach(async (mash) => {
@@ -405,7 +405,10 @@ export default function ModelForm() {
                 itOptional: false,
                 textureEnable: false,
                 fabricRange: [{ fabricRageID: "" }],
-                mashVariants: [],
+                mashVariants: {
+                  name: "",
+                  mash: [],
+                },
               });
             });
           else alert("Model is required");

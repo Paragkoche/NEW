@@ -27,6 +27,8 @@ interface ConfigType {
 
   setPdfText: Dispatch<SetStateAction<string | null>>;
   pdfText: string | null;
+  setImageBank: Dispatch<SetStateAction<string | null>>;
+  ImageBank: string | null;
 
   selectedModel: Model | null;
   changeSelectedModel: Dispatch<SetStateAction<Model | null>>;
@@ -57,6 +59,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
   const [Models, setModel] = useState<Model[] | null>(null);
 
   const [pdfText, setPdfText] = useState<string | null>(null);
+  const [imageBank, setImageBank] = useState<string | null>(null);
   const [selectedModel, changeSelectedModel] = useState<Model | null>(null);
 
   const [selectedVariants, changeSelectedVariants] = useState<Mash | null>(
@@ -97,6 +100,8 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
     canvasRef,
     pdfText,
     setPdfText,
+    ImageBank: imageBank,
+    setImageBank,
   };
 
   return <ConfigCtx.Provider value={value}>{children}</ConfigCtx.Provider>;

@@ -29,6 +29,13 @@ export class ModelService {
     }
     const newProduct = this.ModelRepo.create({
       ...data,
+      isDefault:
+        typeof data.isDefault == 'string'
+          ? data.isDefault === 'true'
+          : data.isDefault,
+      shadow:
+        typeof data.shadow == 'string' ? data.shadow === 'true' : data.shadow,
+
       url: url,
       product: {
         id: product.id,
@@ -61,7 +68,9 @@ export class ModelService {
         dimensions: true,
 
         mash: {
-          mashVariants: true,
+          mashVariants: {
+            mash: true,
+          },
           fabricRange: {
             fabric: true,
           },

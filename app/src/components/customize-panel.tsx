@@ -139,7 +139,7 @@ const CustomizePanel = () => {
             animate={{ x: 0, opacity: 1 }}
             whileHover={{ scale: 1.1 }}
             transition={{ type: "spring", stiffness: 200 }}
-            className="bg-red-600/60 h-[55px] w-[55px] fixed right-0 top-1/2 transform -translate-y-1/2 cursor-pointer flex justify-center items-center text-white rounded-l-3xl z-50"
+            className="bg-red-600/60 h-[55px] w-auto px-3.5 fixed right-0 top-1/2 transform -translate-y-1/2 cursor-pointer flex justify-center items-center text-white rounded-l-3xl z-50 select-none"
             onClick={togglePanel}
           >
             customization

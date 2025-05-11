@@ -117,8 +117,8 @@ const ModelView = ({ model }: { model: ModelType }) => {
 
   return (
     <Stage
-      intensity={0.05}
-      environment="studio"
+      intensity={0.3} // soft light
+      environment="apartment"
       adjustCamera={false}
       shadows={{
         type: "accumulative",
@@ -182,6 +182,7 @@ const ViewThreeD = (pops: Product) => {
     showDimensions,
     canvasRef,
     setPdfText,
+    setImageBank,
   } = useConfig();
 
   useEffect(() => {
@@ -192,6 +193,7 @@ const ViewThreeD = (pops: Product) => {
       });
 
       setPdfText(pops.pdfText);
+      setImageBank(pops.imageBank);
     }
   }, [pops]);
 
@@ -207,11 +209,11 @@ const ViewThreeD = (pops: Product) => {
         >
           <Suspense fallback={<Loader />}>
             <color attach="background" args={["#FFFFFF"]} />
-            <ambientLight intensity={0.0} color={"#FFFFFF"} />
+            <ambientLight intensity={0.05} color={"#000"} />
             <directionalLight
               castShadow
               position={[10, 5, 10]}
-              intensity={1}
+              intensity={0.005}
               color={"#FFFDE0"}
             />
 

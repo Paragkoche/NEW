@@ -17,7 +17,7 @@ const mashFrom = (props: {
     remove: removeVariant,
   } = useFieldArray({
     control: props.control,
-    name: `mash.${props.i}.mashVariants`,
+    name: `mash.${props.i}.mashVariants.mash`,
   });
   const {
     fields: fabricFields,
@@ -41,14 +41,14 @@ const mashFrom = (props: {
         {...props.register(`mash.${props.i}.mashName`)}
         className="input input-bordered w-full"
       />
-      <label className="text-sm">model</label>
+      {/* <label className="text-sm">model</label>
       <input
         type="file"
         className="file-input file-input-bordered w-full"
         onChange={(e) =>
           props.handleFileUpload(e.target.files?.[0]!, `mash.${props.i}.url`)
         }
-      />
+      /> */}
       <label className="text-sm">thumbnail</label>
 
       <input
@@ -124,10 +124,20 @@ const mashFrom = (props: {
       )}
       <br />
 
+      {props.watch(`mash.${props.i}.mashVariants.mash`).length != 0 && (
+        <>
+          <label> Mash Variants Name</label>
+          <input
+            {...props.register(`mash.${props.i}.mashVariants.name`)}
+            className="input input-bordered w-full"
+          />
+        </>
+      )}
       {variantFields.map((variant, k) => (
         <div key={variant.id} className="border p-2 rounded bg-white">
+          <label>Name</label>
           <input
-            {...props.register(`mash.${props.i}.mashVariants.${k}.name`)}
+            {...props.register(`mash.${props.i}.mashVariants.mash.${k}.name`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">model</label>
@@ -135,10 +145,11 @@ const mashFrom = (props: {
           <input
             type="file"
             className="file-input file-input-bordered w-full"
+            required
             onChange={(e) =>
               props.handleFileUpload(
                 e.target.files?.[0]!,
-                `mash.${props.i}.mashVariants.${k}.url`
+                `mash.${props.i}.mashVariants.mash.${k}.url`
               )
             }
           />
@@ -147,10 +158,11 @@ const mashFrom = (props: {
           <input
             type="file"
             className="file-input file-input-bordered w-full"
+            required
             onChange={(e) =>
               props.handleFileUpload(
                 e.target.files?.[0]!,
-                `mash.${props.i}.mashVariants.${k}.thumbnailUrl`
+                `mash.${props.i}.mashVariants.mash.${k}.thumbnailUrl`
               )
             }
           />
@@ -158,7 +170,7 @@ const mashFrom = (props: {
             <input
               type="checkbox"
               {...props.register(
-                `mash.${props.i}.mashVariants.${k}.itOptional`
+                `mash.${props.i}.mashVariants.mash.${k}.itOptional`
               )}
             />
             <span>Optional</span>
@@ -167,7 +179,7 @@ const mashFrom = (props: {
             <input
               type="checkbox"
               {...props.register(
-                `mash.${props.i}.mashVariants.${k}.textureEnable`
+                `mash.${props.i}.mashVariants.mash.${k}.textureEnable`
               )}
             />
             <span>Texture Enabled</span>

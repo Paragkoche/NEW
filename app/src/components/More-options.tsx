@@ -15,6 +15,7 @@ const MoreOptions = () => {
     canvasRef,
     selectedModel,
     pdfText,
+    ImageBank,
   } = useConfig();
   const togglePopup = () => {
     setIsOpen(!isOpen);
@@ -53,14 +54,12 @@ const MoreOptions = () => {
   };
 
   const downloadSavedImages = () => {
-    savedImageUrls.forEach((url, index) => {
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `saved-image-${index + 1}.png`; // You can customize the extension/filename
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
+    const link = document.createElement("a");
+    link.href = ImageBank || "";
+    link.download = `saved-image.${ImageBank?.split(".").at(-1)}`; // You can customize the extension/filename
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
   const generatePDF = () => {
     const doc = new jsPDF();

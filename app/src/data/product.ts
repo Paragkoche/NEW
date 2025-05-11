@@ -61,7 +61,7 @@ export const fabricRage: FabricRage[] = [
 export const product: ProductType = {
   id: 1,
   name: "Queen Arm Chair",
-
+  imageBank: "",
   pdfText: `
   Dimensions:
 Height                   : 1130 mm
@@ -235,7 +235,7 @@ Available in Fabric/Leatherette (Leather available on specific request at extra 
 export const product2: ProductType = {
   id: 2,
   name: "Nora MB",
-
+  imageBank: "",
   pdfText: `Chair name: Nora MB
 Dimensions:
 Height                   : 880 mm
