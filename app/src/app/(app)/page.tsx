@@ -17,30 +17,18 @@ const Page = () => {
     fetchData();
   }, []);
 
-  // Split into 4 columns
-  const columns: Array<[ProductType?]> = [[], [], [], []];
-  data.data.forEach((model, idx) => {
-    columns[idx % 4].push(model);
-  });
-
   return (
     <main className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
-      {columns.map((column, colIdx) => (
-        <div key={colIdx} className="grid gap-4">
-          {column.map(
-            (model, i) =>
-              model && (
-                <Card
-                  key={model.id}
-                  name={model.name}
-                  id={model.id}
-                  imageUrl={`${API_BASE_URL}${model.thumbnailUrl}`}
-                />
-              )
-          )}
-        </div>
+      {data.data.map((model) => (
+        <Card
+          key={model.id}
+          name={model.name}
+          id={model.id}
+          imageUrl={`${API_BASE_URL}${model.thumbnailUrl}`}
+        />
       ))}
     </main>
   );
 };
+
 export default Page;

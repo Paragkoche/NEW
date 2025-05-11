@@ -14,6 +14,7 @@ import * as THREE from "three";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 import MashFrom from "./_components/mashFrom";
 import { log } from "console";
+import { ModelViewer } from "../_components/add_dimensions";
 const fileSchema = z
   .any()
   .refine((file) => file instanceof File && file.size > 0, {
@@ -147,6 +148,7 @@ export default function ModelForm() {
       autoRotate: Boolean(data.autoRotate),
       RotationSpeed: Number(data.RotationSpeed),
       shadow: Boolean(data.shadow),
+      imageBank: String(data.imageBank),
       // Optionally you can add mash/dimensions if needed at backend
     };
 
@@ -418,6 +420,13 @@ export default function ModelForm() {
         Get All Mash in Model
       </button>
 
+      {modelFile && (
+        <ModelViewer
+          modelUrl={URL.createObjectURL(modelFile)}
+          dimension={watch("dimensions")}
+        />
+      )}
+
       {dimensionFields.map((dim, i) => (
         <div key={dim.id} className="grid grid-cols-2 gap-2">
           <label className="text-sm">Label</label>
@@ -428,36 +437,48 @@ export default function ModelForm() {
           <label className="text-sm">X</label>
           <input
             type="number"
+            min={-0.001}
+            max={5}
             {...register(`dimensions.${i}.x`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">Y</label>
           <input
             type="number"
+            min={-0.001}
+            max={5}
             {...register(`dimensions.${i}.y`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">Z</label>
           <input
             type="number"
+            min={-0.001}
+            max={5}
             {...register(`dimensions.${i}.z`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">End X</label>
           <input
             type="number"
+            min={-0.001}
+            max={5}
             {...register(`dimensions.${i}.end_x`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">End Y</label>
           <input
             type="number"
+            min={-0.001}
+            max={5}
             {...register(`dimensions.${i}.end_y`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">End Z</label>
           <input
             type="number"
+            min={-0.001}
+            max={5}
             {...register(`dimensions.${i}.end_z`)}
             className="input input-bordered w-full"
           />

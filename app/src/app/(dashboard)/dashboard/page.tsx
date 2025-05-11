@@ -23,7 +23,7 @@ const Page = () => {
   }
 
   return (
-    <main className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-3">
+    <main className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-3">
       {data.map((v: any, i: number) => (
         <Card
           name={v.name}

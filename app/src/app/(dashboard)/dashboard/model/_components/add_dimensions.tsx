@@ -24,7 +24,7 @@ function Model({ glbUrl }: { glbUrl: string }) {
   return <primitive object={scene} scale={0.05} />;
 }
 
-function ModelViewer({
+export function ModelViewer({
   modelUrl,
   dimension,
 }: {
