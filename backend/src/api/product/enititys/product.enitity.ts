@@ -15,6 +15,6 @@ export class Product {
   @Column()
   pdfText: string;
 
-  @OneToMany(() => Model, (model) => model.product)
+  @OneToMany(() => Model, (model) => model.product, { onDelete: 'CASCADE' })
   model: Model[];
 }

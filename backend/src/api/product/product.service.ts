@@ -63,6 +63,8 @@ export class ProductService {
     data: Partial<AddProductDto>,
     fileUrl?: string,
   ) {
+    console.log(data, fileUrl);
+
     const product = await this.ProductRepo.findOne({
       where: {
         id,

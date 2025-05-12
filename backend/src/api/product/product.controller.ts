@@ -8,6 +8,7 @@ import {
   Param,
   ParseFilePipe,
   Post,
+  Put,
   UnprocessableEntityException,
   UploadedFile,
   UploadedFiles,
@@ -103,8 +104,10 @@ export class ProductController {
 
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
-  @Post('update-product/:id')
+  @Put('update-product/:id')
   updateProduct(@Param('id') id: string, @Body() data: Partial<AddProductDto>) {
+    console.log(data);
+
     return this.productService.updateProduct(Number(id), data);
   }
 

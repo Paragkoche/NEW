@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
+import { useAuth } from "@/app/(dashboard)/_ctx/auth.ctx";
 
 const API_URL = process.env.NEXT_PUBLIC_API;
 
@@ -29,7 +30,7 @@ const UpdateProduct = forwardRef(
     } = useForm<FormDataType>({
       resolver: zodResolver(schema),
     });
-
+    const { token } = useAuth();
     useEffect(() => {
       // Fetch product data to prefill form
       const fetchData = async () => {
@@ -42,9 +43,10 @@ const UpdateProduct = forwardRef(
           setValue(
             "pdfFile",
             (product.pdfText as string).replace(/\\n/g, "\n")
+            //   toast.error("Failed to load product data.");
           ); // Assuming it's a text field in the DB
         } catch (error) {
-          toast.error("Failed to load product data.");
+          //   toast.error("Failed to load product data.");
           console.error(error);
         }
       };
@@ -62,15 +64,11 @@ const UpdateProduct = forwardRef(
           formData.append("thumbnail", data.thumbnail[0]);
         }
 
-        await axios.put(
-          `${API_URL}/product/update-product/${props.id}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        await axios.put(`${API_URL}/product/update-product/${props.id}`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         toast.success("Product updated successfully!");
         window.location.reload();

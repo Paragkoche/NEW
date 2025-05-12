@@ -41,6 +41,6 @@ export class Model {
   @OneToMany(() => Dimensions, (dimensions) => dimensions.model)
   dimensions: Dimensions[];
 
-  @ManyToOne(() => Product, (product) => product.model)
+  @ManyToOne(() => Product, (product) => product.model, { onDelete: 'CASCADE' })
   product: Product;
 }

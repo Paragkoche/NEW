@@ -36,9 +36,9 @@ export class Mash {
   @ManyToMany(() => FabricRage, (fr) => fr.mash)
   fabricRange: FabricRage[];
 
-  @ManyToOne(() => Model, (model) => model.mash)
+  @ManyToOne(() => Model, (model) => model.mash, { onDelete: 'CASCADE' })
   model: Model;
 
-  @ManyToOne(() => MashVariants, (mv) => mv.mash)
+  @ManyToOne(() => MashVariants, (mv) => mv.mash, { onDelete: 'CASCADE' })
   mashVariants: MashVariants;
 }
