@@ -258,7 +258,7 @@ const CustomizePanel = () => {
                     mash.mashVariants?.mash?.length ? (
                       <div key={mash.id} className="mb-6">
                         <label className="text-white text-sm font-medium mb-2 block">
-                          {mash.name} Variant:
+                          {mash.mashVariants.name} Variant:
                         </label>
                         <CustomSelectWithImages
                           options={mash.mashVariants.mash}

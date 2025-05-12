@@ -1,18 +1,28 @@
 "use client";
-import { getAllProduct } from "@/api";
+import { deleteFabricRageById, deleteProductById, getAllProduct } from "@/api";
 import { Product } from "@/types/type";
-import { Edit2, Plus } from "lucide-react";
+import { Edit2, Plus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import AddProduct from "./_components/add_product";
+import { useAuth } from "../../_ctx/auth.ctx";
+import ConformBox from "../fabric/_components/conform";
+import UpdateProduct from "./_components/update_product";
 
 const page = () => {
   const [Product, setProduct] = useState<Product[]>([]);
   const addProductRef = useRef<HTMLDialogElement>(null);
+  const UpdateFabricRangeRef = useRef<HTMLDialogElement>(null);
+  const deleteFabricRangeRef = useRef<HTMLDialogElement>(null);
+  const [fabricRangeEditId, setFabricRangeEditId] = useState<number>(0);
+  const [fabricRangeDeleteFun, setFabricRangeDeleteFun] = useState<
+    (() => void) | null
+  >(null);
   useEffect(() => {
     getAllProduct().then((data) => {
       setProduct(data.data);
     });
   }, []);
+  const { token } = useAuth();
   return (
     <div className="card  bg-base-100 shadow-sm">
       <div className="card-body">
@@ -47,10 +57,48 @@ const page = () => {
                   <td>{v.name}</td>
                   <td>{v.pdfText.slice(0, 100)}...</td>
                   <th>
-                    <button className="btn">
-                      <Edit2 size={16} />
-                      Update
-                    </button>
+                    <div>
+                      <button
+                        className="btn"
+                        onClick={() => {
+                          setFabricRangeEditId(v.id);
+                          if (UpdateFabricRangeRef.current)
+                            UpdateFabricRangeRef.current.showModal();
+                          console.log(v.id);
+                        }}
+                      >
+                        <Edit2 size={16} />
+                        Update
+                      </button>
+                      <button
+                        className="btn btn-sm btn-error"
+                        onClick={() => {
+                          setFabricRangeDeleteFun(() => async () => {
+                            try {
+                              if (!token) {
+                                throw new Error("token not found");
+                              }
+                              // Call your API to update the fabric range
+
+                              await deleteProductById(token, v.id);
+                              window.location.reload();
+                              // Close dialog after successful update
+                              (
+                                deleteFabricRangeRef as React.RefObject<HTMLDialogElement>
+                              )?.current?.close();
+                            } catch (error) {
+                              console.error("Failed to delete Product:", error);
+                            }
+                          });
+                          if (deleteFabricRangeRef.current) {
+                            deleteFabricRangeRef.current.showModal();
+                          }
+                        }}
+                      >
+                        <Trash2 size={16} />
+                        Delete
+                      </button>
+                    </div>
                   </th>
                 </tr>
               ))}
@@ -62,6 +110,8 @@ const page = () => {
       </div>
 
       <AddProduct ref={addProductRef} />
+      <ConformBox ref={deleteFabricRangeRef} okFun={fabricRangeDeleteFun!} />
+      <UpdateProduct ref={UpdateFabricRangeRef} id={fabricRangeEditId} />
     </div>
   );
 };

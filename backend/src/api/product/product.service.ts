@@ -20,6 +20,20 @@ export class ProductService {
   async getAllProduct() {
     return await this.ProductRepo.find({});
   }
+
+  async getProductById(id: number) {
+    const product = await this.ProductRepo.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    return product;
+  }
   async createPost(data: AddProductDto, fileUrl?: string) {
     console.log(data);
 
@@ -42,5 +56,44 @@ export class ProductService {
     });
     const product = await this.ProductRepo.save(newProduct);
     return product;
+  }
+
+  async updateProduct(
+    id: number,
+    data: Partial<AddProductDto>,
+    fileUrl?: string,
+  ) {
+    const product = await this.ProductRepo.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    const updatedProduct = {
+      ...product,
+      ...data,
+      thumbnailUrl: fileUrl || product.thumbnailUrl,
+    };
+
+    return this.ProductRepo.save(updatedProduct);
+  }
+
+  async deleteFun(id: number) {
+    const data = await this.ProductRepo.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!data) {
+      throw new NotFoundException('Product not fount');
+    }
+
+    return this.ProductRepo.delete({
+      id: data.id,
+    });
   }
 }

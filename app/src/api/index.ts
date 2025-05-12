@@ -67,3 +67,10 @@ export const deleteFabricRageById = async (token: string, id: number) =>
 
 export const getAllModel = async () =>
   await client.get<Model[]>("/product/model/get-all-model");
+
+export const deleteProductById = async (token: string, id: number) =>
+  await client.delete<undefined>(`/product/delete-product/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });

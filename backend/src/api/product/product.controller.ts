@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   FileTypeValidator,
   Get,
   MaxFileSizeValidator,
@@ -34,6 +35,10 @@ export class ProductController {
   @Get('get-all')
   getAllProduct() {
     return this.productService.getAllProduct();
+  }
+  @Get('get-product/:id')
+  getProduct(@Param('id') id: number) {
+    return this.productService.getProductById(id);
   }
 
   @UseGuards(AuthGuard)
@@ -94,5 +99,19 @@ export class ProductController {
     file: Express.Multer.File,
   ) {
     return `/static/upload/${file.filename}`;
+  }
+
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @Post('update-product/:id')
+  updateProduct(@Param('id') id: string, @Body() data: Partial<AddProductDto>) {
+    return this.productService.updateProduct(Number(id), data);
+  }
+
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @Delete('delete-product/:id')
+  deleteProduct(@Param('id') id: string) {
+    return this.productService.deleteFun(Number(id));
   }
 }
