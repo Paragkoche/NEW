@@ -72,7 +72,6 @@ const page = () => {
                         className="btn btn-sm"
                         onClick={() => {
                           setFabricRangeEditId(v.id);
-                          setFabricRangeEditHeader("Product");
                           if (UpdateFabricRangeRef.current)
                             UpdateFabricRangeRef.current.showModal();
                           console.log(v.id);
@@ -83,6 +82,8 @@ const page = () => {
                       <button
                         className="btn btn-sm btn-error"
                         onClick={() => {
+                          setFabricRangeEditHeader("Product");
+
                           setFabricRangeDeleteFun(() => async () => {
                             try {
                               if (!token) {

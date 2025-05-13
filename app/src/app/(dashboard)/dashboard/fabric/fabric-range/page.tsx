@@ -78,6 +78,8 @@ const page = () => {
                       <button
                         className="btn btn-sm btn-error"
                         onClick={() => {
+                          setFabricRangeEditHeader("Fabric range");
+
                           setFabricRangeDeleteFun(() => async () => {
                             try {
                               if (!token) {

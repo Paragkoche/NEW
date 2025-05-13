@@ -124,12 +124,12 @@ export class FabricController {
     return this.fabricService.deleteFabric(id);
   }
 
-  @Get('/get-all-fabric')
+  @Get('get-all-fabric')
   getAllFabric() {
     return this.fabricService.getAllFabric();
   }
 
-  @Get('/get-fabric-id/:id')
+  @Get('get-fabric-id/:id')
   getFabricById(@Param('id') id: number) {
     return this.fabricService.getFabricById(id);
   }

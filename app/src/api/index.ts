@@ -32,7 +32,7 @@ export const PostFabricRage = async (
 };
 
 export const getFabricById = async (id: number) =>
-  await client.get<Fabric>("/product/fabric-rage/get-fabric-id/" + id);
+  await client.get<Fabric>("/product/fabric/get-fabric-id/" + id);
 
 export const getFabricRageById = async (id: number) =>
   await client.get<FabricRage>("/product/fabric/get-fabric-by-id/" + id);
@@ -57,6 +57,16 @@ export const updateFabricRageById = async (
 export const deleteFabricRageById = async (token: string, id: number) =>
   await client.delete<undefined>(
     "/product/fabric-rage/delete-fabric-by-id/" + id,
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+export const deleteFabricById = async (token: string, id: number) =>
+  await client.delete<undefined>(
+    "/product/fabric/delete-fabric/" + id,
 
     {
       headers: {

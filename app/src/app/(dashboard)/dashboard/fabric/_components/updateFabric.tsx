@@ -53,6 +53,8 @@ const UpdateFabric = forwardRef(
     });
     useEffect(() => {
       getFabricById(props.id).then(({ data }) => {
+        console.log(data);
+
         setFabricRange(data);
         setValue("id", data.id);
         setValue("name", data.name); // Reset form values after data is fetched
@@ -160,63 +162,51 @@ const UpdateFabric = forwardRef(
               )}
             </div>
 
-            {fields.map((field, index) => (
-              <div key={field.id} className="space-y-4">
-                <div>
-                  <label className="label">Name</label>
-                  <input
-                    type="text"
-                    className="input input-bordered w-full"
-                    {...register(`name`)}
-                  />
-                  {errors.name && (
-                    <p className="text-red-400">{errors.name.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="label">Size</label>
-                  <input
-                    type="number"
-                    className="input input-bordered w-full"
-                    {...register(`size`)}
-                  />
-                  {errors.size && (
-                    <p className="text-red-400">{errors.size.message}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="label">Thumbnail</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="file-input file-input-bordered w-full"
-                    {...register(`thumbnail`)}
-                  />
-                </div>
-
-                <div>
-                  <label className="label">Fabric Files</label>
-                  <input
-                    type="file"
-                    className="file-input file-input-bordered w-full"
-                    multiple
-                    {...register(`fabric`)}
-                  />
-                </div>
-
-                <div className="flex justify-between">
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-error"
-                    onClick={() => remove(index)}
-                  >
-                    Remove Fabric
-                  </button>
-                </div>
+            <div className="space-y-4">
+              <div>
+                <label className="label">Name</label>
+                <input
+                  type="text"
+                  className="input input-bordered w-full"
+                  {...register(`name`)}
+                />
+                {errors.name && (
+                  <p className="text-red-400">{errors.name.message}</p>
+                )}
               </div>
-            ))}
+
+              <div>
+                <label className="label">Size</label>
+                <input
+                  type="number"
+                  className="input input-bordered w-full"
+                  {...register(`size`)}
+                />
+                {errors.size && (
+                  <p className="text-red-400">{errors.size.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="label">Thumbnail</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="file-input file-input-bordered w-full"
+                  {...register(`thumbnail`)}
+                />
+              </div>
+
+              <div>
+                <label className="label">Fabric Files</label>
+                <input
+                  type="file"
+                  className="file-input file-input-bordered w-full"
+                  multiple
+                  {...register(`fabric`)}
+                />
+              </div>
+            </div>
 
             <div className="modal-action">
               <button

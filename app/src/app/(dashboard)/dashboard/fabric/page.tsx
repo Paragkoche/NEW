@@ -2,10 +2,11 @@
 import { Edit2, Plus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import AddFabric from "./_components/addFabric";
-import { getAllFabric } from "@/api";
+import { deleteFabricById, getAllFabric } from "@/api";
 import { Fabric } from "@/types/type";
 import UpdateFabric from "./_components/updateFabric";
 import ConformBox from "./_components/conform";
+import { useAuth } from "../../_ctx/auth.ctx";
 const API_URL = process.env.NEXT_PUBLIC_API;
 const page = () => {
   const addFabricRef = useRef<HTMLDialogElement>(null);
@@ -18,6 +19,7 @@ const page = () => {
   const [fabricDeleteFun, setFabricDeleteFun] = useState<(() => void) | null>(
     null
   );
+  const { token } = useAuth();
   useEffect(() => {
     getAllFabric().then((data) => {
       setFabric(data.data);
@@ -79,14 +81,43 @@ const page = () => {
                         className="btn  btn-sm"
                         onClick={() => {
                           setFabricEditId(v.id);
-                          setFabricRangeEditHeader("Fabric");
+
                           if (UpdateFabricRef.current)
                             UpdateFabricRef.current.showModal();
                         }}
                       >
                         <Edit2 size={16} />
                       </button>
-                      <button className="btn  btn-sm btn-error">
+                      <button
+                        className="btn  btn-sm btn-error"
+                        onClick={() => {
+                          setFabricRangeEditHeader("Fabric");
+
+                          setFabricDeleteFun(() => async () => {
+                            try {
+                              if (!token) {
+                                throw new Error("token not found");
+                              }
+                              // Call your API to update the fabric range
+
+                              await deleteFabricById(token, v.id);
+                              window.location.reload();
+                              // Close dialog after successful update
+                              (
+                                deleteFabricRef as React.RefObject<HTMLDialogElement>
+                              )?.current?.close();
+                            } catch (error) {
+                              console.error(
+                                "Failed to update fabric range:",
+                                error
+                              );
+                            }
+                          });
+                          if (deleteFabricRef.current) {
+                            deleteFabricRef.current.showModal();
+                          }
+                        }}
+                      >
                         <Trash2 size={16} />
                       </button>
                     </div>
