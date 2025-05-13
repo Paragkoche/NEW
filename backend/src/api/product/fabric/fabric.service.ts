@@ -61,11 +61,13 @@ export class FabricService {
     if (!FRdata) {
       throw new NotFoundException('fabric range not fount');
     }
+    console.log(FRdata);
+
     data.thumbnailUrl = thumbnail ? thumbnail : data.thumbnailUrl;
     data.url = fabric ? fabric : data.url;
     data.name = body.name ? body.name : data.name;
     data.size = body.size ? body.size : data.size;
-    data.fabricRage.id = FRdata.id;
+    data.fabricRage = FRdata;
     return this.FabricRepo.save(data);
   }
 

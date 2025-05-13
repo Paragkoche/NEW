@@ -118,7 +118,7 @@ const UpdateFabric = forwardRef(
 
         toast.success("All fabrics created successfully!");
         reset();
-        window.location.reload();
+        // window.location.reload();
         (ref as React.RefObject<HTMLDialogElement>)?.current?.close();
       } catch (error) {
         toast.error("Something went wrong while creating fabrics.");
