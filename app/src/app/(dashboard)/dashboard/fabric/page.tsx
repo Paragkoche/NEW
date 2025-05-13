@@ -12,7 +12,8 @@ const page = () => {
   const [fabric, setFabric] = useState<Fabric[]>([]);
   const UpdateFabricRef = useRef<HTMLDialogElement>(null);
   const deleteFabricRef = useRef<HTMLDialogElement>(null);
-
+  const [fabricRangeEditHeader, setFabricRangeEditHeader] =
+    useState<string>("");
   const [fabricEditId, setFabricEditId] = useState<number>(0);
   const [fabricDeleteFun, setFabricDeleteFun] = useState<(() => void) | null>(
     null
@@ -78,14 +79,15 @@ const page = () => {
                         className="btn  btn-sm"
                         onClick={() => {
                           setFabricEditId(v.id);
+                          setFabricRangeEditHeader("Fabric");
                           if (UpdateFabricRef.current)
                             UpdateFabricRef.current.showModal();
                         }}
                       >
-                        <Edit2 size={16} /> update
+                        <Edit2 size={16} />
                       </button>
                       <button className="btn  btn-sm btn-error">
-                        <Trash2 size={16} /> delete
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </td>
@@ -99,7 +101,11 @@ const page = () => {
 
       <AddFabric ref={addFabricRef} />
       <UpdateFabric id={fabricEditId} ref={UpdateFabricRef} />
-      <ConformBox okFun={fabricDeleteFun!} ref={deleteFabricRef} />
+      <ConformBox
+        okFun={fabricDeleteFun!}
+        ref={deleteFabricRef}
+        text={fabricRangeEditHeader}
+      />
     </div>
   );
 };

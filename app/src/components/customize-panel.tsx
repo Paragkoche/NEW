@@ -143,7 +143,7 @@ const CustomizePanel = () => {
             className="bg-red-600/60  h-[150px] w-[50px] px-3.5 fixed right-0 top-1/2 transform -translate-y-1/2 cursor-pointer flex justify-center items-center text-white rounded-l-3xl z-50 select-none"
             onClick={togglePanel}
           >
-            <span className="rotate-90">customization</span>
+            <span className="-rotate-90">customization</span>
           </motion.div>
         )}
 
@@ -253,8 +253,8 @@ const CustomizePanel = () => {
                   </div>
                 )} */}
 
-                {Models.map((model) =>
-                  model.mash.map((mash) =>
+                {selectedModel &&
+                  selectedModel.mash.map((mash) =>
                     mash.mashVariants?.mash?.length ? (
                       <div key={mash.id} className="mb-6">
                         <label className="text-white text-sm font-medium mb-2 block">
@@ -279,87 +279,89 @@ const CustomizePanel = () => {
                         />
                       </div>
                     ) : null
-                  )
-                )}
+                  )}
 
                 {/* Fabric Selection by FabricRage */}
-                {selectedModel && selectedModel?.mash?.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="text-white text-sm font-medium mb-2">
-                      Fabrics
-                    </h3>
-                    {selectedModel.mash.map((mesh) =>
-                      mesh.textureEnable && mesh.fabricRange.length > 0 ? (
-                        <div key={mesh.id} className="mb-5">
-                          <h4 className="text-white mb-1">{mesh.name}</h4>
+                {selectedModel &&
+                  selectedModel?.mash?.length > 0 &&
+                  selectedModel.mash.filter((v) => v.fabricRange.length > 0)
+                    .length !== 0 && (
+                    <div className="mb-6">
+                      <h3 className="text-white text-sm font-medium mb-2">
+                        Fabrics
+                      </h3>
+                      {selectedModel.mash.map((mesh) =>
+                        mesh.textureEnable && mesh.fabricRange.length > 0 ? (
+                          <div key={mesh.id} className="mb-5">
+                            <h4 className="text-white mb-1">{mesh.name}</h4>
 
-                          {/* Select Fabric Rage */}
-                          <select
-                            className="w-full p-2 rounded bg-white text-black mb-2"
-                            value={fabricRageMap[mesh.id]?.id || ""}
-                            onChange={(e) => {
-                              const rage = mesh.fabricRange.find(
-                                (r) => r.id === parseInt(e.target.value)
-                              );
-                              setFabricRageForVariant(mesh.id, rage || null);
-                              // Optionally reset selected fabric when rage changes
-                              changeSelectedFabrics((prev) => ({
-                                ...prev,
-                                [mesh.mashName]: {} as Fabric,
-                              }));
-                            }}
-                          >
-                            <option value="">Select Fabric Range</option>
-                            {mesh.fabricRange.map((rage) => (
-                              <option key={rage.id} value={rage.id}>
-                                {rage.name}
-                              </option>
-                            ))}
-                          </select>
-
-                          {/* Select Fabric from Selected Rage */}
-                          {fabricRageMap[mesh.id] && (
-                            <CustomSelectWithImages
-                              options={fabricRageMap[mesh.id]?.fabric}
-                              size={32}
-                              value={
-                                selectedFabrics[mesh.mashName]?.id
-                                  ? fabricRageMap[mesh.id]?.fabric.find(
-                                      (f) =>
-                                        f.id ===
-                                        selectedFabrics[mesh.mashName]?.id
-                                    )
-                                  : null
-                              }
-                              onChange={(selected: Fabric) => {
+                            {/* Select Fabric Rage */}
+                            <select
+                              className="w-full p-2 rounded bg-white text-black mb-2"
+                              value={fabricRageMap[mesh.id]?.id || ""}
+                              onChange={(e) => {
+                                const rage = mesh.fabricRange.find(
+                                  (r) => r.id === parseInt(e.target.value)
+                                );
+                                setFabricRageForVariant(mesh.id, rage || null);
+                                // Optionally reset selected fabric when rage changes
                                 changeSelectedFabrics((prev) => ({
                                   ...prev,
-                                  [mesh.mashName]: selected,
+                                  [mesh.mashName]: {} as Fabric,
                                 }));
                               }}
-                            />
-                          )}
-
-                          {/* Reset Fabric */}
-                          {selectedFabrics[mesh.name] && (
-                            <button
-                              onClick={() => {
-                                changeSelectedFabrics((prev) => ({
-                                  ...prev,
-                                  [mesh.name]: {} as Fabric,
-                                }));
-                                setFabricRageForVariant(mesh.id, null);
-                              }}
-                              className="mt-2 text-white text-xs px-2 py-1 border border-white rounded hover:bg-white hover:text-black"
                             >
-                              Reset Fabric
-                            </button>
-                          )}
-                        </div>
-                      ) : null
-                    )}
-                  </div>
-                )}
+                              <option value="">Select Fabric Range</option>
+                              {mesh.fabricRange.map((rage) => (
+                                <option key={rage.id} value={rage.id}>
+                                  {rage.name}
+                                </option>
+                              ))}
+                            </select>
+
+                            {/* Select Fabric from Selected Rage */}
+                            {fabricRageMap[mesh.id] && (
+                              <CustomSelectWithImages
+                                options={fabricRageMap[mesh.id]?.fabric}
+                                size={32}
+                                value={
+                                  selectedFabrics[mesh.mashName]?.id
+                                    ? fabricRageMap[mesh.id]?.fabric.find(
+                                        (f) =>
+                                          f.id ===
+                                          selectedFabrics[mesh.mashName]?.id
+                                      )
+                                    : null
+                                }
+                                onChange={(selected: Fabric) => {
+                                  changeSelectedFabrics((prev) => ({
+                                    ...prev,
+                                    [mesh.mashName]: selected,
+                                  }));
+                                }}
+                              />
+                            )}
+
+                            {/* Reset Fabric */}
+                            {selectedFabrics[mesh.name] && (
+                              <button
+                                onClick={() => {
+                                  changeSelectedFabrics((prev) => ({
+                                    ...prev,
+                                    [mesh.name]: {} as Fabric,
+                                  }));
+                                  setFabricRageForVariant(mesh.id, null);
+                                }}
+                                className="mt-2 text-white text-xs px-2 py-1 border border-white rounded hover:bg-white hover:text-black"
+                              >
+                                Reset Fabric
+                              </button>
+                            )}
+                          </div>
+                        ) : null
+                      )}
+                    </div>
+                  )}
               </motion.div>
             </motion.div>
           )}

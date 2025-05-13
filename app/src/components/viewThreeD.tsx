@@ -18,11 +18,37 @@ import { v4 as uuidv4 } from "uuid";
 import * as THREE from "three";
 import { useConfig } from "@/context/configure-ctx";
 import { Fabric, Mash, Model as ModelType, Product } from "@/types/type";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Dimension from "./Dimension";
 import { getModelById } from "@/api";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
+
+const getExt = (url: string) =>
+  url.match(/\.([^.?#]+)(\?|#|$)/i)?.[1].toLowerCase();
+
+function useDynamicScene(url: string) {
+  const ext = useMemo(() => getExt(url), [url]);
+
+  // choose the right loader
+  const gltf = ext && (ext === "glb" || ext === "gltf") ? useGLTF(url) : null;
+  const objGrp = ext === "obj" ? useLoader(OBJLoader, url) : null;
+
+  // handy “nodes” map so Model keeps working the same way
+  const nodes = useMemo(() => {
+    if (gltf) return gltf.nodes; // GLTF already gives us nodes
+    if (!objGrp) return {};
+    const m: Record<string, THREE.Mesh> = {};
+    objGrp.traverse((c) => {
+      if (c instanceof THREE.Mesh) m[c.name] = c;
+    });
+    return m; // OBJ → build a name→mesh index
+  }, [gltf, objGrp]);
+
+  return { scene: gltf?.scene ?? objGrp, nodes };
+}
+
 const VariantMesh = ({ url }: { url: string }) => {
   const fullUrl = url.startsWith("http") ? url : `/${url}`;
 
@@ -30,16 +56,32 @@ const VariantMesh = ({ url }: { url: string }) => {
     useGLTF.clear(fullUrl);
   }, [fullUrl]);
 
-  const { scene } = useGLTF(fullUrl);
+  const { scene } = useDynamicScene(fullUrl);
 
-  return <primitive key={fullUrl} object={scene} dispose={null} />;
+  return <primitive key={fullUrl} object={scene!} dispose={null} />;
 };
 
-const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
-  const [material, setMaterial] = useState(() => node.material.clone());
+export const DefaultMesh = ({
+  node,
+  fabric,
+}: {
+  node: THREE.Mesh | any;
+  fabric?: Fabric;
+}) => {
+  const [material, setMaterial] = useState<THREE.Material>(() => {
+    if (node.material && typeof node.material.clone === "function") {
+      return node.material.clone();
+    }
+    // Fallback material if OBJ has no material or clone fails
+    return new THREE.MeshStandardMaterial({ color: "gray" });
+  });
 
   useEffect(() => {
-    const cloned = node.material.clone();
+    const baseMat =
+      node.material && typeof node.material.clone === "function"
+        ? node.material.clone()
+        : new THREE.MeshStandardMaterial({ color: "gray" });
+
     if (fabric?.url) {
       const loader = new THREE.TextureLoader();
       loader.crossOrigin = "anonymous";
@@ -47,36 +89,32 @@ const DefaultMesh = ({ node, fabric }: { node: any; fabric?: Fabric }) => {
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(fabric.size || 1, fabric.size || 1);
-        cloned.map = texture;
-        cloned.needsUpdate = true;
-        setMaterial(cloned);
+        baseMat.map = texture;
+        baseMat.needsUpdate = true;
+        setMaterial(baseMat);
       });
     } else {
-      cloned.map = null;
-      cloned.needsUpdate = true;
-      setMaterial(cloned);
+      setMaterial(baseMat);
     }
-  }, [fabric]);
+  }, [fabric, node.material]);
 
   return (
     <mesh
       key={uuidv4()}
       castShadow
-      // receiveShadow
       geometry={node.geometry}
       material={material}
       position={node.position}
       rotation={node.rotation}
       receiveShadow
-    ></mesh>
+    />
   );
 };
-
 const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
   const baseUrl = glfUrl.startsWith("http")
     ? glfUrl
     : `${API_BASE_URL}${glfUrl}`;
-  const { nodes } = useGLTF(baseUrl);
+  const { nodes } = useDynamicScene(baseUrl);
   const { selectedVariants, selectedFabrics } = useConfig();
   console.log("ss", nodes, mashData);
 
@@ -107,13 +145,6 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
 
 const ModelView = ({ model }: { model: ModelType }) => {
   const { selectedVariants, selectedFabrics } = useConfig();
-  const [rerender, setRerender] = useState(false);
-
-  // useEffect(() => {
-  //   // Whenever selectedVariants or selectedFabrics change, trigger a re-render
-  //   setRerender((prev) => !prev); // Toggle rerender state
-  // }, [selectedVariants, selectedFabrics]);
-  console.log("mash.mash", model);
 
   return (
     <Stage
@@ -128,13 +159,6 @@ const ModelView = ({ model }: { model: ModelType }) => {
       }}
       castShadow
     >
-      {/* <AccumulativeShadows
-        frames={20} // Number of frames for smoother shadows
-        temporal={false} // Temporal anti-aliasing for better smoothness
-        color="black"
-        opacity={0.5} // Adjust opacity for softer shadows
-        scale={10} // Scale of the shadows
-      /> */}
       <Suspense fallback={<Loader />}>
         <Model
           glfUrl={`${model.url}`}
@@ -192,12 +216,13 @@ const ViewThreeD = (pops: Product) => {
         setModel(data.data);
         changeSelectedModel(data.data.filter((v) => v.isDefault)[0]);
       });
-
-      setPdfText(pops.pdfText);
-      setImageBank(`${API_BASE_URL}${selectedModel?.imageBank}`!);
-      SetRotation(selectedModel?.autoRotate ?? false);
     }
   }, [pops]);
+  useEffect(() => {
+    setPdfText(pops.pdfText);
+    setImageBank(`${API_BASE_URL}${selectedModel?.imageBank}`!);
+    SetRotation(selectedModel?.autoRotate ?? false);
+  }, [selectedModel]);
 
   return (
     selectedModel && (

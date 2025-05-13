@@ -39,7 +39,7 @@ const SideBar = (props: PropsWithChildren) => {
           </li> */}
 
           <li>
-            <Link href={""}>Product</Link>
+            <Link href={""}>Fabric</Link>
             <ul>
               <li>
                 <Link href={"/dashboard/fabric"}>

@@ -13,4 +13,18 @@ export class MashController {
   createMash(@Body() data: MashCreteDTO) {
     return this.mashService.createMash(data);
   }
+
+  @ApiBearerAuth()
+  @Post('update-mash/:id')
+  @UseGuards(AuthGuard)
+  updateMash(@Body('id') id: number, @Body() data: MashCreteDTO) {
+    return this.mashService.updateMash(id, data);
+  }
+
+  @ApiBearerAuth()
+  @Post('delete-mash/:id')
+  @UseGuards(AuthGuard)
+  deleteMash(@Body('id') id: number) {
+    return this.mashService.deleteMash(id);
+  }
 }

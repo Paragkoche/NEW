@@ -7,6 +7,7 @@ import AddProduct from "./_components/add_product";
 import { useAuth } from "../../_ctx/auth.ctx";
 import ConformBox from "../fabric/_components/conform";
 import UpdateProduct from "./_components/update_product";
+const API_URL = process.env.NEXT_PUBLIC_API;
 
 const page = () => {
   const [Product, setProduct] = useState<Product[]>([]);
@@ -14,6 +15,8 @@ const page = () => {
   const UpdateFabricRangeRef = useRef<HTMLDialogElement>(null);
   const deleteFabricRangeRef = useRef<HTMLDialogElement>(null);
   const [fabricRangeEditId, setFabricRangeEditId] = useState<number>(0);
+  const [fabricRangeEditHeader, setFabricRangeEditHeader] =
+    useState<string>("");
   const [fabricRangeDeleteFun, setFabricRangeDeleteFun] = useState<
     (() => void) | null
   >(null);
@@ -55,20 +58,27 @@ const page = () => {
               {Product.map((v, i) => (
                 <tr key={i}>
                   <td>{v.name}</td>
-                  <td>{v.pdfText.slice(0, 100)}...</td>
+                  <td>
+                    <a
+                      href={`${API_URL}${v.pdfText}`}
+                      className="underline hover:text-blue-400"
+                    >
+                      PDF
+                    </a>
+                  </td>
                   <th>
-                    <div>
+                    <div className="flex gap-1.5">
                       <button
-                        className="btn"
+                        className="btn btn-sm"
                         onClick={() => {
                           setFabricRangeEditId(v.id);
+                          setFabricRangeEditHeader("Product");
                           if (UpdateFabricRangeRef.current)
                             UpdateFabricRangeRef.current.showModal();
                           console.log(v.id);
                         }}
                       >
                         <Edit2 size={16} />
-                        Update
                       </button>
                       <button
                         className="btn btn-sm btn-error"
@@ -96,7 +106,6 @@ const page = () => {
                         }}
                       >
                         <Trash2 size={16} />
-                        Delete
                       </button>
                     </div>
                   </th>
@@ -110,7 +119,11 @@ const page = () => {
       </div>
 
       <AddProduct ref={addProductRef} />
-      <ConformBox ref={deleteFabricRangeRef} okFun={fabricRangeDeleteFun!} />
+      <ConformBox
+        ref={deleteFabricRangeRef}
+        okFun={fabricRangeDeleteFun!}
+        text={fabricRangeEditHeader}
+      />
       <UpdateProduct ref={UpdateFabricRangeRef} id={fabricRangeEditId} />
     </div>
   );

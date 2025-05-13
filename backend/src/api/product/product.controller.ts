@@ -37,6 +37,7 @@ export class ProductController {
   getAllProduct() {
     return this.productService.getAllProduct();
   }
+
   @Get('get-product/:id')
   getProduct(@Param('id') id: number) {
     return this.productService.getProductById(id);
@@ -49,7 +50,7 @@ export class ProductController {
       type: 'object',
       properties: {
         name: { type: 'string' },
-        pdfText: { type: 'string' },
+        pdfText: { type: 'string', format: 'binary' },
         thumbnail: {
           type: 'string',
           format: 'binary',
@@ -58,12 +59,20 @@ export class ProductController {
     },
   })
   @ApiBearerAuth()
-  @UseInterceptors(FileInterceptor('thumbnail'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'thumbnail', maxCount: 1 },
+      { name: 'pdf', maxCount: 1 },
+    ]),
+  )
   @Post('create-product')
   createProduct(
     @Body() data: AddProductDto,
-    @UploadedFile()
-    file?: Express.Multer.File,
+    @UploadedFiles()
+    files: {
+      thumbnail?: Express.Multer.File[];
+      pdf?: Express.Multer.File[];
+    },
   ) {
     let parsedData: AddProductDto;
     if (typeof data === 'string') {
@@ -71,11 +80,14 @@ export class ProductController {
     } else {
       parsedData = data;
     }
-    console.log(file);
+    console.log(files);
 
     return this.productService.createPost(
       parsedData,
-      file ? `/static/upload/${file.filename}` : undefined,
+      files.thumbnail
+        ? `/static/upload/${files.thumbnail[0].filename}`
+        : undefined,
+      files.pdf ? `/static/upload/${files.pdf[0].filename}` : undefined,
     );
   }
 

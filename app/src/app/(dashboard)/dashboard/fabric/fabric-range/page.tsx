@@ -13,6 +13,8 @@ const page = () => {
   const deleteFabricRangeRef = useRef<HTMLDialogElement>(null);
   const [fabricRange, setFabricRange] = useState<FabricRage[]>([]);
   const [fabricRangeEditId, setFabricRangeEditId] = useState<number>(0);
+  const [fabricRangeEditHeader, setFabricRangeEditHeader] =
+    useState<string>("");
   const [fabricRangeDeleteFun, setFabricRangeDeleteFun] = useState<
     (() => void) | null
   >(null);
@@ -47,10 +49,10 @@ const page = () => {
             {/* head */}
             <thead>
               <tr>
-                <th>sr no</th>
+                <th>Sr no</th>
                 <th>Name</th>
                 <th>Fabric count</th>
-                <th></th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -65,13 +67,13 @@ const page = () => {
                       <button
                         className="btn btn-sm"
                         onClick={() => {
+                          setFabricRangeEditHeader("Fabric range");
                           setFabricRangeEditId(v.id);
                           if (UpdateFabricRangeRef.current)
                             UpdateFabricRangeRef.current.showModal();
                         }}
                       >
                         <Edit2 size={16} />
-                        Fabric Edit
                       </button>
                       <button
                         className="btn btn-sm btn-error"
@@ -102,7 +104,6 @@ const page = () => {
                         }}
                       >
                         <Trash2 size={16} />
-                        Delete
                       </button>
                     </div>
                   </td>
@@ -115,7 +116,11 @@ const page = () => {
       </div>
       <AddFabricRange ref={addFabricRangeRef} />
       <UpdateFabricRange id={fabricRangeEditId} ref={UpdateFabricRangeRef} />
-      <ConformBox okFun={fabricRangeDeleteFun!} ref={deleteFabricRangeRef} />
+      <ConformBox
+        okFun={fabricRangeDeleteFun!}
+        ref={deleteFabricRangeRef}
+        text={fabricRangeEditHeader}
+      />
     </div>
   );
 };

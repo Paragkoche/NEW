@@ -18,7 +18,7 @@ import { UpdateFabricRage } from './dto/update.dto';
 export class FabricRageController {
   constructor(private readonly fabricRageService: FabricRageService) {}
 
-  @Get('/')
+  @Get('')
   getAllFabricRage() {
     return this.fabricRageService.getAll();
   }

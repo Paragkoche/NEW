@@ -79,9 +79,7 @@ export class FabricService {
       throw new NotFoundException('fabric range not fount');
     }
 
-    return this.FabricRepo.delete({
-      id: data.id,
-    });
+    return this.FabricRepo.remove(data);
   }
 
   async getAllFabric() {

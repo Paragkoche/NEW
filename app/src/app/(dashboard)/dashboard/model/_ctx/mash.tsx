@@ -1,27 +1,50 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useLoader } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
+import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 
-export function useGLTFFromArrayBuffer(buffer: File | null) {
-  const [url, setUrl] = useState<string | null>(null);
+type ModelResult = {
+  object: any | null;
+  url: string | null;
+};
 
-  // Convert ArrayBuffer to object URL once
+export function use3DModelFromFile(file: File | null): ModelResult {
+  const [objectUrl, setObjectUrl] = useState<string | null>(null);
+  const [extension, setExtension] = useState<string | null>(null);
+
   useEffect(() => {
-    if (buffer) {
-      (async () => {
-        const blob = new Blob([await buffer.arrayBuffer()], {
-          type: "model/gltf-binary",
-        });
-        const objectUrl = URL.createObjectURL(blob);
-        setUrl(objectUrl);
-      })();
+    if (!file) return;
 
-      //   return () => {
-      //     URL.revokeObjectURL(objectUrl);
-      //   };
-    }
-  }, [buffer]);
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    setExtension(ext || null);
 
-  const gltf = url ? useGLTF(url, true) : null; // only call useGLTF if url is valid
+    (async () => {
+      const blob = new Blob([await file.arrayBuffer()], {
+        type:
+          ext === "glb"
+            ? "model/gltf-binary"
+            : ext === "gltf"
+            ? "model/gltf+json"
+            : "text/plain", // fallback for .obj
+      });
+      const url = URL.createObjectURL(blob);
+      setObjectUrl(url);
+    })();
 
-  return gltf;
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [file]);
+
+  const gltf =
+    objectUrl && (extension === "glb" || extension === "gltf")
+      ? useGLTF(objectUrl, true)
+      : null;
+  const obj =
+    objectUrl && extension === "obj" ? useLoader(OBJLoader, objectUrl) : null;
+
+  return {
+    object: gltf?.scene ?? obj ?? null,
+    url: objectUrl,
+  };
 }

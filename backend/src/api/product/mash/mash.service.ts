@@ -129,4 +129,65 @@ export class MashService {
       throw new InternalServerErrorException('Failed to create mash entry.');
     }
   }
+
+  async updateMash(id: number, data: Partial<MashCreteDTO>) {
+    const mash = await this.MashRepo.findOne({ where: { id } });
+    if (!mash) {
+      throw new NotFoundException('Mash not found.');
+    }
+
+    if (data.modelId) {
+      const model = await this.ModelRepo.findOne({
+        where: { id: data.modelId },
+      });
+      if (!model) {
+        throw new NotFoundException('Model not found.');
+      }
+      mash.model = model;
+    }
+
+    if (data.fabricRanges?.length) {
+      const fabricRangeEntities: FabricRage[] = [];
+      for (const item of data.fabricRanges) {
+        if (!item.fabricRangeId) continue;
+
+        const fabricRange = await this.FabricRageRepo.findOne({
+          where: { id: item.fabricRangeId },
+        });
+
+        if (!fabricRange) {
+          throw new UnprocessableEntityException(
+            `Fabric range with ID ${item.fabricRangeId} not found.`,
+          );
+        }
+
+        fabricRangeEntities.push(fabricRange);
+      }
+      mash.fabricRange = fabricRangeEntities;
+    }
+
+    Object.assign(mash, data);
+
+    try {
+      return await this.MashRepo.save(mash);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Failed to update mash entry.');
+    }
+  }
+
+  async deleteMash(id: number) {
+    const mash = await this.MashRepo.findOne({ where: { id } });
+    if (!mash) {
+      throw new NotFoundException('Mash not found.');
+    }
+
+    try {
+      await this.MashRepo.remove(mash);
+      return { message: 'Mash deleted successfully.' };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Failed to delete mash entry.');
+    }
+  }
 }

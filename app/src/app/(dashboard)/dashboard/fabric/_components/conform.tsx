@@ -5,6 +5,7 @@ const ConformBox = forwardRef(
   (
     props: {
       okFun: () => void;
+      text: string;
     },
     ref: Ref<HTMLDialogElement>
   ) => {
@@ -23,7 +24,7 @@ const ConformBox = forwardRef(
             </button>
           </form>
 
-          <h3 className="font-bold text-lg">Delete Fabric Rage</h3>
+          <h3 className="font-bold text-lg">Delete {props.text}</h3>
           <div className="modal-action">
             <button className="btn btn-sm" onClick={props.okFun}>
               <Trash2 size={16} />

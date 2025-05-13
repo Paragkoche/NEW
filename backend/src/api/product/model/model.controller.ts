@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   UnprocessableEntityException,
   UploadedFile,
   UseGuards,
@@ -78,5 +79,20 @@ export class ModelController {
       data,
       `/static/upload/${file.filename}`,
     );
+  }
+
+  @Get('get-model-by-id/:id')
+  getModelById(@Param('id') id: number) {
+    return this.modelService.getModelById(id);
+  }
+
+  @Put('update-model/:id')
+  updateModel(@Param('id') id: number, @Body() data: ModelCreateDto) {
+    return this.modelService.updateModel(id, data);
+  }
+
+  @Post('delete-model/:id')
+  deleteModel(@Param('id') id: number) {
+    return this.modelService.deleteModel(id);
   }
 }

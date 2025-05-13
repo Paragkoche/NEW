@@ -32,17 +32,34 @@ export class Fabric {
 
   @BeforeRemove()
   async deleteFile() {
-    try {
-      if (this.url) {
-        const fullPath = path.resolve(this.url);
+    const deleteIfExists = async (url: string | undefined) => {
+      if (!url) return;
+
+      try {
+        const relativePath = url.replace('/static', '');
+        console.log(relativePath, __dirname);
+
+        const fullPath = path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          '..',
+          '..',
+          relativePath,
+        );
+        console.log(fullPath);
+
         await fs.unlink(fullPath);
+      } catch (err: any) {
+        if (err.code !== 'ENOENT') {
+          console.error(`Error deleting file at ${url}:`, err);
+        }
       }
-      if (this.thumbnailUrl) {
-        const fullThumbPath = path.resolve(this.thumbnailUrl);
-        await fs.unlink(fullThumbPath);
-      }
-    } catch (err) {
-      console.error('Error deleting files:', err);
-    }
+    };
+    await Promise.all([
+      deleteIfExists(this.thumbnailUrl),
+      deleteIfExists(this.url),
+    ]);
   }
 }

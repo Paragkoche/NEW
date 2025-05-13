@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { boolean, set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +9,7 @@ import { useAuth } from "@/app/(dashboard)/_ctx/auth.ctx";
 import { Fabric, FabricRage, Mash, MashVariants, Product } from "@/types/type";
 import { get } from "http";
 import { getAllFabricRage, getAllProduct } from "@/api";
-import { useGLTFFromArrayBuffer } from "../_ctx/mash";
+import { use3DModelFromFile } from "../_ctx/mash";
 import * as THREE from "three";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 import MashFrom from "./_components/mashFrom";
@@ -100,7 +100,25 @@ const defaultValues = {
   ],
 };
 
+type FileSource = {
+  url: string;
+  extension: "glb" | "obj";
+};
+
+export function getMeshesFromScene(scene: THREE.Object3D): THREE.Mesh[] {
+  const meshes: THREE.Mesh[] = [];
+
+  scene.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      meshes.push(child);
+    }
+  });
+
+  return meshes;
+}
+
 export default function ModelForm() {
+  const [modelSource, setModelSource] = useState<FileSource | null>(null);
   const {
     register,
     control,
@@ -271,7 +289,7 @@ export default function ModelForm() {
   console.log("THUM", watch("thumbnailUrl"));
 
   const [mash, setMash] = React.useState<Mash[]>([]);
-  const model = useGLTFFromArrayBuffer(modelFile);
+  const model = use3DModelFromFile(modelFile);
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -335,6 +353,7 @@ export default function ModelForm() {
       <input
         {...register("RotationSpeed")}
         type="number"
+        step="any"
         className="input input-bordered w-full"
       />
 
@@ -351,6 +370,17 @@ export default function ModelForm() {
         onChange={(e) => {
           handleFileUpload(e.target.files?.[0]!, "url");
           setModelFile(e.target.files?.[0] || null);
+          alert(
+            e.target.files?.[0]!.name.split(".").pop()?.toLowerCase()! as
+              | "glb"
+              | "obj"
+          );
+          setModelSource({
+            url: URL.createObjectURL(e.target.files?.[0]!),
+            extension: e.target.files?.[0]!.name.split(".")
+              .pop()
+              ?.toLowerCase()! as "glb" | "obj",
+          });
           console.log(model);
         }}
       />
@@ -397,11 +427,13 @@ export default function ModelForm() {
       <button
         type="button"
         onClick={() => {
+          console.log(getMeshesFromScene(model.object));
+
           if (model)
-            Object.keys(model?.meshes).forEach((key) => {
+            getMeshesFromScene(model.object).forEach((key: any) => {
               appendMash({
                 name: "",
-                mashName: key,
+                mashName: key.name,
                 url: "",
                 thumbnailUrl: "",
                 itOptional: false,
@@ -420,11 +452,8 @@ export default function ModelForm() {
         Get All Mash in Model
       </button>
 
-      {modelFile && (
-        <ModelViewer
-          modelUrl={URL.createObjectURL(modelFile)}
-          dimension={watch("dimensions")}
-        />
+      {modelFile && modelSource && (
+        <ModelViewer modelUrl={modelSource!} dimension={watch("dimensions")} />
       )}
 
       {dimensionFields.map((dim, i) => (
@@ -437,36 +466,42 @@ export default function ModelForm() {
           <label className="text-sm">X</label>
           <input
             type="number"
+            step="any"
             {...register(`dimensions.${i}.x`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">Y</label>
           <input
             type="number"
+            step="any"
             {...register(`dimensions.${i}.y`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">Z</label>
           <input
             type="number"
+            step="any"
             {...register(`dimensions.${i}.z`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">End X</label>
           <input
             type="number"
+            step="any"
             {...register(`dimensions.${i}.end_x`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">End Y</label>
           <input
             type="number"
+            step="any"
             {...register(`dimensions.${i}.end_y`)}
             className="input input-bordered w-full"
           />
           <label className="text-sm">End Z</label>
           <input
             type="number"
+            step="any"
             {...register(`dimensions.${i}.end_z`)}
             className="input input-bordered w-full"
           />

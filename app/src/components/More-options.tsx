@@ -6,6 +6,7 @@ import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 const savedImageUrls = ["IMAGE BANK.zip"];
 import { jsPDF } from "jspdf";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 const MoreOptions = () => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<null | HTMLDivElement>(null);
@@ -55,19 +56,17 @@ const MoreOptions = () => {
 
   const downloadSavedImages = () => {
     const link = document.createElement("a");
-    link.href = ImageBank || "";
-    link.download = `saved-image.${ImageBank?.split(".").at(-1)}`; // You can customize the extension/filename
+    link.href = `${ImageBank}` || "";
+    link.download = `saved-image.${ImageBank?.split(".").at(-1)}`;
+    console.log(link.href);
+
+    // You can customize the extension/filename
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
   const generatePDF = () => {
-    const doc = new jsPDF();
-
-    const text = pdfText || "";
-    doc.text(text, 10, 10); // (text, x, y)
-
-    doc.save(`${selectedModel?.name}.pdf`);
+    window.open(`${API_BASE_URL}${pdfText}`);
   };
 
   return (

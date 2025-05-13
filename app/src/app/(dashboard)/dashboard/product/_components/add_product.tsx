@@ -12,7 +12,7 @@ const API_URL = process.env.NEXT_PUBLIC_API;
 // Zod schema
 const schema = z.object({
   name: z.string().min(1, "Product name is required"),
-  pdfText: z.string(),
+  pdfText: z.any().refine((file) => file?.length === 1, "PDF file is required"),
   thumbnail: z
     .any()
     .refine((file) => file?.length === 1, "PDF file is required"),
@@ -36,7 +36,7 @@ const AddProduct = forwardRef((props: {}, ref: Ref<HTMLDialogElement>) => {
     try {
       const formData = new FormData();
       formData.append("name", data.name);
-      formData.append("pdfText", data.pdfText);
+      formData.append("pdf", data.pdfText[0]);
       formData.append("thumbnail", data.thumbnail[0]);
 
       await axios.post(`${API_URL}/product/create-product`, formData, {
@@ -87,19 +87,16 @@ const AddProduct = forwardRef((props: {}, ref: Ref<HTMLDialogElement>) => {
 
           <div>
             <label className="label">PDF File</label>
-            <textarea
+            {/* <textarea
               className="file-input file-input-bordered w-full"
               {...register("pdfText")}
-            ></textarea>
-            {/* <input
+            ></textarea> */}
+            <input
               type="file"
               accept="application/pdf"
               className="file-input file-input-bordered w-full"
               {...register("pdfText")}
-            /> */}
-            {errors.pdfText && (
-              <p className="text-red-400">{errors.pdfText.message}</p>
-            )}
+            />
           </div>
           <div>
             <label className="label">thumbnail</label>

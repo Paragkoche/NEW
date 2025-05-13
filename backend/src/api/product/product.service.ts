@@ -34,7 +34,7 @@ export class ProductService {
 
     return product;
   }
-  async createPost(data: AddProductDto, fileUrl?: string) {
+  async createPost(data: AddProductDto, fileUrl?: string, pdf?: string) {
     console.log(data);
 
     const isExitProduct = await this.ProductRepo.findOne({
@@ -51,7 +51,7 @@ export class ProductService {
     }
     const newProduct = this.ProductRepo.create({
       name: data.name,
-      pdfText: data.pdfText,
+      pdfText: pdf,
       thumbnailUrl: fileUrl,
     });
     const product = await this.ProductRepo.save(newProduct);
@@ -94,8 +94,6 @@ export class ProductService {
       throw new NotFoundException('Product not fount');
     }
 
-    return this.ProductRepo.delete({
-      id: data.id,
-    });
+    return this.ProductRepo.remove(data);
   }
 }

@@ -1,10 +1,11 @@
 "use client";
 import { getAllModel, getAllProduct } from "@/api";
 import { Model } from "@/types/type";
-import { Edit2, Plus } from "lucide-react";
+import { Edit2, Pen, Plus, Trash, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import AddProduct from "./_components/add_model";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 const API_URL = process.env.NEXT_PUBLIC_API;
 
 const page = () => {
@@ -21,7 +22,7 @@ const page = () => {
     <div className="card  bg-base-100 shadow-sm">
       <div className="card-body">
         <div className="card-title flex justify-between items-center w-full">
-          <p>Product</p>
+          <p>Model</p>
           <div className="flex justify-between gap-5 items-center">
             <button
               className="btn"
@@ -30,7 +31,7 @@ const page = () => {
               }}
             >
               <Plus />
-              Product
+              Model
             </button>
           </div>
         </div>
@@ -44,30 +45,63 @@ const page = () => {
                 {/* <th>Name</th>
                 <th>pdf content</th>
 
-                <th>action</th> */}
+                 */}
+                {Product[0] && <th>action</th>}
               </tr>
             </thead>
             <tbody>
-              {Product.map((v, i) => (
-                <tr key={i}>
-                  <td>{v.name}</td>
-                  <td>
-                    <div className="flex items-center gap-3">
-                      <div className="avatar">
-                        <div className="mask mask-squircle h-12 w-12">
-                          <img
-                            src={`${API_URL}${v.thumbnailUrl}`}
-                            alt="Avatar Tailwind CSS Component"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </td>
+              {Product.map((vv: any, index) => (
+                <tr key={index}>
+                  {Object.keys(Product[0]).map((v: any, i) => (
+                    <td key={i}>
+                      {v == "thumbnailUrl" ? (
+                        vv.thumbnailUrl ? (
+                          <div className="flex items-center gap-3">
+                            <div className="avatar">
+                              <div className="mask mask-squircle h-12 w-12">
+                                <img
+                                  src={`${API_URL}${vv.thumbnailUrl}`}
+                                  alt="Avatar Tailwind CSS Component"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <p>No thumbnail</p>
+                        )
+                      ) : v == "imageBank" ? (
+                        <a
+                          href={`${API_URL}${vv[v]}`}
+                          className="underline hover:text-blue-400"
+                        >
+                          Zip file
+                        </a>
+                      ) : v == "url" ? (
+                        <a
+                          href={`${API_URL}${vv[v]}`}
+                          className="underline hover:text-blue-400"
+                        >
+                          Model
+                        </a>
+                      ) : v == "id" ? (
+                        String(index + 1)
+                      ) : (
+                        String(vv[v])
+                      )}
+                    </td>
+                  ))}
+
                   <th>
-                    <button className="btn">
-                      <Edit2 size={16} />
-                      Update
-                    </button>
+                    <div className="flex gap-1.5">
+                      <Link href={"/dashboard/model/update/" + vv.id}>
+                        <button className="btn">
+                          <Pen size={16} />
+                        </button>
+                      </Link>
+                      <button className="btn btn-error">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </th>
                 </tr>
               ))}

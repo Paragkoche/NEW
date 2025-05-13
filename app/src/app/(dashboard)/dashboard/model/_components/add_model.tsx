@@ -15,7 +15,6 @@ import { set, z } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
 import { useModelUrl } from "../_ctx/model";
-import AddDimensions from "./add_dimensions";
 import AddMash from "./add_mash";
 import { Product } from "@/types/type";
 import { getAllProduct } from "@/api";
@@ -167,13 +166,6 @@ const AddModel = forwardRef((props: {}, ref: Ref<HTMLDialogElement>) => {
             </button>
           </form>
         </div>
-        <AddDimensions
-          append={dimensions.append}
-          fields={dimensions.fields}
-          remove={dimensions.remove}
-          modelUrl={modelUrl}
-          ref={addDimensions}
-        />
       </dialog>
     </FormProvider>
   );
