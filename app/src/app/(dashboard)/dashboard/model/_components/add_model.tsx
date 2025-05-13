@@ -15,7 +15,7 @@ import { set, z } from "zod";
 import axios from "axios";
 import { toast } from "sonner";
 import { useModelUrl } from "../_ctx/model";
-import AddMash from "./add_mash";
+// import AddMash from "./add_mash";
 import { Product } from "@/types/type";
 import { getAllProduct } from "@/api";
 import { FormDataType, schema } from "./form";

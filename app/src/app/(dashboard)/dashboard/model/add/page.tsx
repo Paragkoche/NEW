@@ -105,7 +105,7 @@ type FileSource = {
   extension: "glb" | "obj";
 };
 
-export function getMeshesFromScene(scene: THREE.Object3D): THREE.Mesh[] {
+function getMeshesFromScene(scene: THREE.Object3D): THREE.Mesh[] {
   const meshes: THREE.Mesh[] = [];
 
   scene.traverse((child) => {
