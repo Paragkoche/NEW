@@ -44,7 +44,10 @@ export class Model {
   })
   mash: Mash[];
 
-  @OneToMany(() => Dimensions, (dimensions) => dimensions.model)
+  @OneToMany(() => Dimensions, (dimensions) => dimensions.model, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   dimensions: Dimensions[];
 
   @ManyToOne(() => Product, (product) => product.model, { onDelete: 'CASCADE' })

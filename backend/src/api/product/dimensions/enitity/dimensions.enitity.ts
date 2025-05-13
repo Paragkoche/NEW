@@ -27,6 +27,6 @@ export class Dimensions {
   @Column('float')
   end_z: number;
 
-  @ManyToOne(() => Model, (model) => model.dimensions)
+  @ManyToOne(() => Model, (model) => model.dimensions, { onDelete: 'CASCADE' })
   model: Model;
 }
