@@ -31,7 +31,8 @@ export class Model {
 
   @Column()
   RotationSpeed: number;
-
+  @Column({ default: 0 })
+  viewCount: number;
   @Column({ nullable: true })
   url: string;
 

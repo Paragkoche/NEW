@@ -95,3 +95,6 @@ export const deleteModelById = async (token: string, id: number) =>
       },
     }
   );
+
+export const addProductViewCount = async (id: number) =>
+  await client.post(`/product/model/add-view-count/${id}`);

@@ -135,4 +135,18 @@ export class ModelService {
     await this.ModelRepo.remove(model);
     return { message: 'Model deleted successfully' };
   }
+
+  async addViewCount(id: number) {
+    const data = await this.ModelRepo.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!data) {
+      throw new NotFoundException('Product not fount');
+    }
+    return await this.ModelRepo.update(data.id, {
+      viewCount: data.viewCount + 1,
+    });
+  }
 }

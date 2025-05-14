@@ -20,7 +20,7 @@ import { useConfig } from "@/context/configure-ctx";
 import { Fabric, Mash, Model as ModelType, Product } from "@/types/type";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Dimension from "./Dimension";
-import { getModelById } from "@/api";
+import { addProductViewCount, getModelById } from "@/api";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
@@ -206,6 +206,7 @@ const ViewThreeD = (pops: Product) => {
     showDimensions,
     canvasRef,
     setPdfText,
+    Models,
     setImageBank,
     SetRotation,
   } = useConfig();
@@ -222,6 +223,39 @@ const ViewThreeD = (pops: Product) => {
     setPdfText(pops.pdfText);
     setImageBank(`${API_BASE_URL}${selectedModel?.imageBank}`!);
     SetRotation(selectedModel?.autoRotate ?? false);
+  }, [selectedModel]);
+
+  useEffect(() => {
+    if (selectedModel) {
+      const local = localStorage.getItem(selectedModel.name);
+      if (!local) {
+        localStorage.setItem(
+          selectedModel.name,
+          JSON.stringify({
+            date: new Date(),
+          })
+        );
+      } else {
+        const localData = JSON.parse(local);
+        const localDate = new Date(localData.date);
+        const currentDate = new Date();
+        if (
+          localDate.getFullYear() !== currentDate.getFullYear() ||
+          localDate.getMonth() !== currentDate.getMonth() ||
+          localDate.getDate() !== currentDate.getDate()
+        ) {
+          // Dates are different, send API call
+          addProductViewCount(selectedModel.id).then(() => {
+            localStorage.setItem(
+              selectedModel.name,
+              JSON.stringify({
+                date: currentDate,
+              })
+            );
+          });
+        }
+      }
+    }
   }, [selectedModel]);
 
   return (

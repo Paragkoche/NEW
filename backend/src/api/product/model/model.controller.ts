@@ -95,4 +95,8 @@ export class ModelController {
   deleteModel(@Param('id') id: number) {
     return this.modelService.deleteModel(id);
   }
+  @Post('add-view-count/:id')
+  addView(@Param('id') id: number) {
+    return this.modelService.addViewCount(id);
+  }
 }

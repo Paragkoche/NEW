@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import { getAllProduct, getModelById } from "@/api";
+import { addProductViewCount, getAllProduct, getModelById } from "@/api";
 import CustomizePanel from "@/components/customize-panel";
 import ViewThreeD from "@/components/viewThreeD";
 import { Product, Product as ProductType } from "@/types/type";

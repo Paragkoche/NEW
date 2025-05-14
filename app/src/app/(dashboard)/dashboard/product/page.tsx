@@ -58,6 +58,7 @@ const page = () => {
               {Product.map((v, i) => (
                 <tr key={i}>
                   <td>{v.name}</td>
+
                   <td>
                     <a
                       href={`${API_URL}${v.pdfText}`}
@@ -66,6 +67,7 @@ const page = () => {
                       PDF
                     </a>
                   </td>
+
                   <th>
                     <div className="flex gap-1.5">
                       <button

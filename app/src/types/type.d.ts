@@ -60,6 +60,7 @@ export class Mash {
 }
 export class Model {
   id: number;
+  viewCount: number;
   name: string;
   isDefault: boolean;
   shadow: boolean;
@@ -78,5 +79,6 @@ export class Product {
   name: string;
   thumbnailUrl?: string;
   pdfText: string;
+
   model: Model[];
 }
