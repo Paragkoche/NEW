@@ -228,13 +228,17 @@ const ViewThreeD = (pops: Product) => {
   useEffect(() => {
     if (selectedModel) {
       const local = localStorage.getItem(selectedModel.name);
+
       if (!local) {
-        localStorage.setItem(
-          selectedModel.name,
-          JSON.stringify({
-            date: new Date(),
-          })
-        );
+        const currentDate = new Date();
+        addProductViewCount(selectedModel.id).then(() => {
+          localStorage.setItem(
+            selectedModel.name,
+            JSON.stringify({
+              date: currentDate,
+            })
+          );
+        });
       } else {
         const localData = JSON.parse(local);
         const localDate = new Date(localData.date);
