@@ -41,7 +41,7 @@ const Page = ({ params }: PageProps) => {
       </div>
       <h1 className="fixed top-2 left-2 text-4xl select-none">
         {data.name} <br />
-        <span className="text-gray-900 text-3xl">Virtual configurator</span>
+        {/* <span className="text-gray-900 text-3xl">Virtual configurator</span> */}
       </h1>
 
       <CustomizePanel />
