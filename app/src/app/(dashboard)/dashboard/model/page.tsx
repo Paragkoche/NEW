@@ -1,23 +1,31 @@
 "use client";
-import { getAllModel, getAllProduct } from "@/api";
+import { deleteModelById, getAllModel, getAllProduct } from "@/api";
 import { Model } from "@/types/type";
 import { Edit2, Pen, Plus, Trash, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import AddProduct from "./_components/add_model";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "../../_ctx/auth.ctx";
 const API_URL = process.env.NEXT_PUBLIC_API;
 
 const page = () => {
   const [Product, setProduct] = useState<Model[]>([]);
   const addProductRef = useRef<HTMLDialogElement>(null);
-
+  const deleteFabricRangeRef = useRef<HTMLDialogElement>(null);
+  const [fabricRangeEditId, setFabricRangeEditId] = useState<number>(0);
+  const [fabricRangeEditHeader, setFabricRangeEditHeader] =
+    useState<string>("");
+  const [fabricRangeDeleteFun, setFabricRangeDeleteFun] = useState<
+    (() => void) | null
+  >(null);
   useEffect(() => {
     getAllModel().then((data) => {
       setProduct(data.data);
     });
   }, []);
   const router = useRouter();
+  const { token } = useAuth();
   return (
     <div className="card  bg-base-100 shadow-sm">
       <div className="card-body">
@@ -98,7 +106,33 @@ const page = () => {
                           <Pen size={16} />
                         </button>
                       </Link>
-                      <button className="btn btn-error">
+                      <button
+                        onClick={() => {
+                          setFabricRangeEditHeader("Product");
+
+                          setFabricRangeDeleteFun(() => async () => {
+                            try {
+                              if (!token) {
+                                throw new Error("token not found");
+                              }
+                              // Call your API to update the fabric range
+
+                              await deleteModelById(token, vv.id);
+                              window.location.reload();
+                              // Close dialog after successful update
+                              (
+                                deleteFabricRangeRef as React.RefObject<HTMLDialogElement>
+                              )?.current?.close();
+                            } catch (error) {
+                              console.error("Failed to delete Product:", error);
+                            }
+                          });
+                          if (deleteFabricRangeRef.current) {
+                            deleteFabricRangeRef.current.showModal();
+                          }
+                        }}
+                        className="btn btn-error"
+                      >
                         <Trash2 size={16} />
                       </button>
                     </div>
