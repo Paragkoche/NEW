@@ -5,10 +5,4 @@ export class AddProductDto {
   @IsString()
   @ApiProperty()
   name: string;
-
-  @IsString()
-  @ApiProperty({
-    type: 'string',
-  })
-  pdfText: string;
 }

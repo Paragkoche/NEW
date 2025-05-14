@@ -62,8 +62,9 @@ export class ProductService {
     id: number,
     data: Partial<AddProductDto>,
     fileUrl?: string,
+    pdfUrl?: string,
   ) {
-    console.log(data, fileUrl);
+    console.log(data, fileUrl, pdfUrl);
 
     const product = await this.ProductRepo.findOne({
       where: {
@@ -79,9 +80,11 @@ export class ProductService {
       ...product,
       ...data,
       thumbnailUrl: fileUrl || product.thumbnailUrl,
+      pdfText: pdfUrl || product.pdfText,
     };
+    console.log(updatedProduct);
 
-    return this.ProductRepo.save(updatedProduct);
+    return await this.ProductRepo.save(updatedProduct);
   }
 
   async deleteFun(id: number) {

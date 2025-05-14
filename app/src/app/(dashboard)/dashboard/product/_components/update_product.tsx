@@ -13,8 +13,18 @@ const API_URL = process.env.NEXT_PUBLIC_API;
 // Zod schema
 const schema = z.object({
   name: z.string().min(1, "Product name is required"),
-  pdfFile: z.string().min(1, "PDF text  is required"),
-  thumbnail: z.any().optional(),
+  pdf: z
+    .any()
+    .refine((file) => file instanceof FileList && file.length > 0, {
+      message: "PDF is required",
+    })
+    .optional(),
+  thumbnail: z
+    .any()
+    .refine((file) => file instanceof FileList && file.length > 0, {
+      message: "PDF is required",
+    })
+    .optional(),
 });
 
 type FormDataType = z.infer<typeof schema>;
@@ -41,7 +51,7 @@ const UpdateProduct = forwardRef(
           const product = response.data;
           setValue("name", product.name);
           setValue(
-            "pdfFile",
+            "pdf",
             (product.pdfText as string).replace(/\\n/g, "\n")
             //   toast.error("Failed to load product data.");
           ); // Assuming it's a text field in the DB
@@ -58,17 +68,26 @@ const UpdateProduct = forwardRef(
       try {
         const formData = new FormData();
         formData.append("name", data.name);
-        formData.append("pdfFile", data.pdfFile);
 
         if (data.thumbnail?.[0]) {
           formData.append("thumbnail", data.thumbnail[0]);
         }
+        if (data.pdf?.[0]) {
+          formData.append("pdf", data.pdf[0]);
+        }
+        console.log(formData.getAll("pdf"));
 
-        await axios.put(`${API_URL}/product/update-product/${props.id}`, data, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        await axios.put(
+          `${API_URL}/product/update-product/${props.id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         toast.success("Product updated successfully!");
         window.location.reload();
@@ -109,14 +128,12 @@ const UpdateProduct = forwardRef(
 
             <div>
               <label className="label">PDF Text (URL or base64)</label>
-              <textarea
-                className="textarea textarea-bordered w-full"
-                rows={4}
-                {...register("pdfFile")}
+              <input
+                type="file"
+                accept="application/pdf"
+                className="file-input file-input-bordered w-full"
+                {...register("pdf")}
               />
-              {errors.pdfFile && (
-                <p className="text-red-400">{errors.pdfFile.message}</p>
-              )}
             </div>
 
             <div>

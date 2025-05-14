@@ -41,7 +41,7 @@ import { Dimensions } from './api/product/dimensions/enitity/dimensions.enitity'
         FabricRage,
       ],
       synchronize: true,
-      dropSchema: true,
+      // dropSchema: true,
     }),
     JwtModule.register({
       global: true,

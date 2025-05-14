@@ -116,11 +116,45 @@ export class ProductController {
 
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        pdf: { type: 'string', format: 'binary' }, // ✅ Corrected from "pdfText"
+        thumbnail: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'thumbnail', maxCount: 1 },
+      { name: 'pdf', maxCount: 1 },
+    ]),
+  )
   @Put('update-product/:id')
-  updateProduct(@Param('id') id: string, @Body() data: Partial<AddProductDto>) {
+  updateProduct(
+    @Param('id') id: string,
+    @Body() data: Partial<AddProductDto>,
+    @UploadedFiles()
+    files: {
+      thumbnail?: Express.Multer.File[];
+      pdf?: Express.Multer.File[];
+    },
+  ) {
     console.log(data);
 
-    return this.productService.updateProduct(Number(id), data);
+    return this.productService.updateProduct(
+      Number(id),
+      data,
+      files.thumbnail
+        ? `/static/upload/${files.thumbnail[0].filename}`
+        : undefined,
+      files.pdf ? `/static/upload/${files.pdf[0].filename}` : undefined,
+    );
   }
 
   @UseGuards(AuthGuard)
