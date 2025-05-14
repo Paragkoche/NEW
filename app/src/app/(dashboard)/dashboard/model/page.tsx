@@ -7,6 +7,7 @@ import AddProduct from "./_components/add_model";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../_ctx/auth.ctx";
+import ConformBox from "../fabric/_components/conform";
 const API_URL = process.env.NEXT_PUBLIC_API;
 
 const page = () => {
@@ -147,6 +148,11 @@ const page = () => {
       </div>
 
       <AddProduct ref={addProductRef} />
+      <ConformBox
+        okFun={fabricRangeDeleteFun!}
+        text={fabricRangeEditHeader}
+        ref={deleteFabricRangeRef}
+      />
     </div>
   );
 };
