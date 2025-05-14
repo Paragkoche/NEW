@@ -50,7 +50,10 @@ export class Model {
   })
   dimensions: Dimensions[];
 
-  @ManyToOne(() => Product, (product) => product.model, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Product, (product) => product.model, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   product: Product;
 
   @BeforeRemove()

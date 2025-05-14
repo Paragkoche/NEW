@@ -86,8 +86,12 @@ export const deleteProductById = async (token: string, id: number) =>
   });
 
 export const deleteModelById = async (token: string, id: number) =>
-  await client.post<undefined>(`/product/model/delete-model/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  await client.post<undefined>(
+    `/product/model/delete-model/${id}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
