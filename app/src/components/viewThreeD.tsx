@@ -72,7 +72,6 @@ export const DefaultMesh = ({
     if (node.material && typeof node.material.clone === "function") {
       return node.material.clone();
     }
-    // Fallback material if OBJ has no material or clone fails
     return new THREE.MeshStandardMaterial({ color: "gray" });
   });
 
@@ -82,19 +81,35 @@ export const DefaultMesh = ({
         ? node.material.clone()
         : new THREE.MeshStandardMaterial({ color: "gray" });
 
+    const applyTexture = (texture?: THREE.Texture) => {
+      if (texture) {
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(fabric?.size || 1, fabric?.size || 1);
+        baseMat.map = texture;
+      } else {
+        // Default fabric texture (you can customize this)
+        baseMat.color = new THREE.Color("gray"); // default color
+        baseMat.map = null;
+      }
+      baseMat.needsUpdate = true;
+      setMaterial(baseMat);
+    };
+
     if (fabric?.url) {
       const loader = new THREE.TextureLoader();
       loader.crossOrigin = "anonymous";
-      loader.load(`${API_BASE_URL}${fabric.url}`, (texture) => {
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set(fabric.size || 1, fabric.size || 1);
-        baseMat.map = texture;
-        baseMat.needsUpdate = true;
-        setMaterial(baseMat);
-      });
+      loader.load(
+        `${API_BASE_URL}${fabric.url}`,
+        (texture) => applyTexture(texture),
+        undefined,
+        () => {
+          console.warn("Failed to load fabric texture, applying default.");
+          applyTexture(); // fallback on error
+        }
+      );
     } else {
-      setMaterial(baseMat);
+      applyTexture(); // no fabric.url — apply default
     }
   }, [fabric, node.material]);
 
@@ -110,6 +125,7 @@ export const DefaultMesh = ({
     />
   );
 };
+
 const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
   const baseUrl = glfUrl.startsWith("http")
     ? glfUrl
