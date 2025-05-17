@@ -126,6 +126,7 @@ export class ModelService {
           mashVariants: {
             mash: true,
           },
+          fabricRange: true,
         },
       },
     });

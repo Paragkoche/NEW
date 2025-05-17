@@ -97,6 +97,7 @@ export const DefaultMesh = ({
       setMaterial(baseMat);
     }
   }, [fabric, node.material]);
+  // console.log(node.geometry, node.position, node.rotation);
 
   return (
     <mesh
@@ -114,10 +115,21 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
   const baseUrl = glfUrl.startsWith("http")
     ? glfUrl
     : `${API_BASE_URL}${glfUrl}`;
-  const { nodes } = useDynamicScene(baseUrl);
+  const { nodes, scene } = useDynamicScene(baseUrl);
   const { selectedVariants, selectedFabrics } = useConfig();
-  console.log("ss", nodes, mashData);
+  // console.log("scene:->", scene?.children, mashData);
 
+  scene?.traverse((m) => {
+    // Log all children whose x position is greater than 0
+    m.setRotationFromEuler(
+      new THREE.Euler(
+        scene.children[0].rotation.x,
+        m.rotation.y,
+        m.rotation.z,
+        THREE.Euler.DEFAULT_ORDER
+      )
+    );
+  });
   return (
     <group scale={0.05}>
       {mashData.map((mash, index) => {
@@ -128,7 +140,7 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
 
         const shouldShowVariant =
           selectedVariants && selectedVariants.mashName === mashKey;
-
+        // console.log("s", mashKey, nodes[mashKey].position);
         return (
           <Suspense fallback={null} key={mashKey + index}>
             {shouldShowVariant && selectedVariants && selectedVariants.url ? (
