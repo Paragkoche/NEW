@@ -130,7 +130,7 @@ export class MashService {
     }
   }
 
-  async updateMash(id: number, data: Partial<MashCreteDTO>) {
+  async updateMash(id: string, data: Partial<MashCreteDTO>) {
     const mash = await this.MashRepo.findOne({ where: { id } });
     if (!mash) {
       throw new NotFoundException('Mash not found.');
@@ -176,7 +176,7 @@ export class MashService {
     }
   }
 
-  async deleteMash(id: number) {
+  async deleteMash(id: string) {
     const mash = await this.MashRepo.findOne({ where: { id } });
     if (!mash) {
       throw new NotFoundException('Mash not found.');

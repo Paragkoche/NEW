@@ -15,7 +15,7 @@ import { FabricRage, Product } from "@/types/type";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API;
 
 const modelSchema = z.object({
-  productId: z.coerce.number(),
+  productId: z.coerce.string(),
   name: z.string().min(1, "Name is required"),
   isDefault: z.boolean().default(false),
   autoRotate: z.boolean().default(false),

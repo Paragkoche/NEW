@@ -40,7 +40,7 @@ export class FabricService {
   }
 
   async updateFabric(
-    id: number,
+    id: string,
     body: UpdateFabricDTO,
     fabric?: string,
     thumbnail?: string,
@@ -71,7 +71,7 @@ export class FabricService {
     return this.FabricRepo.save(data);
   }
 
-  async deleteFabric(id: number) {
+  async deleteFabric(id: string) {
     const data = await this.FabricRepo.findOne({
       where: {
         id,
@@ -97,7 +97,7 @@ export class FabricService {
     });
   }
 
-  async getFabricById(id: number) {
+  async getFabricById(id: string) {
     return await this.FabricRepo.findOne({
       where: {
         id,

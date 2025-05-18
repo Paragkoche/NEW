@@ -17,14 +17,14 @@ export class MashController {
   @ApiBearerAuth()
   @Post('update-mash/:id')
   @UseGuards(AuthGuard)
-  updateMash(@Body('id') id: number, @Body() data: MashCreteDTO) {
+  updateMash(@Body('id') id: string, @Body() data: MashCreteDTO) {
     return this.mashService.updateMash(id, data);
   }
 
   @ApiBearerAuth()
   @Post('delete-mash/:id')
   @UseGuards(AuthGuard)
-  deleteMash(@Body('id') id: number) {
+  deleteMash(@Body('id') id: string) {
     return this.mashService.deleteMash(id);
   }
 }

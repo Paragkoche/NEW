@@ -31,14 +31,14 @@ export class FabricRageController {
   }
 
   @Get('get-fabric-by-id/:id')
-  async getByIdFabricRage(@Param('id') id: number) {
+  async getByIdFabricRage(@Param('id') id: string) {
     return await this.fabricRageService.getById(id);
   }
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Put('update-fabric-by-id/:id')
   async updateByIdFabricRage(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() data: UpdateFabricRage,
   ) {
     return await this.fabricRageService.update(id, data);
@@ -46,7 +46,7 @@ export class FabricRageController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Delete('delete-fabric-by-id/:id')
-  async deleteByIdFabricRage(@Param('id') id: number) {
+  async deleteByIdFabricRage(@Param('id') id: string) {
     return await this.fabricRageService.deleteFun(id);
   }
 }

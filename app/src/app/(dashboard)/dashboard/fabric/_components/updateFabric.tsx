@@ -13,8 +13,8 @@ import { fabrics } from "@/types/upload";
 const API_URL = process.env.NEXT_PUBLIC_API;
 // Zod schema for validation
 const schema = z.object({
-  id: z.number(),
-  FabricRageId: z.coerce.number().min(1, "Fabric Range is required"),
+  id: z.string(),
+  FabricRageId: z.coerce.string().min(1, "Fabric Range is required"),
 
   name: z.string().min(1, "Name is required"),
   size: z.coerce.number().min(1, "Size is required"),
@@ -27,7 +27,7 @@ type FormDataType = z.infer<typeof schema>;
 const UpdateFabric = forwardRef(
   (
     props: {
-      id: number;
+      id: string;
     },
     ref: Ref<HTMLDialogElement>
   ) => {
@@ -43,7 +43,7 @@ const UpdateFabric = forwardRef(
     } = useForm<FormDataType>({
       resolver: zodResolver(schema),
       defaultValues: {
-        FabricRageId: 0,
+        FabricRageId: "",
 
         name: "",
         size: 0,
@@ -58,7 +58,7 @@ const UpdateFabric = forwardRef(
         setFabricRange(data);
         setValue("id", data.id);
         setValue("name", data.name); // Reset form values after data is fetched
-        setValue("FabricRageId", data?.fabricRage?.id || 0); // Reset form values after data is fetched
+        setValue("FabricRageId", data?.fabricRage?.id || ""); // Reset form values after data is fetched
         setValue("size", data?.size || 0); // Reset form values after data is fetched
         // Reset form values after data is fetched
       });

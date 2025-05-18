@@ -114,7 +114,7 @@ const CustomizePanel = () => {
   };
 
   const togglePanel = () => setOpen(!open);
-  console.log("s");
+  console.log("s", fabricRageMap);
 
   const panelVariants = {
     hidden: { x: "100%", opacity: 0 },
@@ -190,9 +190,7 @@ const CustomizePanel = () => {
                       value={selectedModel?.id || ""}
                       onChange={(e) =>
                         changeSelectedModel(
-                          Models.find(
-                            (v) => v.id === parseInt(e.target.value)
-                          ) ?? null
+                          Models.find((v) => v.id === e.target.value) ?? null
                         )
                       }
                     >
@@ -301,7 +299,7 @@ const CustomizePanel = () => {
                               value={fabricRageMap[mesh.id]?.id || ""}
                               onChange={(e) => {
                                 const rage = mesh.fabricRange.find(
-                                  (r) => r.id === parseInt(e.target.value)
+                                  (r) => r.id === e.target.value
                                 );
                                 setFabricRageForVariant(mesh.id, rage || null);
                                 // Optionally reset selected fabric when rage changes

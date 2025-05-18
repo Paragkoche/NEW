@@ -1,4 +1,4 @@
-export const makeJWtToken = (id: number, username: string) => {
+export const makeJWtToken = (id: string, username: string) => {
   return btoa(`${id}::${username}::${new Date()}`);
 };
 export const deCodeJwtToken = (token: string) => {

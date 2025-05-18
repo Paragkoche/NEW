@@ -30,7 +30,7 @@ const schema = z.object({
 type FormDataType = z.infer<typeof schema>;
 
 const UpdateProduct = forwardRef(
-  (props: { id: number }, ref: Ref<HTMLDialogElement>) => {
+  (props: { id: string }, ref: Ref<HTMLDialogElement>) => {
     const {
       register,
       handleSubmit,

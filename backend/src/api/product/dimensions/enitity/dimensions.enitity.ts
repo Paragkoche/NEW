@@ -3,8 +3,8 @@ import { Model } from '../../model/enitity/model.enitity';
 
 @Entity()
 export class Dimensions {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   label: string;

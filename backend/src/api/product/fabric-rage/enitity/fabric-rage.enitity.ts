@@ -12,8 +12,8 @@ import { Mash } from '../../mash/enitity/mash.enitity';
 
 @Entity()
 export class FabricRage {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;
@@ -22,7 +22,8 @@ export class FabricRage {
     onDelete: 'CASCADE',
   })
   fabric: Fabric[];
-  @ManyToMany(() => Mash, (mash) => mash.fabricRange)
-  @JoinTable()
+  @ManyToMany(() => Mash, (mash) => mash.fabricRange, {
+    onDelete: 'CASCADE',
+  })
   mash: Mash;
 }

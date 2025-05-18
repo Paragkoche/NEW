@@ -10,7 +10,7 @@ import {
 class FabricRangeArray {
   @ApiProperty()
   @IsNumber()
-  fabricRangeId: number;
+  fabricRangeId: string;
 }
 class MashVariants {
   @ApiProperty()
@@ -24,7 +24,7 @@ class MashVariants {
 class MashCreteDTO {
   @ApiProperty()
   @IsNumber()
-  modelId: number;
+  modelId: string;
 
   @ApiProperty()
   @IsBoolean()

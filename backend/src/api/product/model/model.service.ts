@@ -49,7 +49,7 @@ export class ModelService {
   async getAllModel() {
     return await this.ModelRepo.find();
   }
-  async getAllByIdModel(productId: number) {
+  async getAllByIdModel(productId: string) {
     const product = await this.ProductRepo.findOne({
       where: {
         id: productId,
@@ -58,7 +58,7 @@ export class ModelService {
     if (!product) {
       throw new NotFoundException('product not found');
     }
-    return await this.ModelRepo.find({
+    const data = await this.ModelRepo.find({
       where: {
         product: {
           id: productId,
@@ -77,8 +77,11 @@ export class ModelService {
         },
       },
     });
+    console.log(data[0].mash);
+
+    return data;
   }
-  async getModelById(id: number) {
+  async getModelById(id: string) {
     const model = await this.ModelRepo.findOne({
       where: { id },
       relations: {
@@ -100,7 +103,7 @@ export class ModelService {
     return model;
   }
 
-  async updateModel(id: number, data: Partial<ModelCreateDto>, url?: string) {
+  async updateModel(id: string, data: Partial<ModelCreateDto>, url?: string) {
     const model = await this.ModelRepo.findOne({ where: { id } });
     if (!model) {
       throw new NotFoundException('Model not found');
@@ -118,7 +121,7 @@ export class ModelService {
     return await this.ModelRepo.save(updatedModel);
   }
 
-  async deleteModel(id: number) {
+  async deleteModel(id: string) {
     const model = await this.ModelRepo.findOne({
       where: { id },
       relations: {
@@ -137,7 +140,7 @@ export class ModelService {
     return { message: 'Model deleted successfully' };
   }
 
-  async addViewCount(id: number) {
+  async addViewCount(id: string) {
     const data = await this.ModelRepo.findOne({
       where: {
         id,

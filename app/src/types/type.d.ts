@@ -1,10 +1,10 @@
 export class Users {
-  id: number;
+  id: string;
   username: string;
   password: string;
 }
 export class Dimensions {
-  id: number;
+  id: string;
 
   label: string;
 
@@ -21,7 +21,7 @@ export class Dimensions {
   end_z: number;
 }
 export class Fabric {
-  id: number;
+  id: string;
 
   name: string;
 
@@ -33,7 +33,7 @@ export class Fabric {
   fabricRage?: FabricRage;
 }
 export class FabricRage {
-  id: number;
+  id: string;
 
   name: string;
 
@@ -41,14 +41,14 @@ export class FabricRage {
 }
 
 export class MashVariants {
-  id: number;
+  id: string;
 
   name: string;
 
   mash: Mash[];
 }
 export class Mash {
-  id: number;
+  id: string;
   itOptional: boolean;
   textureEnable: boolean;
   thumbnailUrl?: string | null;
@@ -59,7 +59,7 @@ export class Mash {
   mashVariants?: MashVariants;
 }
 export class Model {
-  id: number;
+  id: string;
   viewCount: number;
   name: string;
   isDefault: boolean;
@@ -75,7 +75,7 @@ export class Model {
 }
 
 export class Product {
-  id: number;
+  id: string;
   name: string;
   thumbnailUrl?: string;
   pdfText: string;

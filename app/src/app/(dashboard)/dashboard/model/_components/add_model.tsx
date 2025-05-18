@@ -25,7 +25,7 @@ import { Plus } from "lucide-react";
 const API_URL = process.env.NEXT_PUBLIC_API;
 
 const formSchema = z.object({
-  productId: z.number().min(1, "product is required"),
+  productId: z.string().min(1, "product is required"),
   name: z.string().min(1, "Model name is required"),
   isDefault: z.boolean().default(false),
   autoRotate: z.boolean().default(false),

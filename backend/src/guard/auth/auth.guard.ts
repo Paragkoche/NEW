@@ -33,7 +33,7 @@ export class AuthGuard implements CanActivate {
       const { id, username } = deCodeJwtToken(payload.token);
       const user = await this.UserRepo.findOne({
         where: {
-          id: Number(id),
+          id: id,
           username,
         },
       });

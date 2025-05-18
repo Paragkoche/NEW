@@ -22,7 +22,7 @@ const Page = ({ params }: PageProps) => {
     if (id) {
       getAllProduct().then(({ data }) => {
         data.map((v) => {
-          if (v.id == Number(id)) setData(v);
+          if (v.id == id) setData(v);
         });
       });
     }

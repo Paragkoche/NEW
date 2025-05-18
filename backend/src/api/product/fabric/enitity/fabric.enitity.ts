@@ -10,8 +10,8 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 @Entity()
 export class Fabric {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;

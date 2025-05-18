@@ -21,7 +21,7 @@ export class ProductService {
     return await this.ProductRepo.find({});
   }
 
-  async getProductById(id: number) {
+  async getProductById(id: string) {
     const product = await this.ProductRepo.findOne({
       where: {
         id,
@@ -59,7 +59,7 @@ export class ProductService {
   }
 
   async updateProduct(
-    id: number,
+    id: string,
     data: Partial<AddProductDto>,
     fileUrl?: string,
     pdfUrl?: string,
@@ -87,7 +87,7 @@ export class ProductService {
     return await this.ProductRepo.save(updatedProduct);
   }
 
-  async deleteFun(id: number) {
+  async deleteFun(id: string) {
     const data = await this.ProductRepo.findOne({
       where: {
         id,

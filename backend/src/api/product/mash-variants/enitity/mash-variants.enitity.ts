@@ -9,8 +9,8 @@ import { Mash } from '../../mash/enitity/mash.enitity';
 
 @Entity()
 export class MashVariants {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;

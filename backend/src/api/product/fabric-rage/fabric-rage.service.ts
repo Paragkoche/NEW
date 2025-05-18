@@ -29,14 +29,14 @@ export class FabricRageService {
       },
     });
   }
-  async getById(id: number) {
+  async getById(id: string) {
     return await this.FabricRageRepo.findOne({
       where: {
         id,
       },
     });
   }
-  async update(id: number, body: UpdateFabricRage) {
+  async update(id: string, body: UpdateFabricRage) {
     const data = await this.FabricRageRepo.findOne({
       where: {
         id,
@@ -49,7 +49,7 @@ export class FabricRageService {
 
     return this.FabricRageRepo.save(data);
   }
-  async deleteFun(id: number) {
+  async deleteFun(id: string) {
     const data = await this.FabricRageRepo.findOne({
       where: {
         id,

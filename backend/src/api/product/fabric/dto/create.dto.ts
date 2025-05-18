@@ -4,7 +4,7 @@ import { IsNumber, IsString } from 'class-validator';
 export class CreateFabricDTO {
   @ApiProperty()
   @IsNumber()
-  FabricRageId: number;
+  FabricRageId: string;
 
   @ApiProperty()
   @IsString()

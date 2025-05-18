@@ -39,8 +39,8 @@ interface ConfigType {
   selectedVariants: Mash | null;
   changeSelectedVariants: Dispatch<SetStateAction<Mash | null>>;
 
-  fabricRageMap: Record<number, FabricRage | null>; // Keyed by Mash ID
-  setFabricRageForVariant: (mashId: number, rage: FabricRage | null) => void;
+  fabricRageMap: Record<string, FabricRage | null>; // Keyed by Mash ID
+  setFabricRageForVariant: (mashId: string, rage: FabricRage | null) => void;
   selectedFabrics: Record<string, Fabric>;
   changeSelectedFabrics: Dispatch<SetStateAction<Record<string, Fabric>>>;
   showDimensions: boolean;
@@ -70,7 +70,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
     null
   );
   const [fabricRageMap, setFabricRageMap] = useState<
-    Record<number, FabricRage | null>
+    Record<string, FabricRage | null>
   >({});
   const [selectedFabrics, changeSelectedFabrics] = useState<
     Record<string, Fabric>
@@ -79,7 +79,7 @@ export const ConfigProvider = ({ children }: PropsWithChildren) => {
 
   const [showDimensions, setShowDimensions] = useState<boolean>(false);
 
-  const setFabricRageForVariant = (mashId: number, rage: FabricRage | null) => {
+  const setFabricRageForVariant = (mashId: string, rage: FabricRage | null) => {
     setFabricRageMap((prev) => ({
       ...prev,
       [mashId]: rage,

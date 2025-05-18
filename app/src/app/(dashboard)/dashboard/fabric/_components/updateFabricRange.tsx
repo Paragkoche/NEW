@@ -8,14 +8,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const schema = z.object({
-  id: z.number(),
+  id: z.string(),
   name: z.string().min(1, "Fabric range name is required"),
 });
 
 type FabricRangeFormData = z.infer<typeof schema>;
 
 const UpdateFabricRange = forwardRef(
-  (props: { id: number }, ref: Ref<HTMLDialogElement>) => {
+  (props: { id: string }, ref: Ref<HTMLDialogElement>) => {
     const [fabricRange, setFabricRange] = useState<FabricRage | null>(null);
 
     const {

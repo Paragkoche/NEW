@@ -2,6 +2,7 @@ import {
   BeforeRemove,
   Column,
   Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -14,8 +15,8 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 @Entity()
 export class Mash {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ default: false })
   itOptional: boolean;
@@ -35,7 +36,8 @@ export class Mash {
   @Column()
   mashName: string;
 
-  @ManyToMany(() => FabricRage, (fr) => fr.mash)
+  @ManyToMany(() => FabricRage, (fr) => fr.mash, { onDelete: 'CASCADE' })
+  @JoinTable()
   fabricRange: FabricRage[];
 
   @ManyToOne(() => Model, (model) => model.mash, { onDelete: 'CASCADE' })

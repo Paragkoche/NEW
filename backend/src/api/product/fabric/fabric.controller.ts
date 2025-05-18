@@ -98,7 +98,7 @@ export class FabricController {
   @Put('update-fabric/:id')
   updateFabric(
     @Body() data: CreateFabricDTO,
-    @Param('id') id: number,
+    @Param('id') id: string,
     @UploadedFiles()
     files: {
       thumbnail?: Express.Multer.File[];
@@ -120,7 +120,7 @@ export class FabricController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Delete('delete-fabric/:id')
-  deleteFabric(@Param('id') id: number) {
+  deleteFabric(@Param('id') id: string) {
     return this.fabricService.deleteFabric(id);
   }
 
@@ -130,7 +130,7 @@ export class FabricController {
   }
 
   @Get('get-fabric-id/:id')
-  getFabricById(@Param('id') id: number) {
+  getFabricById(@Param('id') id: string) {
     return this.fabricService.getFabricById(id);
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 
-const Card = (props: { name: string; imageUrl: string; id: number }) => {
+const Card = (props: { name: string; imageUrl: string; id: string }) => {
   const router = useRouter();
   console.log("props:::", props);
 

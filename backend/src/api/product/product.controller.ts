@@ -39,7 +39,7 @@ export class ProductController {
   }
 
   @Get('get-product/:id')
-  getProduct(@Param('id') id: number) {
+  getProduct(@Param('id') id: string) {
     return this.productService.getProductById(id);
   }
 
@@ -50,7 +50,7 @@ export class ProductController {
       type: 'object',
       properties: {
         name: { type: 'string' },
-        pdfText: { type: 'string', format: 'binary' },
+        pdf: { type: 'string', format: 'binary' },
         thumbnail: {
           type: 'string',
           format: 'binary',
@@ -148,7 +148,7 @@ export class ProductController {
     console.log(data);
 
     return this.productService.updateProduct(
-      Number(id),
+      id,
       data,
       files.thumbnail
         ? `/static/upload/${files.thumbnail[0].filename}`
@@ -161,6 +161,6 @@ export class ProductController {
   @ApiBearerAuth()
   @Delete('delete-product/:id')
   deleteProduct(@Param('id') id: string) {
-    return this.productService.deleteFun(Number(id));
+    return this.productService.deleteFun(id);
   }
 }

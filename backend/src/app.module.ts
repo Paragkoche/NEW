@@ -8,7 +8,7 @@ import { Users } from './api/users/enititys/user.enitity';
 import { Product } from './api/product/enititys/product.enitity';
 import { Model } from './api/product/model/enitity/model.enitity';
 import { MashVariants } from './api/product/mash-variants/enitity/mash-variants.enitity';
-
+import * as fs from 'fs';
 import { FabricRage } from './api/product/fabric-rage/enitity/fabric-rage.enitity';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
@@ -28,8 +28,18 @@ import { Dimensions } from './api/product/dimensions/enitity/dimensions.enitity'
     }),
 
     TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'database.db',
+      type: 'cockroachdb',
+      database: process.env.DB_DATABASE!,
+      password: process.env.DB_PASSWORD!,
+      port: Number(process.env.DB_PORT!),
+      username: 'SOS_AR',
+      host: process.env.DB_HOST!,
+      ssl: {
+        rejectUnauthorized: true,
+        ca: fs.readFileSync('./crt/ca.crt').toString(),
+        key: fs.readFileSync('./crt/client.sos_ar.key').toString(),
+        cert: fs.readFileSync('./crt/client.sos_ar.crt').toString(),
+      },
       entities: [
         Users,
         Product,

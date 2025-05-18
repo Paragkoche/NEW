@@ -12,7 +12,7 @@ const page = () => {
   const UpdateFabricRangeRef = useRef<HTMLDialogElement>(null);
   const deleteFabricRangeRef = useRef<HTMLDialogElement>(null);
   const [fabricRange, setFabricRange] = useState<FabricRage[]>([]);
-  const [fabricRangeEditId, setFabricRangeEditId] = useState<number>(0);
+  const [fabricRangeEditId, setFabricRangeEditId] = useState<string>("");
   const [fabricRangeEditHeader, setFabricRangeEditHeader] =
     useState<string>("");
   const [fabricRangeDeleteFun, setFabricRangeDeleteFun] = useState<

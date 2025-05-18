@@ -26,7 +26,7 @@ export class ModelController {
   }
 
   @Get('get-model/:ProductId')
-  getAllByIdModel(@Param('ProductId') id: number) {
+  getAllByIdModel(@Param('ProductId') id: string) {
     return this.modelService.getAllByIdModel(id);
   }
 
@@ -82,21 +82,21 @@ export class ModelController {
   }
 
   @Get('get-model-by-id/:id')
-  getModelById(@Param('id') id: number) {
+  getModelById(@Param('id') id: string) {
     return this.modelService.getModelById(id);
   }
 
   @Put('update-model/:id')
-  updateModel(@Param('id') id: number, @Body() data: ModelCreateDto) {
+  updateModel(@Param('id') id: string, @Body() data: ModelCreateDto) {
     return this.modelService.updateModel(id, data);
   }
 
   @Post('delete-model/:id')
-  deleteModel(@Param('id') id: number) {
+  deleteModel(@Param('id') id: string) {
     return this.modelService.deleteModel(id);
   }
   @Post('add-view-count/:id')
-  addView(@Param('id') id: number) {
+  addView(@Param('id') id: string) {
     return this.modelService.addViewCount(id);
   }
 }

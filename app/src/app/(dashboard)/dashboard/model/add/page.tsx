@@ -60,7 +60,7 @@ const dimensionsSchema = z.object({
 });
 
 const modelSchema = z.object({
-  productId: z.coerce.number(),
+  productId: z.coerce.string(),
   name: z.string().min(1, "Name is required"),
   isDefault: z.boolean().default(false),
   autoRotate: z.boolean().default(false),
@@ -77,7 +77,7 @@ const modelSchema = z.object({
 });
 
 const defaultValues = {
-  productId: 1,
+  productId: "",
   name: "",
   isDefault: false,
   autoRotate: false,
@@ -304,7 +304,7 @@ export default function ModelForm() {
           console.log(e.target.value);
 
           // Updating the form value
-          setValue("productId", Number(e.target.value));
+          setValue("productId", e.target.value);
         }}
       >
         <option value="">Select a product</option>

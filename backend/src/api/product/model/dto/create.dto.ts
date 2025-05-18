@@ -4,7 +4,7 @@ import { IsBoolean, IsNumber, IsString } from 'class-validator';
 export class ModelCreateDto {
   @IsNumber()
   @ApiProperty()
-  productId: number;
+  productId: string;
 
   @IsString()
   @ApiProperty()

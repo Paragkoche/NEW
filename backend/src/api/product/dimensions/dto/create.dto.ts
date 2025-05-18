@@ -4,7 +4,7 @@ import { IsNumber, IsString } from 'class-validator';
 export class dimensionsCreateDto {
   @IsNumber()
   @ApiProperty()
-  ModelId: number;
+  ModelId: string;
 
   @IsString()
   @ApiProperty()

@@ -1,11 +1,11 @@
 export interface User {
-  id: number;
+  id: string;
   username: string;
   password: string;
 }
 
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   thumbnailUrl?: string | null;
   bgs: Bgs[];
@@ -14,14 +14,14 @@ export interface Product {
 }
 
 export interface Bgs {
-  id: number;
+  id: string;
   color: string;
   productId?: number | null;
   Product?: Product | null;
 }
 
 export interface Model {
-  id: number;
+  id: string;
   name: string;
   isDefault: boolean;
   shadow: boolean;
@@ -35,7 +35,7 @@ export interface Model {
 }
 
 export interface Env {
-  id: number;
+  id: string;
   name: string;
   url?: string | null;
   thumbnailUrl?: string | null;
@@ -44,7 +44,7 @@ export interface Env {
 }
 
 export interface Mash {
-  id: number;
+  id: string;
   itOptional: boolean;
   textureEnable: boolean;
   thumbnailUrl?: string | null;
@@ -59,7 +59,7 @@ export interface Mash {
 }
 
 export interface Fabric {
-  id: number;
+  id: string;
   name: string;
   url?: string | null;
   thumbnailUrl?: string | null;

@@ -31,15 +31,15 @@ export const PostFabricRage = async (
   });
 };
 
-export const getFabricById = async (id: number) =>
+export const getFabricById = async (id: string) =>
   await client.get<Fabric>("/product/fabric/get-fabric-id/" + id);
 
-export const getFabricRageById = async (id: number) =>
+export const getFabricRageById = async (id: string) =>
   await client.get<FabricRage>("/product/fabric/get-fabric-by-id/" + id);
 
 export const updateFabricRageById = async (
   token: string,
-  id: number,
+  id: string,
   data: {
     name: string;
   }
@@ -54,7 +54,7 @@ export const updateFabricRageById = async (
     }
   );
 
-export const deleteFabricRageById = async (token: string, id: number) =>
+export const deleteFabricRageById = async (token: string, id: string) =>
   await client.delete<undefined>(
     "/product/fabric-rage/delete-fabric-by-id/" + id,
 
@@ -64,7 +64,7 @@ export const deleteFabricRageById = async (token: string, id: number) =>
       },
     }
   );
-export const deleteFabricById = async (token: string, id: number) =>
+export const deleteFabricById = async (token: string, id: string) =>
   await client.delete<undefined>(
     "/product/fabric/delete-fabric/" + id,
 
@@ -78,14 +78,14 @@ export const deleteFabricById = async (token: string, id: number) =>
 export const getAllModel = async () =>
   await client.get<Model[]>("/product/model/get-all-model");
 
-export const deleteProductById = async (token: string, id: number) =>
+export const deleteProductById = async (token: string, id: string) =>
   await client.delete<undefined>(`/product/delete-product/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-export const deleteModelById = async (token: string, id: number) =>
+export const deleteModelById = async (token: string, id: string) =>
   await client.post<undefined>(
     `/product/model/delete-model/${id}`,
     {},
@@ -96,5 +96,5 @@ export const deleteModelById = async (token: string, id: number) =>
     }
   );
 
-export const addProductViewCount = async (id: number) =>
+export const addProductViewCount = async (id: string) =>
   await client.post(`/product/model/add-view-count/${id}`);
