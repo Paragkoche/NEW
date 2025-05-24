@@ -215,7 +215,7 @@ export default function ModelForm() {
         mashName: mash?.mashName,
         fabricRanges: mash?.fabricRange.map((fabric: any) => ({
           fabricRangeId:
-            fabric.fabricRageID == "" ? undefined : Number(fabric.fabricRageID), // Assuming `fabricRageID` is used
+            fabric.fabricRageID == "" ? undefined : fabric.fabricRageID, // Assuming `fabricRageID` is used
         })),
         mashVariant: mash?.mashVariants?.name != "" && {
           name: mash?.mashVariants?.name,
