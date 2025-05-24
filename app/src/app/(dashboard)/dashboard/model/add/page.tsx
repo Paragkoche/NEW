@@ -160,7 +160,7 @@ export default function ModelForm() {
 
     // Flatten the rest of the form fields into a JSON string
     const otherData = {
-      productId: Number(data.productId),
+      productId: String(data.productId),
       name: String(data.name),
       isDefault: Boolean(data.isDefault),
       autoRotate: Boolean(data.autoRotate),
