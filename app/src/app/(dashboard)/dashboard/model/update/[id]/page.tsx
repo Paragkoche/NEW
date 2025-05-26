@@ -23,6 +23,7 @@ const modelSchema = z.object({
   imageBank: z.string().optional(),
 
   RotationSpeed: z.coerce.number().default(0),
+  scale: z.number().default(0),
   url: z.string().optional(),
   thumbnailUrl: z.string().optional(),
 });
@@ -92,6 +93,7 @@ export default function ModelUpdateForm({
           RotationSpeed: data.RotationSpeed,
           imageBank: data.imageBank,
           url: data.url,
+          scale: data.scale || 0,
           thumbnailUrl: data.thumbnailUrl ?? "",
         });
       } catch (error) {
@@ -212,6 +214,12 @@ export default function ModelUpdateForm({
       <input
         type="number"
         {...register("RotationSpeed")}
+        className="input input-bordered w-full"
+      />
+      <label className="text-sm">Scale</label>
+      <input
+        type="number"
+        {...register("scale")}
         className="input input-bordered w-full"
       />
 

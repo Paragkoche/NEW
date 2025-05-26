@@ -116,7 +116,7 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
     ? glfUrl
     : `${API_BASE_URL}${glfUrl}`;
   const { nodes, scene } = useDynamicScene(baseUrl);
-  const { selectedVariants, selectedFabrics } = useConfig();
+  const { selectedVariants, selectedFabrics, selectedModel } = useConfig();
   // console.log("scene:->", scene?.children, mashData);
 
   scene?.traverse((m) => {
@@ -131,7 +131,7 @@ const Model = ({ glfUrl, mashData }: { glfUrl: string; mashData: Mash[] }) => {
     );
   });
   return (
-    <group scale={0.05}>
+    <group scale={selectedModel!.scale || 0.05}>
       {mashData.map((mash, index) => {
         const mashKey = mash.mashName;
         const fabric = mash.textureEnable

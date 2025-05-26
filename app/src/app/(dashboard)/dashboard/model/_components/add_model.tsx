@@ -30,6 +30,7 @@ const formSchema = z.object({
   isDefault: z.boolean().default(false),
   autoRotate: z.boolean().default(false),
   RotationSpeed: z.coerce.number().default(0),
+  scale: z.coerce.number().default(0),
   dimensions: z.array(
     z.object({
       label: z.string().min(1, "label is required"),

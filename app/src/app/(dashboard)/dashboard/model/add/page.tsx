@@ -68,6 +68,7 @@ const modelSchema = z.object({
   imageBank: z.string().optional(),
 
   RotationSpeed: z.coerce.number().default(0),
+  scale: z.number().default(0),
   url: z.string().optional(),
   thumbnailUrl: z.string().optional(),
   mash: z.array(mashSchema.optional()),
@@ -87,6 +88,7 @@ const defaultValues = {
   url: "",
   thumbnailUrl: "",
   mash: [],
+  scale: 0.05,
   dimensions: [
     {
       label: "",
@@ -352,6 +354,14 @@ export default function ModelForm() {
 
       <input
         {...register("RotationSpeed")}
+        type="number"
+        step="any"
+        className="input input-bordered w-full"
+      />
+      <label className="text-sm">Scale</label>
+
+      <input
+        {...register("scale")}
         type="number"
         step="any"
         className="input input-bordered w-full"

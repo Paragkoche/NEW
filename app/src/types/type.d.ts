@@ -70,6 +70,7 @@ export class Model {
   thumbnailUrl?: string | null;
   mash: Mash[];
   imageBank: string;
+  scale: number;
 
   dimensions: Dimensions[];
 }
