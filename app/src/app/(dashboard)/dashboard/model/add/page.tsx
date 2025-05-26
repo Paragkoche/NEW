@@ -58,7 +58,7 @@ const dimensionsSchema = z.object({
   end_y: z.coerce.number(),
   end_z: z.coerce.number(),
 });
-
+//ok
 const modelSchema = z.object({
   productId: z.coerce.string(),
   name: z.string().min(1, "Name is required"),
