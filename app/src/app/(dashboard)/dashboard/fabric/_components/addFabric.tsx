@@ -12,7 +12,7 @@ import axios from "axios";
 const API_URL = process.env.NEXT_PUBLIC_API;
 // Zod schema for validation
 const schema = z.object({
-  FabricRageId: z.coerce.number().min(1, "Fabric Range is required"),
+  FabricRageId: z.coerce.string().min(1, "Fabric Range is required"),
   fabrics: z.array(
     z.object({
       name: z.string().min(1, "Name is required"),
@@ -35,7 +35,7 @@ const AddFabric = forwardRef((props: {}, ref: Ref<HTMLDialogElement>) => {
   } = useForm<FormDataType>({
     resolver: zodResolver(schema),
     defaultValues: {
-      FabricRageId: 0,
+      FabricRageId: "",
       fabrics: [
         {
           name: "",
