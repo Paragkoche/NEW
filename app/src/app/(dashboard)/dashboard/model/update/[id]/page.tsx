@@ -23,7 +23,7 @@ const modelSchema = z.object({
   imageBank: z.string().optional(),
 
   RotationSpeed: z.coerce.number().default(0),
-  scale: z.number().default(0),
+  scale: z.coerce.number().default(0),
   url: z.string().optional(),
   thumbnailUrl: z.string().optional(),
 });
@@ -224,6 +224,9 @@ export default function ModelUpdateForm({
         className="input input-bordered w-full"
         step="any"
       />
+      {errors.scale && (
+        <p className="text-red-500 text-sm">{errors.scale.message}</p>
+      )}
 
       <label className="text-sm">Update Thumbnail</label>
       <input

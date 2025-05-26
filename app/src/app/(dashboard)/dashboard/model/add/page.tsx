@@ -68,7 +68,7 @@ const modelSchema = z.object({
   imageBank: z.string().optional(),
 
   RotationSpeed: z.coerce.number().default(0),
-  scale: z.number().default(0),
+  scale: z.coerce.number().default(0),
   url: z.string().optional(),
   thumbnailUrl: z.string().optional(),
   mash: z.array(mashSchema.optional()),
