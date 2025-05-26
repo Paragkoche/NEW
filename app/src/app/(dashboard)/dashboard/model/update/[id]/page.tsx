@@ -215,12 +215,14 @@ export default function ModelUpdateForm({
         type="number"
         {...register("RotationSpeed")}
         className="input input-bordered w-full"
+        step="any"
       />
       <label className="text-sm">Scale</label>
       <input
         type="number"
         {...register("scale")}
         className="input input-bordered w-full"
+        step="any"
       />
 
       <label className="text-sm">Update Thumbnail</label>
